@@ -6,14 +6,6 @@ application:
     mapping:
         *: App\*Module\Presenters\*Presenter
 
-dibi:
-    driver: sqlsrv
-    host: 192.168.1.8
-    username: sa
-    password: Helios200953
-    database: Helios001
-    lazy: TRUE
-
 extensions:
     dibi: Dibi\Bridges\Nette\DibiExtension22
     translation: Kdyby\Translation\DI\TranslationExtension
@@ -35,6 +27,7 @@ services:
     - App\Forms\ReadBarCodeFormFactory
     - App\Forms\ReceiptReadBarCodeFormFactory
     - App\Forms\SetQuantityFormFactory
+    - App\Forms\SetQuantityFromStockFormFactory
     - App\Forms\SetFinalOperationQuantityFormFactory
     - App\Models\CustMaterialModel
     - App\Forms\SelectCustMaterialFormFactory
