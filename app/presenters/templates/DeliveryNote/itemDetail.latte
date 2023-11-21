@@ -1,0 +1,84 @@
+{block content}
+{include 'headerDeliveryNote.latte'}
+<div class="content">
+    {ifset $deliveryNote->UmisteniKod}
+            <div class="row delivery-note-status">
+                {if $deliveryNote->StavDLExp !== 1}
+                    <div class="col-sm-12">
+                        <div class="set-dn-form">
+                            {include '../components/readBarCodeForm.latte', form => readBarCodeForm}
+                        </div>
+                    </div>
+                {/if}
+            </div>
+        <div class="row delivery-note-items">
+            <div class="col-sm-12">
+                <h2>Detail položky dodacího listu</h2>
+                <table class="table table-bordered table-sm">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Zak/Náz/Rozm</th>
+                            <th scope="col">Pož</th>
+                            <th scope="col">Připr</th>
+                                <th scope="col" class="text-right">
+                                    <a n:href="DeliveryNote:default" class="btn btn-sm btn-primary mr-2"><i class="far fa-level-up"></i></a>
+                                </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {if isset($deliveryNoteItem)}
+                            <tr>
+                                <td class="text-center">{$deliveryNoteItem->Zakazka}</td>
+                                <td class="text-center font-weight-bold" rowspan="2">{$deliveryNoteItem->Mnozstvi}</td>
+                                <td class="text-center font-weight-bold {if $deliveryNoteItem->MnozstviVC == $deliveryNoteItem->Mnozstvi}text-success{elseif $deliveryNoteItem->MnozstviVC > $deliveryNoteItem->Mnozstvi}text-warning{else}text-danger{/if}" rowspan="2">{$deliveryNoteItem->MnozstviVC}</td>
+                                <td class="text-right" rowspan="2">
+                                    <a n:href="removeDeliveryNoteItem! $deliveryNoteItemId" n:if="($deliveryNote->StavDLExp == 0)" class="btn btn-sm btn-danger mr-2 ajax" data-nette-confirm="modal" data-nette-confirm-title="Zrušení přípravy" data-nette-confirm-text="Opravu chcete zrušit přípravu u vybrané položky?" data-nette-confirm-ok-class="btn-danger" data-nette-confirm-ok-text="Ano" data-nette-confirm-cancel-class="btn-secondary" data-nette-confirm-cancel-text="Ne"><i class="far fa-trash-alt"></i></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">{$deliveryNoteItem->Vykres}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center" colspan="4">{$deliveryNoteItem->Rozmery}</td>
+                            </tr>
+                        {/if}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row delivery-note-item-sn">
+            <div class="col-sm-12">
+                <h2>Výrobní čísla položky dodacího listu</h2>
+                {snippet itemSNTable}
+                    <table class="table table-bordered table-striped table-sm">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Výrobní číslo</th>
+                                <th scope="col">Skladem</th>
+                                <th scope="col">Na DL</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {foreach $deliveryNoteItemSNs as $deliveryNoteItemSN}
+                                <tr>
+                                    <td class="text-center">{$deliveryNoteItemSN->Nazev}</td>
+                                    <td class="text-center">{$deliveryNoteItemSN->MnozstviPoPrijmuAVydeji}</td>
+                                    <td class="text-center font-weight-bold">{$deliveryNoteItemSN->MnozstviCP}
+                                        {*<span class="quantity-span btn btn-outline-primary" data-sn-id="{$deliveryNoteItemSN->IDVyrCP}"data-sn-value="{$deliveryNoteItemSN->MnozstviCP}">{$deliveryNoteItemSN->MnozstviCP}</span>
+                                        <div class="edit-quantity-form" id="editq-id-{$deliveryNoteItemSN->IDVyrCP}">
+                                            {include 'editQuantityForm.latte', form => $control->getComponent('editQuantityForm')->getComponent($deliveryNoteItemSN->IDVyrCP)}
+                                        </div>*}
+                                    </td>
+                                    <td class="text-right text-nowrap">
+                                        <a n:href="removeDeliveryNoteItemSN! $deliveryNoteItem->ID, $deliveryNoteItemSN->IDVyrCP" n:if="($deliveryNote->StavDLExp == 0)" class="btn btn-sm btn-danger mr-2 ajax" data-nette-confirm="modal" data-nette-confirm-title="Odebrat výrobní číslo z dodacího listu" data-nette-confirm-text="Opravdu chcete zrušit výrobní číslo z dodacího listu?" data-nette-confirm-ok-class="btn-danger" data-nette-confirm-ok-text="Ano" data-nette-confirm-cancel-class="btn-secondary" data-nette-confirm-cancel-text="Ne"><i class="far fa-trash-alt"></i></a>
+                                    </td>
+                                </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                {/snippet}
+            </div>
+        </div>
+    {/ifset}
+</div>

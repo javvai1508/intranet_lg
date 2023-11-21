@@ -1,0 +1,25 @@
+<div class="row header">
+                {if $user->isLoggedIn()}
+                    <div class="logged">
+                        <div class="btn-group">    
+                            <button class="btn btn-outline-dark dropdown-toggle" type="button" id="menuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
+                                <i class="far fa-bars"></i>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="menuButton">
+                                <a class="dropdown-item logged-user lg" n:href="Homepage:">{$user->getIdentity()->getData()['fullname']}</a>
+                                <a class="dropdown-item" n:if="$user->isInRole('expedice')" n:href="DeliveryNote:default"><i class="far fa-truck"></i> Expedice</a>
+                                <a class="dropdown-item" n:if="$user->isInRole('prijMatZak')" n:href="CustomerMaterial:default"><i class="far fa-inbox-in"></i> Materiál zákazníka</a>
+                                <a class="dropdown-item" n:if="$user->isInRole('skladMat')" n:href="Material:default"><i class="far fa-pallet-alt"></i> Sklad materiálu</a>
+                                <a class="dropdown-item" n:href="Sign:out"><i class="far fa-sign-out"></i> Odhlásit</a>
+                            </div>
+                        </div>
+                    </div>
+                {else}
+                    <div class="button-sign">
+                        <a n:href="Sign:in" title="Přihlásit">
+                            <i class="far fa-sign-in"></i>
+                        </a>
+                    </div>
+                {/if}
+</div>
+

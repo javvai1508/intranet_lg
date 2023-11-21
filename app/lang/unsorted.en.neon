@@ -1,0 +1,9 @@
+default:
+	author: Author
+	canceled: Canceled
+	category: Category
+	checkdecrease: Check decrease
+	contact: Contact
+	docs: Documents
+	email: Email
+

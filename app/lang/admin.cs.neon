@@ -1,0 +1,471 @@
+language:
+    language: cs
+    select: Vyberte jazyk
+    
+address:
+    address: Adresa
+    at : Na adrese
+
+admin:
+    admin: Správce
+    instration: Správa
+
+announcement: 
+    announcement: Oznámení
+    announcements: Oznámení
+    add: Přidat oznámení
+    edit: Upravit oznámení
+    new: Nové oznámení
+    sourceofnew: Zdroj nového oznámení
+    
+assign:
+    assigned: Přiřazeno
+    to: Přiřadit k
+
+button:
+    active: Aktivní
+    add: Přidat
+    block: Zablokovat
+    blocked: Blokováno
+    cancel: Zrušit
+    canceled: Zrušeno
+    change: Změnit
+    close: Zavřít
+    delete: Smazat
+    detail: Detail
+    edit: Upravit
+    notactivated: Neaktivováno
+    play: Spustit
+    replace: Vyměnit
+    set: Nastavit
+    suspend: Zastavit
+    unblock: Odblokovat
+
+calibration:
+    validto: Kalibrace platí do
+    
+consumption:
+    consumption: Spotřeba
+    dailyaverage: Průměrná denní spotřeba
+    year: Spotřeba rok
+    lastmonth: Spotřeba předchozí měsíc
+    thismonth: Spotřeba tento měsíc
+
+data:
+    changepersonal: Změna osobních údajů
+    fromto: Data od/do
+    firstrecorded: První zaznamenaná data
+    lastrecorded: Poslední zaznamenaná data
+    no: Nejsou žádná data k zobrazení
+    notprocessed: Nezpracovaná data
+
+date:
+    date: Datum
+    andtime: Datum a čas
+    andtimeof:
+        event: Datum a čas události
+        write: Datum a čas zápisu
+
+days:
+    mo: Po
+    tu: Út
+    we: St
+    th: Čt
+    fr: Pá
+    sa: So
+    su: Ne
+
+delete:
+    delete: Smazat
+    actionallinformation: 'Akce smaže veškeré informace o přiřazení a vyřazení měřicích přístrojů, včetně záznamů v historii a vypočtených dat. Žádné odběrné místo nebude mít přiřazený měřicí přístroj, všechny měřicí přístroje budou ve stavu Pořízeno, Zjištěno nebo Přijato. Opravdu provést?'
+    actionwithdevices: Smazání akcí s měřicími přístroji
+    lastentryfromhistory: Smazání posledního záznamu z historie
+    meterdata: Smazat data
+    allmeterdata: Smazat všechna data a logy k vybranému přístroji
+    alluseractions: 'Smaže všechny uživatelské akce s měřicími přístroji (přiřazení k odběrnému místu a vyřazení).'
+
+device:
+    assign: Přiřadit přístroj
+    assignmismatch: Neshoda v přiřazeném přístroji
+    device: Měřící přístroj
+    devices: Měřící přístroje
+    add: Přidat měřící přístroj
+    assignement: Přiřazení měřicího přístroje
+    assigntometerpoint: Přiřazení měřicího přístroje k odběrnému místu
+    edit: Upravit přístroj
+    exchange: Výměna měřícího přístroje
+    excludefrommeterpoint: Vyřazení měřícího přístroje z odběrného místa
+    exclusion: Vyřazení měřícího přístroje
+    new: Nový měřicí přístroj
+    newselection: Výběr nového měřícího přístroje
+    no: Není přístroj
+    to: K přístroji
+    uploadfinished: Načtení dat proběhlo bez chyb
+    wasnotfound: Měřicí přístroj nebyl nalezen
+
+documentation:
+    detectederrors: Zjištěné chyby
+    dataStructures: Struktury dat pro export / import
+    documentation: Dokumentace
+    changelog: Změny ve verzích
+    instructions: Návod
+    todolist: Plánovaný vývoj
+edit:
+    edit: Upravit
+    announcement: Upravit oznámení
+    consumingunit: Oprava spotřebitelské jednotky
+    device: Oprava měřicího přístroje
+    location: Oprava umístění
+    meterpoint: Oprava odběrného místa
+    role: Oprava role
+
+event:
+    detailof: Detail události
+    diffs: 'Rozdíl (zadaná - naměřená)'
+    event: Událost
+    initial: počáteční stav
+    measured: Naměřená hodnota
+    nearest: Nejbližší vyšší
+    valueupdate: Oprava hodnoty události
+    update: Oprava události
+    useasmeasured: Použít jako naměřenou
+
+exclude:
+    exclude: Vyřadit
+    excluded: Vyřazeno
+    to: Vyřadit k
+
+flash:
+    unauthorisedaccess: Neoprávněný přístup
+    affectedrows: Počet ovlivněných řádků
+
+history:
+    hide: Odstranit historii
+    history: Historie
+    lastentryin: Poslední záznam v historii
+    show: Zobrazit historii
+    shownext: Zobrazit další historii
+    wasreversed: Historie byla vrácena o krok zpět
+    wasnotreversed: Historii se nepodařilo vrátit zpět
+
+invalid:
+    invalid: Neplatné
+    userpass: Neplatné uživatelské jméno nebo heslo
+    emailaddress: Neplatná e-mailová adresa
+
+homepage:
+    nolocationchosen: Nemáte vybrané žádné umístění pro zobrazení na nástěnce. Nastavit si je můžete v 
+    settings: uživatelském nastavení
+
+last:
+    activity: Čas poslední aktivity
+    lastentryin: Poslední záznam v historii
+    recordeddata: Poslední zaznamenaná data
+    valuesaresettothistime: k tomuto času jsou aktuálně nastavené konečné hodnoty
+    monthcomparison: Porovnání s minulým měsícem
+    weekcomparison: Porovnání s minulým týdnem
+
+load:
+    fromfile: Načíst ze souboru
+    devicesfromcsvfile: Načtení měřicích přístrojů z CSV souboru
+    unitsfromcsvfile: Načtení jednotek a odběrných míst z CSV souboru
+
+location:
+    location: Umístění
+    add: Přidat umístění
+    backtoselection: Zpět na výběr umístění
+    edit: Oprava umístění
+    new: Nové umístění
+    nocorresponding: Žádné odpovídající umístění nebylo nalezeno
+    search: Vyhledejte umístění
+    select: Vyberte umístění
+    selected: Vybrané umístnění
+    selection: Výběr umístění
+    wasnotfound: Umístění nebylo nalezeno
+
+log:
+    change: Změny ve verzích
+    in: Přihlásit
+    out: Odhlásit
+    gedout: Odhlášeno
+    logs: Logy
+
+measured:
+    measured: Naměřeno nezpracováno
+    
+message:
+    addressedusers: Oslovení uživatelé
+    comment: Poznámka
+    escalated: Eskalování oznámení
+    message: Oznámení
+    newsettings: Nová šablona oznámení
+    related: Související oznámení
+    send: Odesláno
+    settings: Nastavení oznámení
+    solved: Vyřešeno
+    
+modal:
+    confirmationdialog: Potvrzovací dialog
+    entrywasnotfound: Záznam nebyl nalezen!
+    isset: Nastaveno
+    no: ne
+    returnback: Vrátit zpět
+    set: Nastavit
+    signoutduetoinactivity: 'Byli jste odhlášeni. Prosím, přihlaste se znovu.'
+    success: Úspěšně provedeno
+    suretoblock: Opravdu zablokovat?
+    suretocompletemonitored: Opravdu doplnit sledované veličiny k vybranému odběrnému místu?
+    suretodelete: Opravdu smazat?
+    suretoplay: Opravdu spustit odesílání?
+    suretorefreshmeterpoints: Opravdu občerstvit odběrná místa?
+    suretoreverseaction: Opravdu vrátit akci zpět?
+    suretosendemail: 'Opravdu poslat E-mail?'
+    suretosendsms: 'Opravdu poslat SMS?'
+    suretosetbillquantity: Opravdu nastavit účtovanou veličinu?
+    suretounsetbillquantity: Opravdu zrušit účtovanou veličinu?
+    suretosetmainquantity: Opravdu nastavit hlavní veličinu?
+    suretosuspend: Opravdu pozastavit odesílání?
+    suretounblock: Opravdu odblokovat?
+    unauthorizedaccess: Neoprávněný přístup
+    wronginputparameters: Špatné vstupní parametry
+    wrongproject: Chybný projekt
+    yes: Ano
+    
+mp:
+    meterpoint: Odběrné místo
+    meterpoints: Odběrná místa
+    add: Přidat odběrné místo
+    assigntowithid: 'Přiřadit k odběrnemu místů s ID = '
+    backtoselection: Zpet na výběr odběrného místa
+    doesnothavemeasuredquantity: Odběrné místo nemá sledované veličiny!
+    edit: Upravit odběrné místo
+    new: Nové odběrné místo
+    newtounit: Nové odběrné místo k jednotce
+    select: Vyberte odběrné místo
+    selected: Vybrané odběrné místo
+    selection: Výběr odběrného místa
+    to: k odběrnému místu
+    wasnotfound: Odběrné místo nebylo nalezeno
+
+option: 
+    options: Možnosti
+
+paginator:
+    first: První
+    last: Poslední
+    next: Další
+    previous: Předchozí
+
+password:
+    change: Změna hesla
+    changeproject: Změna systémového hesla
+    forgotten: Zapomenuté heslo?
+    invalid: Neplatné heslo
+    projectinfo: 'Toto systémové heslo slouží v rámci celého programu k zabezpečení některých akcí, které mohou způsobit závažnou ztrátu dat nebo jiné problémy.'
+    sendnew: Zaslat nové heslo
+    wrongoriginal: Chybné původní heslo
+
+period:
+    period: Období
+    day: Den
+    daily: Denní
+    fromto: Od - do
+    hour: Hodina
+    hours: hodin
+    lastmonth: Minulý měsíc
+    minute: Minuta
+    month: Měsíc
+    monthly: Měsíční
+    quarter: Čtvrtletí
+    selectedday: Vybraný den
+    thismonth: Tento měsíc
+    thisyear: Letos
+    today: Dnes
+    unlimited: Neomezené
+    week: Týden
+    weekly: Týdenní
+    weeks: Týdny
+    year: Rok
+    yearly: Roční
+    yesterday: Včera
+
+permition:
+    list: Seznam oprávnění
+    donthavetoentersection: Nemáte oprávnění pro vstup do této sekce
+
+process:
+    ed: Zpracováno
+    ing: Zpracování
+    interval: 'Interval zpracování:'
+    method: 'Způsob zpracování:'
+
+quantity:
+    quantity: Veličina
+    addpreset: Přidat přednastavenou veličinu
+    comparison: Porovnání veličin
+    getusedquantity: Použité veličiny
+    mainnotselected: Není vybraná hlavní veličina
+    monitored: Sledované veličiny
+    presetmonitored: Přednastavené sledované veličiny
+    refreshmeterpoints: Občerstvit veličiny u odběrných míst
+    selectedwithhistory: Vybraná veličina s historií
+    wasnotfound: Veličina nebyla nalezena
+    withhistory: Veličina s historií
+    nomonitored: 'Nejsou sledované veličiny - doplnit?'
+
+restore:
+    dbviews: DB obnova pohledů
+    viewsindatabase: Obnovit pohledy v databázi?
+    sviewsindatabase: 'Obnoví v databázi pohledy (views), použít po update driveru.'
+
+result:
+    result: Výsledek
+    search: Výsledky vyhledávání
+
+role:
+    role: Role
+    roles: Role
+    add: Přidat roli
+    edit: Upravit roli
+    new: Nová role
+    newwascreated: Byla vytvořena nová role
+
+seal: 
+    list: Seznam plomb
+    seals: Plomby
+
+search:
+    s1: Hledat
+    s2: Vyhledat
+    
+service:
+    service: Služba
+    actions: Servisní akce
+
+settings:
+    dashboard: Nastavení hlavní stránky
+    settings: Nastavení
+        
+summary:
+    summary: Přehledy
+    of:
+        consumingunits: Přehled spotřebitelských jednotek
+        consumption: Přehled spotřeby
+        subordinateconsumingunits: Přehled podřazených spotřebitelských jednotek
+        meterpoints: Přehled odběrných míst
+
+table:
+    archived: Archivní
+    blockingtime: Čas blokace do
+    calibrationvalidto: Kalibrace platí do
+    charged: Účtováno
+    comparison: Porovnání
+    count: Počet
+    current: Aktuálně
+    description: Popis
+    end: Konec
+    firstname: Jméno
+    label: Označení
+    lastname: Příjmení
+    main: Hlavní
+    name: Jméno
+    name1: Název
+    note: Poznámka
+    origin: Původ
+    phone: Telefon
+    priority: Priorita
+    project: Projekt
+    radioaddress: Rádiová adresa
+    ratio: Převodní poměr
+    records: Záznam
+    registers: Registr
+    registermap: Registrová mapa
+    requiredaction: Požadovaná akce
+    serialnumber: Sériové číslo
+    source: Zdroj
+    start: Počátek
+    state: Stav
+    stateto: Stav k
+    table: Tabulka
+    title: Nadpis
+    type: Typ
+    vendor: Dodavatel
+    
+
+unit:
+    add: Přidat spotřebiteskou jednotku
+    assignement: Přiřazení jednotky
+    addsubordinate: Přidat podřazenou spotřebitelskou jednotku
+    backtoselection: Zpět na výběr jednotky
+    consumingunit: Spotřebitelská jednotka
+    consumingunits: Spotřebitelské jednotky
+    edit: Opravit spotřebitelskou jednotku
+    hidesubordinate: Skrýt podřazené
+    highestlevel: nejvyšší úrovně
+    in: V jednotce
+    label: Označení jednotky
+    new: Nová spotřebitelská jednotka 
+    newtosuperior: Nová jednotka k nadřazené
+    number: Číslo spotřebitelské jednotky
+    numberofs: Počet jednotek
+    select: Vyberte spotřebitelskou jednotku
+    selected: Vybraná jednotka
+    selection: Výběr jednotky
+    wasnotfound: Spotřebitelská jednotka nebyla nalezena
+
+updown:
+    uploadDownload: Nahrát / stáhnout
+    download: Stáhnout
+    upload: Nahrát
+    dnlAllMeterPoints: 'Všechna odběrná místa (csv)'
+    dnlMeterPointsWithErrors: 'Odběrná místa s chybami (csv)'
+    dnlCsvServiceModemtec: 'Servis Modemtec (csv)'
+    dnlDevicesWithErrors: 'Přístroje s chybami (csv)'
+    upDevices: 'Přístroje (csv)'
+    dnlYearSummary: 'Přehled za vybraný rok (csv)'
+    dnlConsumptionTable: 'Tabulka spotřeby (csv)'
+    dnlUnitSummary: 'Přehled jednotky (pdf)'
+
+user:
+    user: Uživatel
+    activation: Aktivace uživatele
+    activity: Aktivita uživatelů
+    delete: Smazat uživatele
+    edit: Opravit uživatele
+    global: Globální uživatelé
+    name: Uživatelské jméno
+    new: Nový uživatel
+    permissions: Uživatelská práva
+    role: Uživatelská role
+    support: Uživatelé podpora
+    users: Uživatelé
+    settings: Uživatelské nastavení
+    type: Typ uživatele
+    wasnotfound: Uživatel nebyl nalezen
+    wrongname: 'Chybné uživatelské jméno (mail)'
+    
+
+utility:
+    charged: Účtovaná veličina?
+    main: Hlavní veličina?
+    utility: Médium
+    utilities: Média
+    wasnotfound: Médium nebylo nalezeno
+
+value:
+    calculatedaverageconsumption: 'Vypočtená hodnota (průměrná spotřeba)'
+    defaultsaresettothistime: k tomuto času jsou aktuálně nastavené výchozí hodnoty
+    diffs: 'Rozdíl mezi hodnotami (zadaná - naměřená)'
+    final: Konečná hodnota
+    finals: Konečné hodnoty
+    initial: Počáteční hodnota
+    initials: Počáteční hodnoty
+    manual: Ruční vstup
+    measurednotassigned: Nepřiřazená naměřená hodnota
+    measureds: Naměřené hodnoty
+    measured: Naměřená hodnota
+    nearest: Nejbližší hodnota
+    settingtheinitials: Nastavení počátečních hodnot
+    type: Type hodnoty
+    useasmeasured: Použít tuto hodnotu jako naměřenou
+    value: Hodnota    

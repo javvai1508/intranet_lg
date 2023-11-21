@@ -1,0 +1,73 @@
+{block content}
+{include 'headerMaterial.latte'}
+                <div class="col-sm-5"> 
+                    <div class="set-dn-form">
+                        {include '../../templates/components/setStockDocForm.latte', form => setStockDocForm}
+                    </div>
+                </div>
+<div class="row content">
+        <div class="select-app">
+            <a class="" n:href="newReceipt"> 
+                <i class="far fa-arrow-to-right fa-2x"></i><br /><br /><span class="sm">Příjemka</span>
+            </a>
+        </div>
+        <div class="select-app">
+            <a class="" n:href="openNewDispatch"> 
+                <i class="far fa-arrow-from-left fa-2x"></i><br /><br /><span class="sm">Výdejka</span>
+            </a>
+        </div>
+        <div class="select-app">
+            <a class="" n:href="stdInventory"> 
+                <i class="far fa-inventory fa-2x"></i><br /><br /><span class="sm">Inventura</span>
+            </a>
+        </div>
+
+{* odtud nevím, co se děje - asi příjemka ručně podle objednávky (směs) - ale možná je to k ničemu *}
+    {ifset $order->orderId}
+        <div class="row delivery-note-header">
+            <div class="col-sm-3">
+                <a n:href="changeOrder!" class="btn btn-primary btn-lg m-1"><i class="far fa-exchange-alt"></i> Změnit VObj</a>
+            </div>
+            <div class="col-sm-9 text-right">
+                <a n:href="closeReceipt!" n:if="($deliveryNote->StavDLExp == 0)" class="btn btn-success btn-lg m-1"><i class="far fa-hand-receiving"></i> Uzavřít příjemku</a>
+            </div>
+        </div>
+        <div class="delivery-note-content">
+            <div class="row delivery-note-items">
+                <div class="col-sm-12">
+                    <table class="table table-bordered table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Zak/pol</th>
+                                <th scope="col">Výkres</th>
+                                <th scope="col">Rozměry</th>
+                                <th scope="col">Plán</th>
+                                <th scope="col">Příprava</th>
+                                <th scope="col" class="text-right">
+                                    <a n:href="DeliveryNote:packages" class="btn btn-lg btn-primary mr-2"><i class="far fa-cubes"></i></a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {foreach $deliveryNoteItems as $deliveryNoteItem}
+                                <tr>
+                                    <td class="text-center">{$deliveryNoteItem->Zakazka}</td>
+                                    <td class="text-center">{$deliveryNoteItem->Vykres}</td>
+                                    <td class="text-center">{$deliveryNoteItem->Rozmery}</td>
+                                    <td class="text-center font-weight-bold">{$deliveryNoteItem->Mnozstvi}</td>
+                                    <td class="text-center font-weight-bold {if $deliveryNoteItem->MnozstviVC == $deliveryNoteItem->Mnozstvi}text-success{elseif $deliveryNoteItem->MnozstviVC > $deliveryNoteItem->Mnozstvi}text-warning{else}text-danger{/if}">{$deliveryNoteItem->MnozstviVC}</td>
+                                    <td class="text-right text-nowrap">
+                                        <a n:href="itemDetail $deliveryNoteItem->ID" class="btn btn-lg btn-primary mr-2"><i class="far fa-info"></i></a>
+                                        <a n:href="removeDeliveryNoteItem! $deliveryNoteItem->ID" n:if="($deliveryNote->StavDLExp == 0)" class="btn btn-lg btn-danger mr-2 ajax" data-nette-confirm="modal" data-nette-confirm-title="Zrušení přípravy" data-nette-confirm-text="Opravu chcete zrušit přípravu u vybrané položky?" data-nette-confirm-ok-class="btn-danger" data-nette-confirm-ok-text="Ano" data-nette-confirm-cancel-class="btn-secondary" data-nette-confirm-cancel-text="Ne"><i class="far fa-trash-alt"></i></a>
+                                    </td>
+                                </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {elseif  $presenter->isLinkCurrent("Material:NewReceipt")}
+        {include '../components/setOrderForm.latte', form => setOrderForm}
+    {/ifset}
+</div>

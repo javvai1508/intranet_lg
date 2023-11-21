@@ -1,0 +1,67 @@
+{block content}
+{include 'headerMaterial.latte'}
+<div class="content">
+    <div class="row delivery-note-items">
+        <div class="col-sm-12">
+            <h5>Detail položky výdejky</h5>
+            <table class="table table-bordered table-striped table-sm">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">Materiál</th>
+                        <th scope="col">Vydáno</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {if isset($dispatchItem)}
+                        <tr>
+                            <td class="text-center">{$dispatchItem->Nazev}</td>
+                            <td class="text-center">{$dispatchItem->MnozstviVC|number:2}</td>
+                            <td class="text-right text-nowrap">
+                                <a n:href="removeDispatchItem! $dispatchItem->DispatchItemID" n:if="($dispatch->StavDispExp == 0)" class="btn btn-sm btn-danger mr-2 ajax" data-nette-confirm="modal" data-nette-confirm-title="Zrušení příjmu" data-nette-confirm-text="Opravu chcete zrušit příjem u vybrané položky?" data-nette-confirm-ok-class="btn-danger" data-nette-confirm-ok-text="Ano" data-nette-confirm-cancel-class="btn-secondary" data-nette-confirm-cancel-text="Ne"><i class="far fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                    {/if}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row delivery-note-item-sn">
+        <div class="col-sm-12">
+            <div class="row">
+                <div class="col-sm-12"><h5>Výrobní čísla položky</h5></div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="set-dn-form">
+                        {*include '../components/dispatchReadBarCodeForm.latte', form => dispatchReadBarCodeForm*}
+                    </div>
+                </div>
+            </div>
+            {snippet itemSNTable}
+                <table class="table table-bordered table-striped table-sm">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Výrobní číslo</th>
+                            <th scope="col">Vydáno</th>
+                            <th scope="col" class="text-right">
+                                <a n:href="Material:showDispatch" class="btn btn-sm btn-primary mr-2"><i class="far fa-level-up"></i></a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach $dispatchItemSNs as $dispatchItemSN}
+                            <tr>
+                                <td class="text-center">{$dispatchItemSN->Nazev}</td>
+                                <td class="text-center font-weight-bold">{$dispatchItemSN->Mnozstvi|number:2}</td>
+                                <td class="text-right text-nowrap">
+                                    <a n:href="removeDispatchItemSN! $dispatchItemSN->DispatchItemID, $dispatchItemSN->IDVyrCP" n:if="($dispatch->StavDispExp == 0)" class="btn btn-sm btn-danger mr-2 ajax" data-nette-confirm="modal" data-nette-confirm-title="Odebrat výrobní číslo z výdejky" data-nette-confirm-text="Opravdu chcete zrušit výrobní číslo z výdejky?" data-nette-confirm-ok-class="btn-danger" data-nette-confirm-ok-text="Ano" data-nette-confirm-cancel-class="btn-secondary" data-nette-confirm-cancel-text="Ne"><i class="far fa-trash-alt"></i></a>
+                                </td>
+                            </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+            {/snippet}
+        </div>
+    </div>
+</div>

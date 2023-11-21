@@ -1,0 +1,104 @@
+{block content}
+{include 'headerDeliveryNote.latte'}
+{snippet finalOperation}
+    {if isset($finalOperation) && $finalOperation}
+        <div id="finalOperation" class='modal fade' tabindex='-1' role='dialog' aria-labelledby='confirmModalLabel' aria-hidden='true'>
+            <div class='modal-dialog'>
+                <div class='modal-content' id='dConfirm'>
+                    <div class='modal-header'>
+                        <h4 class='modal-title info' id='confirmModalLabel'>Výrobní číslo není na skladě</h4>
+                        <button type='button' class='close' class='btn btn-lg' data-dismiss='modal' aria-hidden='true'>&times;</button>
+                    </div>
+                    <div class='modal-body'>
+                        <strong>Je možné zaevidovat odváděcí operaci a výrobní číslo odvést na sklad. Opravdu provést?</strong>
+                    </div>
+                    <div class='modal-footer'>
+                        <button type='button' id='dConfirmCancel' class='btn btn-lg m5 btn-secondary' data-dismiss='modal'>Ne</button>
+                        <button type='button' id='dConfirmOk' class='btn btn-lg m5 btn-primary' data-dismiss='modal'>Ano</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {/if}
+{/snippet}
+<div class="content">
+    {ifset $deliveryNote->UmisteniKod}
+            <div class="row delivery-note-header">
+                <div class="col-sm-12">
+                <!-- div class="float-right"><a n:href="changeDeliveryNote!" class="btn btn-primary btn-sm"><i class="far fa-exchange-alt"></i></a></div -->
+                <h1>{$deliveryNote->Odberatel}</strong></h1>
+                </div>
+            </div>
+            <div class="row delivery-note-header">
+                <div class="col-sm-12">
+                <div class="float-right delivery-note-status"><span class="{if $deliveryNote->MnozstviVC == $deliveryNote->MnozstviPozad}text-success{elseif $deliveryNote->MnozstviVC > $deliveryNote->MnozstviPozad}text-warning{else}text-danger{/if}">{$deliveryNote->MnozstviVC|number:2}</span> / {$deliveryNote->MnozstviPozad|number:2}</span></div>
+                <strong>{$deliveryNote->DatDodavky}</strong>
+                </div>
+            </div>
+            <div class="row delivery-note-status">
+                {if $deliveryNote->StavDLExp !== 1}
+                    <div class="col-sm-12">
+                        <div class="set-dn-form">
+                            {include '../components/readBarCodeForm.latte', form => readBarCodeForm}
+                        </div>
+                    </div>
+                {/if}
+            </div>
+        <div class="delivery-note-content">
+            <div class="row delivery-note-items">
+                <div class="col-sm-12">
+                    <table class="table table-bordered table-striped table-sm">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Zak/pol/rozměry</th>
+                                <th scope="col">Název</th>
+                                <th scope="col">Plán</th>
+                                <th scope="col">Příprava</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {foreach $deliveryNoteItems as $deliveryNoteItem}
+                                <tr class="clickable-row" data-href="{link itemDetail $deliveryNoteItem->ID}">
+                                    <td class="text-center">{$deliveryNoteItem->Zakazka}</td>
+                                    <td class="text-center">{$deliveryNoteItem->Vykres}</td>
+                                    <td class="text-center font-weight-bold" rowspan="2">{$deliveryNoteItem->Mnozstvi}</td>
+                                    <td class="text-center font-weight-bold {if $deliveryNoteItem->MnozstviVC == $deliveryNoteItem->Mnozstvi}text-success{elseif $deliveryNoteItem->MnozstviVC > $deliveryNoteItem->Mnozstvi}text-warning{else}text-danger{/if}" rowspan="2">{$deliveryNoteItem->MnozstviVC}</td>
+                                </tr>
+                                <tr class="clickable-row" data-href="{link itemDetail $deliveryNoteItem->ID}">
+                                    <td class="text-center" colspan="2">{$deliveryNoteItem->Rozmery}</td>
+                                </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+                <div class="text-center">
+                    {if $deliveryNote->StavDLExp == 1}
+                        {ifset $deliveryNote->DatUzavrenoExp}
+                            <span class="text-danger font-weight-bold">Uzavřeno: {$deliveryNote->DatUzavrenoExp}</span>
+                        {else}
+                            <span class="text-danger font-weight-bold">Vyfakturováno</span>
+                        {/ifset}
+                    {else}
+                    <a n:href="closeDeliveryNote!" n:if="($deliveryNote->StavDLExp == 0)" class="btn btn-success btn-lg m-1"><i class="far fa-forklift"></i> Uzavřít DL</a>
+                    {/if}
+                    <a n:href="changeDeliveryNote!" class="btn btn-primary btn-lg m-1"><i class="far fa-exchange-alt"></i> Změnit DL</a>
+                </div>
+                <div class="text-center">
+                    <h5>Balíky</h5>
+                    <a n:href="DeliveryNote:packages" class="btn btn-sm btn-primary mr-2"><i class="far fa-cubes"></i> Přehled</a> 
+                    <a n:href="openPackage!" n:if="($deliveryNote->StavDLExp == 0)" class="btn btn-primary btn-sm m-1"><i class="far fa-box-open"></i> Nový</a>
+                    <a n:href="closePackage!" n:if="($deliveryNote->StavDLExp == 0)" class="btn btn-primary btn-sm m-1 {if !$packageOpen}disabled{/if}"><i class="far fa-box-check"></i> Konec</a>
+                </div>
+    {else}
+            {ifset $deliveryNote->ID}
+                        <div class="set-dn-form">
+                            {include '../../templates/components/setLocationForm.latte', form => setLocationForm}</div>
+            {else}
+                    <div class="set-dn-form">
+                        {include '../../templates/components/setDeliveryNoteForm.latte', form => setDeliveryNoteForm}
+                    </div>
+            {/ifset}
+    {/ifset}
+</div>

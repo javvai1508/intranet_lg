@@ -1,0 +1,62 @@
+/* 
+    Created on : 23.4.2018, 19:20:40
+    Author     : vlada
+*/
+body {
+    font-family: 'centurygothic', sans-serif;
+    color: #111;
+    background: white;
+}
+
+/* univerzální*/
+.clearer {clear: both;}
+.flash {display: none;}
+label {font-weight: normal; font-size: larger;}
+th {text-align: center;}
+
+.warning {color: Yellow;}
+.error {color: Red;}
+.info {color: Blue;}
+
+/* štítky pdf */
+div, barcode, h1, h2, h3, p {
+    margin: 0;
+    padding: 0;
+    font-weight: bolder;
+}
+
+p, div {
+    font-size: 9.25pt;
+}
+
+table {
+    border-collapse: collapse;
+
+}
+
+th, td {
+    padding: 0.5em 1em;
+    border: 1px solid;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.logo {
+    width: 60pt;
+    float: left;
+    margin-right: 5pt;
+}
+
+.content {
+    margin-top: 3em;
+}
+
+.err-text {
+    margin-top: 3em;
+}

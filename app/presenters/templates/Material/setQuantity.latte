@@ -1,0 +1,58 @@
+{block content}
+{include 'headerMaterial.latte'}
+<div class="content">
+    <div class="row delivery-note-items">
+        <div class="col-sm-12">
+            <h2>Detail položky výdejky</h2>
+            <table class="table table-bordered table-sm">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">Materiál</th>
+                        <th scope="col">Vydáno</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {if isset($dispatchItem)}
+                        <tr>
+                            <td class="text-center">{$dispatchItem->Nazev}</td>
+                            <td class="text-center">{$dispatchItem->Mnozstvi|number:2}</td>
+                            <td class="text-right text-nowrap">
+                                <a n:href="removeDispatchItem! $dispatchItem->DispatchItemID" n:if="($dispatch->StavDispExp == 0)" class="btn btn-lg btn-danger mr-2 ajax" data-nette-confirm="modal" data-nette-confirm-title="Zrušení příjmu" data-nette-confirm-text="Opravu chcete zrušit příjem u vybrané položky?" data-nette-confirm-ok-class="btn-danger" data-nette-confirm-ok-text="Ano" data-nette-confirm-cancel-class="btn-secondary" data-nette-confirm-cancel-text="Ne"><i class="far fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                    {/if}
+                </tbody>
+            </table>
+        </div>
+    </div>
+        <div class="row delivery-note-item-sn">
+            <div class="col-sm-12">
+                <h2>Nové výrobní číslo na výdejku</h2>
+                {snippet itemSNTable}
+                    <table class="table table-bordered table-sm">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col" class=" text-right">Výrobní číslo</th>
+                                <th scope="col">{$serialNumberRow->BarCode}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row" class=" text-right">Přidat na výdejku</th>
+                                <td class="text-center">{include '../components/setQuantityForm.latte', form => setQuantityForm}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class=" text-right">Množství skladem</th>
+                                <td class="text-center">{$serialNumberRow->MnozstviPoPrijmuAVydeji}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class=" text-right">Množství požadované</th>
+                                <td class="text-center">{$serialNumberRow->MnozstviPozadavek}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                {/snippet}
+            </div>
+        </div>
+</div>

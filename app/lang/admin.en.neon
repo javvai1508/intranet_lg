@@ -1,0 +1,446 @@
+language:
+    language: en
+    select: Choose language
+
+address:
+    address: Address
+    at: At address
+
+admin:
+    admin: Admin
+    instration: Administration
+
+announcement:
+    announcement: Announcement
+    announcements: Announcements
+    add: Add announcement
+    new: New announcement
+    sourceofnew: Source of new announcement
+
+assign:
+    assigned: Assigned
+    to: Assign to
+
+button:
+    active: Active
+    add: Add
+    block: Block
+    blocked: Blocked
+    cancel: Cancel
+    canceled: Canceled
+    change: Change
+    close: Close
+    delete: Delete
+    detail: Detail
+    edit: Edit
+    notactivated: Not activated
+    replace: Exchange
+    set: Set
+    unblock: Unblock
+
+calibration:
+    validto: Calibration valid to
+
+consumption:
+    consumption: Consumption
+    dailyaverage: Average daily consumption
+    year: Consumption year
+    lastmonth: Cosumption last month
+    thismonth: Consumption this month
+
+data:
+    changepersonal: Change personal data
+    fromto: Data from/to
+    firstrecorded: First recorded data
+    "no": No data
+    notprocessed: Not processed data
+
+date:
+    date: Date
+    andtime: Date and time
+    andtimeof:
+        event: Date and time of event
+        write: Date and time of write
+
+days:
+    mo: Mon
+    tu: Tue
+    we: Wen
+    th: Thu
+    fr: Fri
+    sa: Sat
+    su: Sun
+
+delete:
+    delete: Delete
+    actionallinformation: "Action deletes all information about assignements and exclusions of meter points, including history entries and computed datas. Meter point will not have assigned device. All devices will go to state Acquired, Found or Accepted. Are you sure to execute command?"
+    actionwithdevices: Delete action with devices
+    lastentryfromhistory: Delete last entry from history
+    meterdata: Delete data
+    allmeterdata: Delete all meter data
+    alluseractions: "Deletes all user actions with devices (assignement or exclusion from meter point)."
+
+device:
+    assign: Assign device
+    assignmismatch: Device assign mismatch
+    device: Device
+    devices: Devices
+    add: Add device
+    assignement: Device assignement
+    assigntometerpoint: Device assignement to meter point
+    edit: Edit
+    exchange: Device exchange
+    excludefrommeterpoint: Device exclusion from meter point
+    exclusion: Device exclusion
+    new: New device
+    newselection: New device selection
+    no: No device
+    to: To device
+    uploadfinished: Device upload finished withou any errors
+    wasnotfound: Device was not found
+
+documentation:
+    detectederrors: Detected errors
+    dataStructures: Data structures for export / import
+    documentation: Documentation
+    changelog: Changelog
+    instructions: Instructions
+    todolist: Todo list
+edit:
+    edit: Edit
+    announcement: Edit announcement
+    consumingunit: Edit consuming unit
+    device: Edit device
+    location: Edit location
+    meterpoint: Edit meter point
+    role: Edit role
+
+event:
+    detailof: Event detail
+    event: Event
+    valueupdate: Event value update
+    update: Event update
+
+exclude:
+    exclude: Exclude
+    excluded: Excluded
+    to: Exclude to
+
+history:
+    hide: Remove history
+    history: History
+    lastentryin: Last entry in history
+    show: Show history
+    shownext: Show next history
+    wasreversed: History was reversed
+    wasnotreversed: History was not successfully reversed
+
+invalid:
+    invalid: Invalid
+    userpass: Invalid username or password
+    emailaddress: Invalid e-mail address
+
+homepage:
+    nolocationchosen: There is no location chosen to display on dashboard. You can change it in
+    settings: user settings
+
+last:
+    activity: Last activity
+    lastentryin: Last entry in history
+    recordeddata: Last recorded data
+    valuesaresettothistime: Last values are set to this time
+    monthcomparison: Last month comparison
+    weekcomparison: Last week comparison
+
+load:
+    fromfile: Load from file
+    devicesfromcsvfile: Load devices from CSV file
+    unitsfromcsvfile: Load units and meter points from CSV file
+
+location:
+    location: Location
+    add: Add location
+    backtoselection: Back to location selection
+    edit: Edit location
+    new: New location
+    nocorresponding: No corresponding location was found
+    search: Search location
+    select: Select location
+    selected: Selected location
+    selection: Location selection
+    wasnotfound: Location was not found
+
+log:
+    change: Log change
+    in: Login
+    out: Logout
+    gedout: Logged out
+    logs: Logs
+
+measured:
+    measured: Measured
+
+message:
+    addressedusers: Addressed users
+    message: Message
+    newsettings: New message settings
+    settings: Message settings
+
+modal:
+    confirmationdialog: Confirmation dialog
+    entrywasnotfound: Entry was not found
+    isset: Is set
+    "no": "No"
+    returnback: Return back
+    set: Set
+    signoutduetoinactivity: "You were signed out due to inactivity. Please, sign in again."
+    success: Success
+    suretoblock: Sure to block?
+    suretocompletemonitored: Sure to complete monitored quantities to selected meter point?
+    suretodelete: Sure to delete?
+    suretoreverseaction: Sure to reverse action?
+    suretosendemail: Sure to send E-mail?
+    suretosendsms: Sure to send SMS?
+    suretosetbillquantity: Sure to set billing quantity?
+    suretounsetbillquantity: Sure to unset billing quantity?
+    suretosetmainquantity: Sure to set main quantity?
+    suretounblock: Sure to unblock?
+    unauthorizedaccess: Unauthorized access
+    wronginputparameters: Wrong input parameters
+    wrongproject: Wrong project
+    "yes": "Yes"
+
+mp:
+    meterpoint: Meter point
+    meterpoints: Meter points
+    add: Add meter point
+    assigntowithid: "Assign to meter point with ID = "
+    backtoselection: Back to meter point selection
+    doesnothavemeasuredquantity: Meter point does not have measured quantity
+    edit: Edit
+    new: New meter point
+    newtounit: new meter point to consuming unit
+    select: Select meter point
+    selected: Selected meter point
+    selection: Meter point selection
+    to: to meter point
+    wasnotfound: Meter point was not found
+
+option:
+    options: Options
+
+paginator:
+    first: First
+    last: Last
+    next: Next
+    previous: Previous
+
+password:
+    change: Change password
+    changeproject: Change system password
+    forgotten: Forgotten password?
+    invalid: Invalid password
+    projectinfo: "This system password is used to secure some actions, which can be dangerous (lost of data and other problems)."
+    sendnew: Send new password
+    wrongoriginal: Wrong original password
+
+period:
+    period: Period
+    day: Day
+    daily: Daily
+    fromto: From - to
+    hour: Hour
+    hours: hours
+    lastmonth: Last month
+    minute: Minute
+    month: Month
+    monthly: Monthly
+    quarter: Quarter
+    selectedday: Selected day
+    thismonth: This month
+    thisyear: This year
+    today: Today
+    unlimited: Unlimited
+    week: Week
+    weekly: Weekly
+    weeks: Weeks
+    year: Year
+    yearly: Yearly
+    yesterday: Yesterday
+
+permition:
+    list: Permition list
+    donthavetoentersection: "You don't have permissions to enter this section"
+
+process:
+    ed: Processed
+    ing: Processing
+    interval: Process interval
+    method: Process method
+
+quantity:
+    quantity: Quantity
+    addpreset: Add preset quantity
+    comparison: Quantity comparison
+    getusedquantity: Used quantities
+    mainnotselected: Main quantity is not selected
+    monitored: Monitored quantity
+    presetmonitored: Preset monitored quantity
+    refreshmeterpoints: Refresh quantities on meter points
+    selectedwithhistory: Selected quantity with history
+    wasnotfound: Quantity was not found
+    withhistory: Quantity with history
+    nomonitored: No monitored quantites - complete?
+
+restore:
+    dbviews: Restore DB views
+    viewsindatabase: Restore views in database?
+    sviewsindatabase: "Restored views in database, use after driver update."
+
+result:
+    result: Result
+    search: Search result
+
+role:
+    role: Role
+    roles: Roles
+    add: Add role
+    edit: Edit role
+    new: New role
+    newwascreated: New role was created
+
+seal:
+    list: Seals list
+    seals: Seals
+
+search:
+    s1: Search
+    s2: Search
+
+service:
+    service: Service
+    actions: Service actions
+
+settings:
+    dashboard: Main page settings
+    settings: Settings
+
+summary:
+    summary: Summary
+    of:
+        consumingunits: Summary of consuming units
+        consumption: Summary fo consumption
+        subordinateconsumingunits: Summary of subordinate consuming units
+        meterpoints: Summary of meter points
+
+table:
+    archived: Archived
+    blockingtime: Blocking time
+    calibrationvalidto: Calibration valid to
+    charged: Charged
+    comparison: Comparison
+    count: Count
+    current: Curent
+    description: Description
+    end: End
+    firstname: Firstname
+    label: Label
+    lastname: Lastname
+    main: Main
+    name: Name
+    name1: Name
+    note: Note
+    origin: Origin
+    phone: Phone
+    priority: Priority
+    project: Project
+    radioaddress: Radio address
+    records: Record
+    registers: Register
+    registermap: Register map
+    requiredaction: Required action
+    serialnumber: Serial number
+    source: Source
+    start: Start
+    state: State
+    stateto: State to
+    table: Table
+    title: Title
+    type: Type
+    vendor: Vendor
+
+unit:
+    add: Add consuming unit
+    assignement: Consuming unit assignement
+    addsubordinate: Add subordinate consuming unit
+    backtoselection: Back to unit selection
+    consumingunit: Conusming unit
+    consumingunits: Consuming units
+    edit: Edit consuming unit
+    hidesubordinate: Hide subordinate
+    highestlevel: highest level
+    in: In consuming unit
+    label: Consuming unit label
+    new: New consuming unit
+    newtosuperior: New consuming unit to superior
+    number: Consuming unit number
+    numberofs: Number of consuming units
+    select: Select consuming unit
+    selected: Selected consuming unit
+    selection: Consuming unit selection
+    wasnotfound: Consuming unit was not found
+
+updown:
+    uploadDownload: Upload / download
+    download: Download
+    upload: Upload
+    dnlAllMeterPoints: 'All meter points (csv)'
+    dnlMeterPointsWithErrors: 'Meter points with errors (csv)'
+    dnlCsvServiceModemtec: 'Data for Modemtec service (csv)'
+    dnlDevicesWithErrors: 'Devices with errors (csv)'
+    upDevices: 'Devices (csv)'
+    dnlYearSummary: 'Summary for selected year (csv)'
+    dnlUnitSummary: 'Summary of unit (pdf)'
+
+user:
+    user: User
+    activation: User activation
+    activity: User activity
+    delete: Delete user
+    edit: Edit user
+    global: Global users
+    name: Username
+    new: New user
+    permissions: User permissions
+    role: User role
+    support: Support users
+    users: Users
+    settings: User settings
+    type: User type
+    wasnotfound: User was not found
+    wrongname: "Wrong username (mail)"
+
+utility:
+    charged: Charged utility?
+    main: Main utility?
+    utility: Utility
+    utilities: Utilities
+    wasnotfound: "Utility was not found"
+
+value:
+    calculatedaverageconsumption: "Calculated value (average consumption)"
+    defaultsaresettothistime: Default values are set to this time
+    diffs: "Difference between values (entered - measured)"
+    final: Final value
+    finals: Final values
+    initial: Initial value
+    initials: Initial values
+    manual: Manual
+    measurednotassigned: Measured value is not assigned
+    measureds: Measured value
+    measured: Measured values
+    nearest: Nearest value
+    settingtheinitials: Setting the initial values
+    type: Value type
+    useasmeasured: Use this value as maesured
+    value: Value

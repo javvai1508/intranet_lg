@@ -1,0 +1,16 @@
+{form stdInventoryForm}
+    <div class="form-group row">
+        <div class="col-sm-12">
+            <h4>VČ: {if $newSN == 1}Generovat nové{else}{$sn}{/if}</h4>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-3"><label>{label IDZboSklad}</label></div><div class="col-sm-9">{snippet material}{input IDZboSklad}{/snippet}</div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-3"><label>{label Mnozstvi}</label></div><div class="col-sm-6">{input Mnozstvi}</div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-12">{input send}</div>
+    </div>
+{/form}

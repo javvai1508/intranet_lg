@@ -1,0 +1,13 @@
+{block content}
+{include 'headerMaterial.latte'}
+<div class="content">
+{if isset($invHdId)}
+    {snippetArea formArea}
+        {include '../../templates/components/stdInventoryBarCodeForm.latte', form => stdInventoryBarCodeForm}
+    {/snippetArea}
+{else}
+    <div class="set-dn-form">
+        {include '../../templates/components/selectInventoryForm.latte', form => selectInventoryForm}
+    </div>
+{/if}
+</div>

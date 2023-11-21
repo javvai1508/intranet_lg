@@ -1,0 +1,11 @@
+<div class="barcode">
+    <barcode code="{$receiptItem->RegCis}" type="C39" class="barcode" size="0.6" /> 
+    <p>{$receiptItem->RegCis}</p>
+</div>
+<div class="pdf-label-header-right">
+    <p>Materiál zákazníka</p>
+    <p class="pdf-label-date">{$receiptItem->DatPorizeni}</p>
+</div>
+<div class="pdf-label-text">{$receiptItem->Nazev1}</div>
+<div class="pdf-label-text">{$receiptItem->Firma}</div>
+<div class="pdf-label-text">{$receiptItem->Rozmery}</div>

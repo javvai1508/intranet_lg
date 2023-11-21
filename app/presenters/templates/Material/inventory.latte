@@ -1,0 +1,7 @@
+{block content}
+{include 'headerMaterial.latte'}
+<div class="content no-padding-top">
+    {snippetArea formArea}
+        {include '../components/startInventoryForm.latte', form => startInventoryForm}
+    {/snippetArea}
+</div>

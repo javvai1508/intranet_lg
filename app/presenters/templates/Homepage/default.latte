@@ -1,0 +1,19 @@
+{block content}
+{include 'headerHomepage.latte'}
+<div class="row content">
+        <div class="select-app" n:if="$user->isInRole('expedice')">
+            <a class="" n:href="DeliveryNote:default"> 
+                <i class="far fa-truck fa-2x"></i><br /><br /><span class="sm">Expedice</span>
+            </a>
+        </div>
+        <div class="select-app" n:if="$user->isInRole('prijMatZak')">
+            <a class="" n:href="CustomerMaterial:default"> 
+                <i class="far fa-inbox-in fa-2x"></i><br /><br /><span class="sm">Materiál zákazníka</span>
+            </a>
+        </div>
+        <div class="select-app" n:if="$user->isInRole('skladMat')">
+            <a class="" n:href="Material:default"> 
+                <i class="far fa-pallet-alt fa-2x"></i><br /><br /><span class="sm">Sklad materiálu</span>
+            </a>
+        </div>
+</div>

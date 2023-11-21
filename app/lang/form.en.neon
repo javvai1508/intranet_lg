@@ -1,0 +1,175 @@
+fillin:
+	label: Fill in label
+	param: Fill in %param%
+	nameofunit: Fill in name of unit
+	street: Fill in street
+	housenumber: Fill in house number
+	zipcode: Fill in zipcode
+	city: Fill in city
+	password: Fill in password
+	username: Fill in ussername
+	youremailaddress: Fill in your e-mail address
+
+sure:
+	toblock: Sure to block?
+	tochangeparentunit: Sure to change parent unit?
+	todelete: Sure to delete?
+	todeleteallmeterdata: Sure to delete all data to meter?
+	toreverseaction: Sure to reverse action?
+	tosetbillquantity: Sure to set bill quantity?
+	tosetmainquantity: Sure to set main quantity
+	tounblock: Sure to unblock
+	tounsetbillquantity: Sure to unset bill quantity
+
+mustbe:
+	passwordsame: New password must be the same!
+	number:
+		availibledatatime: "Availible data time [min] must be number"
+		consumptioncalculationtime: "Consumption calculation time [min] must be number"
+		escalateafter: "Escalate after [min] must be number"
+		minimalconsumptionvalue: Minimal consumption value must be number
+		missingdatatime: "Missing data time [min] must be number"
+		name: %name% must be number
+		nominalflow: Nominal flow must be number
+		number: Must be number
+		latitude: Latitude must be number
+		longitude: Longitude must be number
+		priority: Priority must be number
+		referencevalue: Reference value must be number
+		timeoverminimalconsumption: "Time over minimal consumption [min] must be number"
+
+mustbeinrange:
+	latitude: Latitude must be in range %d - %d
+	longitude: Longitude must be in range %d - %d
+	priority: Priority must be in range %d - %d
+
+enter:
+	dateofassignement: Enter date of assignement
+	dateofcalibrationvalid: Enter date of calibration validity
+	dateofevent: Enter date of event
+	dateofexclusion: Enter date of exclusion
+	description: Enter description
+	internalnumber: Enter internal number
+	lastname: Enter lastname
+	nameofunit: Enter name of unit
+	requireddata: Enter required data
+	timeofassignement: Enter time of assignement
+	timeofexclusion: Enter time of exclusion
+	timeofevent: Enter time of event
+	title: Enter title
+
+invalid:
+	mailaddress: Invalid e-mail address
+
+select:
+	quantitytype: Select quantity type
+	box:
+		instantvalue: Instant value
+		cumulativeconsumption: Cumulative Consumption
+
+labels:
+	activate: Activate
+	add: Add
+	addconsumingunit: Add consuming unit
+	address: Address
+	addressingusers: Addressing users
+	addquantity: Add quantity
+	aeskey: AES key
+	allutilities: All utilities
+	areaoftheheater: Area fo the heater
+	areaoftheroom: Area of the room
+	assign: Assign
+	availibledatatime: "Availible data time [min]"
+	calibrationvalidto: Calibration valid to
+	cancel: Cancel
+	cancelsearch: Cancel search
+	change: Change
+	chargedutilities: Charged quantites
+	city: City
+	clear: Clear form
+	comparisontype: Comparison type
+	consumingunitnumber: Consuming unit number
+	consumptioncalculationtime: "Consumption calculation time [min]"
+	contactphone: Contact phone number
+	continue: Continue
+	correction: Correction
+	country: Country
+	county: County
+	district: District
+	dateandtimeofassignement: Date and time of assignement
+	dateandtimeofexclusion: Date and time of exclusion
+	description: Description
+	doublecheck: Doublecheck
+	enableautomaticsolve: Enable automatic solve
+	escalateafter: "Escalate after [min]"
+	escalationpriority: Priority escalation
+	exclude: Exclude
+	excludecontinue: Exclude and continue
+	file: File
+	finish: Finish
+	firstname: Firstname
+	floor: Floor
+	housenumber: House number
+	internallabel: Internal label
+	internalnumber: "Internal number (sorting)"
+	ischeckedsum: Check sum of children?
+	label: Label
+	lastname: Lastname
+	latitude: Latitude
+	load: Load
+	location: Location
+	longitude: Longitude
+	mainutilities: Main utilities
+	measuredutility: Measured utility
+	messagestatus: Message status
+	meterpointlabel: Meter point label
+	minimalconsumptionvalue: Minimal consumption values
+	missingdatatime: "Missing data time [min]"
+	name: Name
+	newpassword: New password
+	nexttimesignin: Next time directly to sign in
+	nominalflow: Nominal flow
+	originalpassword: Original password
+	parentconsumingunit: Parent consuming unit
+	password: Password
+	pattern: Pattern
+	phone: Phone
+	positionx: Position X
+	positiony: Position Y
+	prefill: Prefill according to
+	priority: Priority
+	quantityidentification: Quantity identification
+	quantitytype: Quantity type
+	referencevalue: Reference value
+	region: Region
+	requiredaction: Required action
+	role: Role
+	roledescription: Role descripton
+	rolename: Role name
+	save: Save
+	seals: Seals
+	search: Search
+	sendannouncementcollectively: Send announcement collectively
+	sendannouncementtoconsumer: Send announcement to consumer
+	signin: Sign in
+	source: Source
+	specifications: Specifications
+	street: Street
+	timeoverminimalconsumption: "Time over minimal consumption [min]"
+	title: Title
+	type: Type
+	usediffasoffset: Use difference as offset
+	usernamemail: "Username (mail)"
+	usertype: User type
+	zipcode: Zipcode
+
+prompt:
+	allutilities: All utilities
+	choose:
+		choose: Choose
+		country: Choose country
+		pattern: Choose Pattern
+		project: Choose project
+		type: Choose Type
+		userrole: Choose user role
+

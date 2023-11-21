@@ -1,0 +1,70 @@
+/* 
+    Created on : 23.4.2018, 19:20:40
+    Author     : vlada
+*/
+body {
+    font-family: 'Verdana', sans-serif;
+    color: #111;
+    background: white;
+}
+
+/* univerzální*/
+.clearer {clear: both;}
+.flash {display: none;}
+label {font-weight: normal; font-size: larger;}
+th {text-align: center;}
+
+.warning {color: Yellow;}
+.error {color: Red;}
+.info {color: Blue;}
+
+/* štítky pdf */
+div, barcode, h1, h2, h3, p {
+    margin: 0;
+    padding: 0;
+    font-weight: bolder;
+}
+
+p, div {
+    font-size: 8pt;
+}
+
+.pdf-label-header {
+    font-size: 12pt;
+    right: 1em;
+    clear: both;
+}
+
+.pdf-label-date {
+    right: 1em;
+    bottom: 10pt;
+    position: fixed;
+}
+
+.pdf-label-text {
+    clear: both;
+    margin-top: 3pt;
+    white-space: nowrap;
+}
+
+.pdf-label-text-small {
+    clear: both;
+    font-size: 6pt;
+    margin-top: 3pt;
+    white-space: nowrap;
+}
+
+.barcode {
+    float: left;
+    margin-left: 0;
+    width: 80%;
+}
+
+barcode {
+    margin-left: -1em;
+}
+
+.barcode p {
+    margin-left: 8pt;
+    margin-top: 1pt;
+}

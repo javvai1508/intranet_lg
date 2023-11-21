@@ -1,0 +1,22 @@
+blocking:
+	access: Access is blocked
+	newaccess: Next opportunity to sign in will be at
+
+language:
+	language: en
+	select: Select language
+
+logged:
+	out: Logged out
+
+password:
+	forgotten: Forgotten password
+
+project:
+	choose: Choose project
+
+sign:
+	in: Sign in
+	nexttime: Next time go right to sign in
+	remember: Remember me
+

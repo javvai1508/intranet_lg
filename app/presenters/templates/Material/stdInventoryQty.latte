@@ -1,0 +1,7 @@
+{block content}
+{include 'headerMaterial.latte'}
+<div class="content">
+    {snippetArea formArea}
+        {include '../components/stdInventoryForm.latte', form => stdInventoryForm}
+    {/snippetArea}
+</div>

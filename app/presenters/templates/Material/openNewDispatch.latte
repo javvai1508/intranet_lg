@@ -1,0 +1,27 @@
+{block content}
+{include 'headerMaterial.latte'}
+<div class="content">
+    {include '../components/readOperBarCodeForm.latte', form => readOperBarCodeForm}
+    <div class="row">
+        <div class="select-app">
+            <a class="" n:href="newDispatchOwn!"> 
+                <i class="far fa-warehouse fa-2x"></i><br /><br /><span class="sm">Vlastní spotřeba</span>
+            </a>
+        </div>
+        {*<div class="select-app">
+            <a class=""  n:href="openDispatchSale"> 
+                <i class="far fa-truck fa-2x"></i><br /><br /><span class="sm">Prodej</span>
+            </a>
+        </div>*}
+        <div class="select-app">
+            <a class="" n:href="newDispatchDefect!"> 
+                <i class="far fa-unlink fa-2x"></i><br /><br /><span class="sm">Zmetek</span>
+            </a>
+        </div>
+        <div class="select-app">
+            <a class="" n:href="undoDispatch!"> 
+                <i class="far fa-undo fa-2x"></i><br /><br /><span class="sm">Storno výdejky</span>
+            </a>
+        </div>
+    </div>
+</div>

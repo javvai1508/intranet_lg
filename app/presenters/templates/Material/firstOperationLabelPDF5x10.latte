@@ -1,0 +1,11 @@
+<div class="barcode">
+    <barcode code="{$dispatch->CarovyKod}" type="C128A" class="barcode" size="0.7" /> 
+    <p>{$dispatch->CarovyKod}</p>
+</div>
+<p class="pdf-label-bottom-text line0">{$dispatch->Prikaz}</p>
+<p class="pdf-label-text line0">{$dispatch->VyrCislo}</p>
+<p class="pdf-label-text line1">{$dispatch->Nazev}</p>
+<p class="pdf-label-text line2">{$dispatch->Odberatel}</p>
+<p class="pdf-label-text line3">{$dispatch->Dilec}</p>
+<p class="pdf-label-bottom-text line4">{date("d.m.Y")}</p>
+<p class="pdf-label-text line4">{$dispatch->CisloEP} / {$dispatch->PoradiEP}</p>

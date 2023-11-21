@@ -1,0 +1,136 @@
+<div class="row header">
+                {if $user->isLoggedIn()}
+                    <div class="logged">
+                        <div class="btn-group">    
+                            <button class="btn btn-outline-dark dropdown-toggle" type="button" id="menuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
+                                <i class="far fa-bars"></i>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="menuButton">
+                                <a class="dropdown-item logged-user lg" n:href="Homepage:">{$user->getIdentity()->getData()['fullname']}</a>
+                                <a class="dropdown-item" n:if="$user->isInRole('expedice')" n:href="DeliveryNote:default"><i class="far fa-truck"></i> Expedice</a>
+                                <a class="dropdown-item" n:if="$user->isInRole('prijMatZak')" n:href="CustomerMaterial:default"><i class="far fa-inbox-in"></i> Materiál zákazníka</a>
+                                <a class="dropdown-item" n:if="$user->isInRole('skladMat')" n:href="Material:default"><i class="far fa-pallet-alt"></i> Sklad materiálu</a>
+                                <a class="dropdown-item" n:href="Sign:out"><i class="far fa-sign-out"></i> Odhlásit</a>
+                            </div>
+                        </div>
+                    </div>
+                {else}
+                    <div class="button-sign">
+                        <a n:href="Sign:in" title="Přihlásit">
+                            <i class="far fa-sign-in"></i>
+                        </a>
+                    </div>
+                {/if}
+
+            {if isset($deliveryNote->ID)}
+                <h1>DL: {$deliveryNoteNr} 
+                {ifset $deliveryNote->UmisteniKod}
+                    ({$deliveryNote->UmisteniKod})
+                {/ifset}
+                </h1>
+            {else}
+                <h1>Expedice</h1>
+            {/if}
+</div>
+{*
+<div class="row header">
+    <div class="col-sm-12">
+        <div class="row page-header back-delivery-note">
+            {ifset $deliveryNote->ID}
+                <div class="col-sm-4"><h3 class="mt-2">DL: {$deliveryNoteNr}</h3></div>
+                {ifset $deliveryNote->UmisteniKod}
+                    <div class="col-sm-4"><h3 class="mt-2">Um: {$deliveryNote->UmisteniKod}</h3></div>
+                {else}
+                    <div class="col-sm-4">
+                        <div class="set-dn-form">
+                            {include '../../templates/components/setLocationForm.latte', form => setLocationForm}</div>
+                    </div>
+                {/ifset}
+            {else}
+                <div class="col-sm-8"> 
+                    <div class="set-dn-form">
+                        {include '../../templates/components/setDeliveryNoteForm.latte', form => setDeliveryNoteForm}
+                    </div>
+                </div>
+            {/ifset}
+            <div class="col-sm-4">
+                {if $user->isLoggedIn()}
+                    <div class="logged">
+                        <div class="btn-group dropleft">    
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="menuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
+                                {$user->getIdentity()->getData()['fullname']}
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="menuButton">
+                                <a class="dropdown-item" n:if="$user->isInRole('expedice')" n:href="DeliveryNote:default">Expedice</a>
+                                <a class="dropdown-item" n:if="$user->isInRole('prijMatZak')" n:href="CustomerMaterial:default">Materiál zákazníka</a>
+                                <a class="dropdown-item" n:if="$user->isInRole('skladMat')" n:href="Material:default">Sklad materiálu</a>
+                            </div>
+                        </div>
+                        <a class="btn btn-light btn-lg ml-3" n:href="Sign:out">
+                            <i class="far fa-sign-out"></i>
+                        </a>
+                    </div>
+                {else}
+                    <div class="button-sign">
+                        <a n:href="Sign:in" title="Přihlásit">
+                            <i class="far fa-sign-in"></i> Přihlásit
+                        </a>
+                    </div>
+                {/if}
+            </div>
+        </div>
+        {ifset $deliveryNote}
+            <div class="row delivery-note-header">
+                <div class="col-sm-8 delivery-note-header-text">
+                    <div class="row">
+                        <div class="col-sm-3">Zákazník</div><div class="col-sm-9"><strong>{$deliveryNote->Odberatel}</strong></div>
+                    </div>
+                </div>
+                <div class="col-sm-4 delivery-note-header-text">
+                    <div class="row">
+                        <div class="col-sm-3">Datum</div><div class="col-sm-9"><strong>{$deliveryNote->DatDodavky}</strong></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row delivery-note-header">
+                <div class="col-sm-3">
+                    <a n:href="changeDeliveryNote!" class="btn btn-primary btn-lg m-1"><i class="far fa-exchange-alt"></i> Změnit DL</a>
+                </div>
+                <div class="col-sm-6 text-center">
+                    <a n:href="openPackage!" n:if="($deliveryNote->StavDLExp == 0)" class="btn btn-primary btn-lg m-1"><i class="far fa-box-open"></i> Nový balík</a>
+                    <a n:href="closePackage!" n:if="($deliveryNote->StavDLExp == 0)" class="btn btn-primary btn-lg m-1 {if !$packageOpen}disabled{/if}"><i class="far fa-box-check"></i> Konec balíku</a>
+                </div>
+                <div class="col-sm-3 text-right">
+                    <a n:href="closeDeliveryNote!" n:if="($deliveryNote->StavDLExp == 0)" class="btn btn-success btn-lg m-1 ajax" data-nette-confirm="modal" data-nette-confirm-title="Uzavření dodacího listu" data-nette-confirm-text="Opravu chcete uzavřít dodací list?" data-nette-confirm-ok-class="btn-success" data-nette-confirm-ok-text="Ano" data-nette-confirm-cancel-class="btn-secondary" data-nette-confirm-cancel-text="Ne"><i class="far fa-truck"></i> Uzavřít DL</a>
+                </div>
+            </div>
+        {/ifset}
+        {ifset $deliveryNote->UmisteniKod}
+            <div class="row delivery-note-status">
+                <div class="col-sm-3 mt-1">
+                    Pol.: <span class="font-weight-bold"><span class="{if $deliveryNote->PocetVC == $deliveryNote->PocetPozad}text-success{elseif $deliveryNote->PocetVC > $deliveryNote->PocetPozad}text-warning{else}text-danger{/if}">{$deliveryNote->PocetVC}</span> / {$deliveryNote->PocetPozad}</span>
+                </div>
+                <div class="col-sm-3 mt-1">
+                    Ks: <span class="font-weight-bold"><span class="{if $deliveryNote->MnozstviVC == $deliveryNote->MnozstviPozad}text-success{elseif $deliveryNote->MnozstviVC > $deliveryNote->MnozstviPozad}text-warning{else}text-danger{/if}">{$deliveryNote->MnozstviVC}</span> / {$deliveryNote->MnozstviPozad}</span>
+                </div>
+                <div class="col-sm-2 mt-1">
+                    Bal.: <span class="font-weight-bold">{$deliveryNote->PocetBaliku}</span>
+                </div>
+                <div class="col-sm-4 text-right">
+                    {if $deliveryNote->StavDLExp == 1}
+                        {ifset $deliveryNote->DatUzavrenoExp}
+                            <span class="text-danger font-weight-bold">Uzavřeno: {$deliveryNote->DatUzavrenoExp}</span>
+                        {else}
+                            <span class="text-danger font-weight-bold">Vyfakturováno</span>
+                        {/ifset}
+                    {else}
+                        <div class="set-dn-form">
+                            {include '../../templates/components/readBarCodeForm.latte', form => readBarCodeForm}
+                        </div>
+                    {/if}
+                </div>
+            </div>
+        {/ifset}
+    </div>
+</div>
+*}

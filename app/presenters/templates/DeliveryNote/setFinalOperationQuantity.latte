@@ -1,0 +1,27 @@
+{block content}
+{include 'headerDeliveryNote.latte'}
+<div class="content">
+    {ifset $deliveryNote->UmisteniKod}
+        <div class="row delivery-note-item-sn">
+            <div class="col-sm-12">
+                <h2>Odvádění výrobního čísla z výroby</h2>
+                {snippet itemSNTable}
+                    <table class="table table-bordered table-striped table-sm">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col" class=" text-right">Výrobní číslo</th>
+                                <th scope="col">{$serialNumber}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row" class=" text-right">Odvést z výroby</th>
+                                <td class="text-center">{include '../components/setFinalOperationQuantityForm.latte', form => setFinalOperationQuantityForm}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                {/snippet}
+            </div>
+        </div>
+    {/ifset}
+</div>

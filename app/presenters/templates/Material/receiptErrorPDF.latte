@@ -1,0 +1,43 @@
+<div class="pdf-header">
+    <img class="logo" src="images/logo.jpg" />
+    <h1 class="text-right">Chyby v příjmu DL č.: {$receipt->CisloDL}</h1>
+    <h2 class="text-right">Příjemka č.: {$receipt->ParovaciZnak}</h2>
+</div>
+<div class="clearer"></div>
+{if count($receiptItems) > 0}
+<div class="content">
+    <h3>Seznam položek s rozdíly</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">Materiál</th>
+                                <th scope="col">Objednávka</th>
+                                <th scope="col">Dodací list</th>
+                                <th scope="col">Přijato</th>
+                                <th scope="col">Rozdíl (nedodáno)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {foreach $receiptItems as $receiptItem}
+                                <tr>
+                                    <td class="text-left">{$receiptItem->Nazev}</td>
+                                    <td class="text-left">{$receiptItem->Objednavka}</td>
+                                    <td class="text-right">{$receiptItem->MnozstviDL|number:2}</td>
+                                    <td class="text-right">{$receiptItem->Mnozstvi|number:2}</td>
+                                    <td class="text-right">{($receiptItem->MnozstviDL - $receiptItem->Mnozstvi)|number:2}</td>
+                                </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+</div>
+{/if}
+{ifset $receipt->Text2}
+<div class="err-text">
+    <h3>Seznam položek, které se z dodacího listu nenačetly</h3>
+    <p>Pravděpodobně chybná vazba na řádek objednávky.</p>
+    {$receipt->Text2|breaklines}
+</div>
+{/ifset}
+<div class="err-text">
+    <p>Vygenerováno: {="now"|date:'j.n.Y H:i:s'}</p>
+</div>

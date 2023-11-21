@@ -1,0 +1,74 @@
+{block content}
+{include 'headerMaterial.latte'}
+<div class="content">
+                {if $receipt->StavRcpExp !== 1}
+            <div class="row delivery-note-status">
+                    <div class="col-sm-12">
+                        <div class="set-dn-form">
+                            {include '../components/readBarCodeForm.latte', form => receiptReadBarCodeForm}
+                        </div>
+                    </div>
+            </div>
+                {/if}
+    <div class="row delivery-note-items">
+        <div class="col-sm-12">
+            <h2>Detail položky příjemky</h2>
+            <table class="table table-bordered table-striped table-sm">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col" colspan="3">Materiál</th>
+                        <th scope="col" rowspan="2" class="text-right text-nowrap">
+                            <a n:href="Material:showReceipt" class="btn btn-sm btn-primary mr-2"><i class="far fa-level-up"></i></a>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th scope="col">DL</th>
+                        <th scope="col">Příjem</th>
+                        <th scope="col">Zbývá</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {if isset($receiptItem)}
+                        <tr>
+                            <td class="text-center font-weight-bold" colspan="3">{$receiptItem->Nazev}</td>
+                            <td class="text-right text-nowrap" rowspan="2">
+                                <a n:href="removeReceiptItem! $receiptItem->ReceiptItemID" n:if="($receipt->StavRcpExp == 0)" class="btn btn-sm btn-danger mr-2 ajax" data-nette-confirm="modal" data-nette-confirm-title="Zrušení příjmu" data-nette-confirm-text="Opravu chcete zrušit příjem u vybrané položky?" data-nette-confirm-ok-class="btn-danger" data-nette-confirm-ok-text="Ano" data-nette-confirm-cancel-class="btn-secondary" data-nette-confirm-cancel-text="Ne"><i class="far fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">{$receiptItem->MnozstviDL|number:2}</td>
+                            <td class="text-center font-weight-bold {if $receiptItem->Mnozstvi == $receiptItem->MnozstviDL}text-success{elseif $receiptItem->Mnozstvi > $receiptItem->MnozstviDL}text-warning{else}text-danger{/if}">{$receiptItem->Mnozstvi|number:2}</td>
+                            <td class="text-center">{$receiptItem->MnozstviDL - $receiptItem->Mnozstvi|number:2}</td>
+                        </tr>
+                    {/if}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row delivery-note-item-sn">
+        <div class="col-sm-12">
+            {snippet itemSNTable}
+                <table class="table table-bordered table-striped table-sm">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Výrobní číslo</th>
+                            <th scope="col">Příjato</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach $receiptItemSNs as $receiptItemSN}
+                            <tr>
+                                <td class="text-center">{$receiptItemSN->Nazev}</td>
+                                <td class="text-center font-weight-bold">{$receiptItemSN->Mnozstvi|number:2}</td>
+                                <td class="text-right text-nowrap">
+                                    <a n:href="removeReceiptItemSN! $receiptItemSN->ReceiptItemID, $receiptItemSN->IDVyrCP" n:if="($receipt->StavRcpExp == 0)" class="btn btn-sm btn-danger mr-2 ajax" data-nette-confirm="modal" data-nette-confirm-title="Odebrat výrobní číslo z příjemky" data-nette-confirm-text="Opravdu chcete zrušit výrobní číslo z příjemky?" data-nette-confirm-ok-class="btn-danger" data-nette-confirm-ok-text="Ano" data-nette-confirm-cancel-class="btn-secondary" data-nette-confirm-cancel-text="Ne"><i class="far fa-trash-alt"></i></a>
+                                </td>
+                            </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+            {/snippet}
+        </div>
+    </div>
+</div>

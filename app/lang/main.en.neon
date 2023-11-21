@@ -1,0 +1,9 @@
+default:
+	trydemoaccount: Try demo account
+	as:
+		admin: As administrator
+		consumer: As consumer
+
+why: null
+for: null
+advantages: null

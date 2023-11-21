@@ -1,0 +1,45 @@
+{block content}
+{include 'headerDeliveryNote.latte'}
+<div class="content">
+    {ifset $deliveryNote->UmisteniKod}
+        <div class="row delivery-note-item-sn">
+            <div class="col-sm-12">
+                <h4>Balení dodacího listu</h4>
+                {snippet packagesTable}
+                    <table class="table table-bordered table-striped table-sm">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Balík</th>
+                                <th scope="col">Zak/pol</th>
+                                <th scope="col">Výkres<br />Rozměry</th>
+                                <th scope="col">Výr. číslo</th>
+                                <th scope="col">Množství v balíku</th>
+                                <th scope="col" class="text-right">
+                                    <a n:href="DeliveryNote:default" class="btn btn-sm btn-primary mr-2"><i class="far fa-level-up"></i></a>
+                                </th>
+                            </tr>
+                        </thead>
+                        {var $cisloBal = 0}
+                        <tbody>
+                            {foreach $packages as $package}
+                                <tr>
+                                    {if $package->CisloBal != $cisloBal}
+                                    <td class="text-center" rowspan="{$package->KsVBaliku}">{$package->CisloBal}</td>
+                                    {var $cisloBal = $package->CisloBal}
+                                    {/if}
+                                    <td class="text-center">{$package->Zakazka}</td>
+                                    <td class="text-center">{$package->Vykres}<br />{$package->Rozmery}</td>
+                                    <td class="text-center">{$package->Nazev}</td>
+                                    <td class="text-center font-weight-bold">{$package->MnozstviBal}</td>
+                                    <td class="text-right text-nowrap">
+                                        <a n:href="removeFromPackage! $package->IDBal" n:if="($deliveryNote->StavDLExp == 0)" class="btn btn-sm btn-danger mr-2 ajax" data-nette-confirm="modal" data-nette-confirm-title="Odebrat položku z balíku" data-nette-confirm-text="Opravu chcete vyjmout položku z balíku?" data-nette-confirm-ok-class="btn-danger" data-nette-confirm-ok-text="Ano" data-nette-confirm-cancel-class="btn-secondary" data-nette-confirm-cancel-text="Ne"><i class="far fa-trash-alt"></i></a>
+                                    </td>
+                                </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                {/snippet}
+            </div>
+        </div>
+    {/ifset}
+</div>

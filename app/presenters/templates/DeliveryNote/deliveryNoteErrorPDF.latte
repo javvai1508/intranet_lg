@@ -1,0 +1,38 @@
+<div class="pdf-header">
+    <img class="logo" src="images/logo.jpg" />
+    <h1 class="text-right">Nedodané zboží DL č.: {$deliveryNote->ParovaciZnak}</h1>
+    <h2 class="text-right">Uzavřeno: {="now"|date:'j.n.Y H:i:s'}</h2>
+</div>
+<div class="clearer"></div>
+{if count($deliveryNoteItems) > 0}
+<div class="content">
+    <h3>Seznam položek s rozdíly</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">Zak/pol</th>
+                                <th scope="col">Název</th>
+                                <th scope="col">Rozměry</th>
+                                <th scope="col">Plán</th>
+                                <th scope="col">Příprava</th>
+                                <th scope="col">Rozdíl (nedodáno)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {foreach $deliveryNoteItems as $deliveryNoteItem}
+                                <tr>
+                                    <td class="text-left">{$deliveryNoteItem->Zakazka}</td>
+                                    <td class="text-left">{$deliveryNoteItem->Vykres}</td>
+                                    <td class="text-left">{$deliveryNoteItem->Rozmery}</td>
+                                    <td class="text-right">{$deliveryNoteItem->Pozadavek|number:2}</td>
+                                    <td class="text-right">{$deliveryNoteItem->Mnozstvi|number:2}</td>
+                                    <td class="text-right">{($deliveryNoteItem->Pozadavek - $deliveryNoteItem->Mnozstvi)|number:2}</td>
+                                </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+</div>
+{/if}
+<div class="err-text">
+    <p>Vygenerováno: {="now"|date:'j.n.Y H:i:s'}</p>
+</div>
