@@ -1,0 +1,7 @@
+{block content}
+{include 'headerMaterial.latte'}
+<div class="content no-padding-top">
+    {snippetArea formArea}
+        {include '../../templates/components/setDeliveryNoteForm.latte', form => setDeliveryNoteForm}
+    {/snippetArea}
+</div>

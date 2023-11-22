@@ -26,10 +26,14 @@
                 <h1>Příj: {$receiptNr}</h1>
             {elseif isset($dispatch->ID)}
                 <h1>Výd: {$dispatchNr}</h1>
+            {elseif isset($deliveryNote->ID)}
+                <h1>DL: {$deliveryNoteNr}</h1>
             {elseif $presenter->isLinkCurrent("Material:NewReceipt")}
                 <h1>Nová příjemka</h1>
             {elseif $presenter->isLinkCurrent("Material:OpenNewDispatch")}
                 <h1>Nová výdejka</h1>
+            {elseif $presenter->isLinkCurrent("Material:OpenDispatchSale")}
+                <h1>Prodej laminátu</h1>
             {elseif $presenter->isLinkCurrent("Material:StdInventory") || $presenter->isLinkCurrent("Material:StdInventoryQty")}
                 {ifset $invHdId}
                     <h1>Inv: {$invNazev}</h1>
