@@ -338,7 +338,7 @@ class MaterialModel extends BaseModel {
     }
 
     /**
-     * kontrola, případně založení nového VČ, přidat na řádek dokladu (viz výše) - akce v HeO
+     * kontrola, případně založení nového VČ, přidat na řádek dokladu (viz výše) - akce v HeO, mimo OXXO
      */
     public function addSNToReceiptId($receiptId, $sn, $itemId, $qty) {
         $this->db->query("EXEC dbo.hpx_agrafa_sklad_nove_vc_prijem_tablet @IDPohyb = %i, @BarCode = %s, @Mnozstvi = %f, @IDDoklad = %i", $itemId, $sn, $qty, $receiptId);

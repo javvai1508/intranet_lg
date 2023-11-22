@@ -3,6 +3,8 @@
 namespace App\Presenters;
 
 use App\Models\MaterialModel,
+    App\Models\DeliveryNoteModel,
+    App\Forms\SetDeliveryNoteFormFactory,
     App\Forms\SetStockDocFormFactory,
     App\Forms\SetOrderFormFactory,
     App\Forms\ReadBarCodeFormFactory,
@@ -20,6 +22,12 @@ class MaterialPresenter extends BasePresenter
 
     /** @var MaterialModel @inject */
     public $dataModel;
+
+    /** @var DeliveryNoteModel @inject */
+    public $dataModelDN;
+
+    /** @var SetDeliveryNoteFormFactory @inject */
+    public $setDeliveryNoteFactory;
 
     /** @var SetStockDocFormFactory @inject */
     public $setStockDocFactory;
@@ -878,6 +886,42 @@ class MaterialPresenter extends BasePresenter
             $this->redirect('Material:default');
         }
     }
+
+    /* ------------- prodej laminátů - podobně jako v expedici --------------------------------- */
+    /* ------------- vyhledat DL -------------------------------------- */
+
+    /**
+     * SetDeliveryNote form factory.
+     * vyhledávní DL 
+     * 
+     * @return Nette\Application\UI\Form
+     */
+    protected function createComponentSetDeliveryNoteForm() {
+        $form = $this->setDeliveryNoteFactory->create();
+        $form->onSuccess[] = function (Form $form, $values) {
+
+            $deliveryNoteId = $this->dataModelDN->checkDeliveryNote($values->ParovaciZnak);
+            
+            if (!$deliveryNoteId) {
+                $this->flashMessage('Vybraný dodací list není v evidenci!', 'error');
+
+                $this->redirect('DeliveryNote:default');
+            } else {
+
+                $deliveryNoteIdSess = $this->getSession('deliveryNoteId');
+                $deliveryNoteIdSess->deliveryNoteId = $deliveryNoteId;
+
+                $packageSess = $this->getSession('package');
+                $packageSess->open = false;
+                $packageSess->number = $this->dataModelDN->getNextPackage($deliveryNoteId);
+
+                $this->redirect('DeliveryNote:default');
+            }
+        };
+
+        return $form;
+    }
+
 
     /* ------------- inventura laminátu - počáteční verze -------------------------------------- */
     /**

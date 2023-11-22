@@ -5,7 +5,7 @@ require __DIR__ . '/../vendor/autoload.php';
 $configurator = new Nette\Configurator;
 
 // $configurator->setDebugMode(FALSE); // enable for your remote IP
-$configurator->setDebugMode(FALSE); // enable for your remote IP
+$configurator->setDebugMode(TRUE); // enable for your remote IP
 $configurator->enableTracy(__DIR__ . '/../log');
 
 $configurator->setTimeZone('Europe/Prague');
@@ -16,6 +16,7 @@ $configurator->createRobotLoader()
 	->register();
 
 $configurator->addConfig(__DIR__ . '/config/config.neon');
+$configurator->addConfig(__DIR__ . '/config/config.local.neon');
 
 $container = $configurator->createContainer();
 
