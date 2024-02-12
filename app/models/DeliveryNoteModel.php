@@ -169,10 +169,12 @@ class DeliveryNoteModel extends BaseModel {
      * @param type $serialNumber
      * @return type
      */
-    public function checkPartNumber($deliveryNoteId, $serialNumber) {
+    public function checkPartNumber($deliveryNoteId, $partNumber) {
         return $this->db->query("SELECT "
                         . "po.ID AS IDPohyb, "
                         . "skl.ID AS IDZboSklad,"
+                        . "CONVERT(INT, skl.Mnozstvi) AS Mnozstvi, "
+                        . "CONVERT(INT, skl.Mnozstvi + skl.MnozstviKPrijmu - skl.MnozstviKVydeji) AS MnozstviPoPrijmuAVydeji, "
                         . "poe._exp_mnozstvi_pozad_puvodni AS MnozstviPozadavek, "
                         . "ISNULL(poe._exp_mnozstvi_vc, 0) AS MnozstviPriprava, "
                         . "kme._SVyrabetNaSklad AS JeSklad "
@@ -181,7 +183,7 @@ class DeliveryNoteModel extends BaseModel {
                         . "JOIN TabStavSkladu skl ON po.IDZboSklad = skl.ID "
                         . "JOIN TabKmenZbozi km ON skl.IDKmenZbozi = km.ID "
                         . "LEFT JOIN TabKmenZbozi_EXT kme ON km.ID = kme.ID "
-                        . "WHERE po.IDDoklad = %i AND (km.SkupZbo + km.RegCis) = %s", $deliveryNoteId, $serialNumber)->fetch();
+                        . "WHERE po.IDDoklad = %i AND (km.SkupZbo + km.RegCis) = %s", $deliveryNoteId, $partNumber)->fetch();
     }
 
     /**
@@ -514,7 +516,9 @@ class DeliveryNoteModel extends BaseModel {
         // transakce
         $this->db->begin();
         try {
-            $itemRows = $this->db->query("SELECT "
+            $resres = 0;
+            $resmsg = "";
+            $itemRow = $this->db->query("SELECT "
                             . "po.ID AS ItemId, "
                             . "po.IDZboSklad AS IDZboSklad, "
                             . "CONVERT(INT, ISNULL(poe._exp_mnozstvi_pozad_puvodni, 0)) AS MnozstviPozadavek, "
@@ -522,9 +526,14 @@ class DeliveryNoteModel extends BaseModel {
                             . "FROM TabPohybyZbozi po "
                             . "LEFT JOIN TabPohybyZbozi_EXT poe ON poe.ID = po.ID "
                             . "WHERE po.ID = %i AND ISNULL(poe._exp_mnozstvi_pozad_puvodni, 0) > ISNULL(poe._exp_mnozstvi_vc, 0) "
-                            . "ORDER BY po.Poradi", $pohybId)->fetchAll();
+                            . "ORDER BY po.Poradi", $pohybId)->fetch();
 
-            foreach ($itemRows as $itemRow) {
+            if ($itemRow) {
+                if ($mnozstviPriprava > $itemRow->MnozstviPozadavek - $itemRow->MnozstviPriprava) {
+                    $mnozstviPriprava = $itemRow->MnozstviPozadavek - $itemRow->MnozstviPriprava;
+                    $resres = 10;
+                    $resmsg = "Překročeno množství na položce - upraveno!";
+                }
                 $itemId = $itemRow->ItemId;
                 \Tracy\Debugger::barDump($itemRow);
 
@@ -605,12 +614,15 @@ class DeliveryNoteModel extends BaseModel {
                     // aktualizace TabPohybyZbozi.Mnozstvi
                     $this->updateDeliveryNoteItemQuantity($itemId);
                 }
+            } else {
+
             }
             $this->db->commit();
             if (isset($res)) {
-                $resArr["res"] = 0;
+                $resArr["res"] = $resres;
                 $resArr["packageNr"] = $packageNr;
                 $resArr["mnozstviPriprava"] = $mnozstviPriprava;
+                $resArr["msg"] = $resmsg;
             } else {
                 $resArr["res"] = 1;
             }
@@ -635,7 +647,7 @@ class DeliveryNoteModel extends BaseModel {
             if ($res) {
                 $res = $this->db->query("DELETE FROM agrafa_ligum_dl_polozka_balik "
                         . "WHERE id IN (SELECT bal.id FROM agrafa_ligum_dl_polozka_balik bal JOIN TabVyrCP vc ON vc.ID = bal.IDVyrCP WHERE vc.IDPolozkaDokladu = %i)", $itemId);
-                if ($res) {
+                // zkontrolovat a opravit mazání balíků vvx-220407 if ($res) {
                     $resDel = $this->db->query("DELETE FROM TabVyrCP WHERE IDPolozkaDokladu = %i AND NOT(EXISTS(SELECT ID FROM TabVyrCP_EXT WHERE TabVyrCP_EXT.ID = TabVyrCP.ID AND ISNULL(TabVyrCP_EXT._exp_mnozstvi_vc_pozad, 0) > 0))", $itemId);
                     $resUpd = $this->db->query("UPDATE TabVyrCP SET Mnozstvi = 0 WHERE IDPolozkaDokladu = %i AND EXISTS(SELECT ID FROM TabVyrCP_EXT WHERE TabVyrCP_EXT.ID = TabVyrCP.ID AND ISNULL(TabVyrCP_EXT._exp_mnozstvi_vc_pozad, 0) > 0)", $itemId);
                         if ($resDel || $resUpd) {
@@ -645,7 +657,7 @@ class DeliveryNoteModel extends BaseModel {
                         }
                     // aktualizace TabPohybyZbozi.Mnozstvi
                     $this->updateDeliveryNoteItemQuantity($itemId);
-                }
+                //}
             }
             if ($res) {
                 $this->db->commit();
@@ -724,7 +736,7 @@ class DeliveryNoteModel extends BaseModel {
 
                 if ($res) {
                     $res = $this->db->query("DELETE FROM agrafa_ligum_dl_polozka_balik WHERE IDVyrCP = %i", $itemSNId);
-                    if ($res) {
+                    // zkontrolovat a opravit mazání balíků vvx-220407 if ($res) {
                         $resDel = $this->db->query("DELETE FROM TabVyrCP WHERE ID = %i AND NOT(EXISTS(SELECT ID FROM TabVyrCP_EXT WHERE TabVyrCP_EXT.ID = TabVyrCP.ID AND ISNULL(TabVyrCP_EXT._exp_mnozstvi_vc_pozad, 0) > 0))", $itemSNId);
                         $resUpd = $this->db->query("UPDATE TabVyrCP SET Mnozstvi = 0 WHERE ID = %i AND EXISTS(SELECT ID FROM TabVyrCP_EXT WHERE TabVyrCP_EXT.ID = TabVyrCP.ID AND ISNULL(TabVyrCP_EXT._exp_mnozstvi_vc_pozad, 0) > 0)", $itemSNId);
                         // aktualizace TabPohybyZbozi.Mnozstvi
@@ -734,7 +746,7 @@ class DeliveryNoteModel extends BaseModel {
                             $res = false;
                         }
                         $this->updateDeliveryNoteItemQuantity($itemSNRow->ItemId);
-                    }
+                    //}
                 }
             } else {
                 $res = false;

@@ -7,6 +7,7 @@ use App\Models\DeliveryNoteModel,
     App\Forms\SetLocationFormFactory,
     App\Forms\ReadBarCodeFormFactory,
     App\Forms\SetQuantityFormFactory,
+    App\Forms\SetQuantityFromStockFormFactory,
     App\Forms\SetFinalOperationQuantityFormFactory,
     Nette\Application\UI\Form;
 
@@ -26,6 +27,9 @@ class DeliveryNotePresenter extends BasePresenter {
 
     /** @var SetQuantityFormFactory @inject */
     public $setQuantityFactory;
+
+    /** @var SetQuantityFromStockFormFactory @inject */
+    public $setQuantityFromStockFactory;
 
     /** @var SetFinalOperationQuantityFormFactory @inject */
     public $setFinalOperationQuantityFactory;
@@ -203,7 +207,7 @@ class DeliveryNotePresenter extends BasePresenter {
                             $packageSess->number = $packageNr;
                         } 
                     } elseif ($resVCSklad->IDVyrCP && ($resVCSklad->PozadVCP - $resVCSklad->MnozstviVCP) > 0) {
-                        // výrobní číslo je na dodacím listu převedené z EP - dodávka ze skladu
+                        // výrobní číslo je na dodacím listu převedené z EP - dodávka ze skladu - xvv210628
                         $packageNr = $this->dataModel->updateDeliveryNoteItemFromStock($deliveryNoteId, $resVCSklad->IDPohyb, $resVCSklad->IDVyrCis, $resVCSklad->PozadVCP - $resVCSklad->MnozstviVCP, $packageOpen, $packageNr);
                         $packageSess->number = $packageNr;
                     }
@@ -214,7 +218,7 @@ class DeliveryNotePresenter extends BasePresenter {
             if ($partNumberRow->JeSklad != 1) {
                 $this->flashMessage('Dílec není nastaven pro použíti jako skladová položka', 'error');
             } elseif ($partNumberRow->MnozstviPriprava >= $partNumberRow->MnozstviPozadavek) {
-                $this->flashMessage('Položka je tomto dodacím listu již připravená', 'error');
+                $this->flashMessage('Položka je v tomto dodacím listu již připravená', 'error');
             } else {
                 $this->redirect('DeliveryNote:setQuantityFromStock', $deliveryNoteId, $serialNumber);
                 /*
@@ -383,7 +387,7 @@ class DeliveryNotePresenter extends BasePresenter {
      * úprava množství výrobního čísla při zadání skladové položky (serviety)
      * @param type $serialNumberRow
      */
-    public function renderSetQuantityFromStock($deliveryNoteId, $serialNumber) {
+    public function renderSetQuantityFromStock($deliveryNoteId, $partNumber) {
         $deliveryNote = $this->dataModel->getDeliveryNote($deliveryNoteId);
 // kontrola, kdy to můžu udělat (co musí být v DL vyplněné)
 
@@ -392,15 +396,15 @@ class DeliveryNotePresenter extends BasePresenter {
         $this->packageNr = $this->getSession('package')->number;
         $this->packageOpen = $this->getSession('package')->open;
 
-        $serialNumberRow = $this->dataModel->checkSerialNumber($deliveryNoteId, $serialNumber);
+        $partNumberRow = $this->dataModel->checkPartNumber($deliveryNoteId, $partNumber);
         $this->template->deliveryNoteId = $deliveryNoteId;
-        $this->template->serialNumberRow = $serialNumberRow;
+        $this->template->partNumberRow = $partNumberRow;
         $this->template->packageOpen = $this->packageOpen;
 
-        \Tracy\Debugger::barDump($serialNumberRow);
+        \Tracy\Debugger::barDump($partNumberRow);
 
-        $setQuantityDefaults = array('deliveryNoteId' => $deliveryNote->ID, 'idPohyb' => $serialNumberRow->IDPohyb, 'idVyrCis' => $serialNumberRow->IDVyrCis, 'quantity' => ($serialNumberRow->MnozstviPoPrijmuAVydeji > ($serialNumberRow->MnozstviPozadavek - $serialNumberRow->MnozstviPriprava)) ? $serialNumberRow->MnozstviPozadavek - $serialNumberRow->MnozstviPriprava : $serialNumberRow->MnozstviPoPrijmuAVydeji);
-        $this["setQuantityForm"]->setDefaults($setQuantityDefaults);
+        $setQuantityDefaults = array('deliveryNoteId' => $deliveryNote->ID, 'idPohyb' => $partNumberRow->IDPohyb);
+        $this["setQuantityFromStockForm"]->setDefaults($setQuantityDefaults);
     }
 
     /**
@@ -408,7 +412,7 @@ class DeliveryNotePresenter extends BasePresenter {
      * @return type
      */
     public function createComponentSetQuantityFromStockForm() {
-        $form = $this->setQuantityFactory->create();
+        $form = $this->setQuantityFromStockFactory->create();
 
 // $form->onValidate[] = array($this, "validateEditQuantityForm");
 
@@ -418,9 +422,9 @@ class DeliveryNotePresenter extends BasePresenter {
             $packageOpen = $packageSess->open;
             $packageNr = $packageSess->number;
 
-            $res = $this->dataModel->processDeliveryNoteFromStock($values->deliveryNoteId, $values->IDPohyb, $values->quantity, $packageOpen, $packageNr);
+            $res = $this->dataModel->processDeliveryNoteFromStock($values->deliveryNoteId, $values->idPohyb, $values->quantity, $packageOpen, $packageNr);
             if ($res["res"] > 0) {
-                $this->flashMessage('Položka je již splněná, případně není co vydávat!', 'error');
+                $this->flashMessage($res["msg"], 'error');
             } else {
                 $packageSess->number = $res["packageNr"];
                 if ($res["mnozstviPriprava"] <> 0) {
@@ -498,6 +502,8 @@ class DeliveryNotePresenter extends BasePresenter {
 // vytvořit soubor v adresáři pro tisk DL
             $f = fopen("c:\\inetpub\\wwwroot\\www\\batch_" . $deliveryNote->SkupinaTisk . "\\" . $this->getSession('deliveryNoteId')->deliveryNoteId . ".txt", "w");
             fwrite($f, $this->getSession('deliveryNoteId')->deliveryNoteId);
+            $f = fopen("e:\\fs\\data_helios\\batch_" . $deliveryNote->SkupinaTisk . "\\" . $this->getSession('deliveryNoteId')->deliveryNoteId . ".txt", "w");
+            fwrite($f, $this->getSession('deliveryNoteId')->deliveryNoteId);
 
             $this->getSession('deliveryNoteId')->remove();
             $this->getSession('package')->remove();
@@ -539,6 +545,7 @@ class DeliveryNotePresenter extends BasePresenter {
      */
     public function handleRemoveDeliveryNoteItem($itemId) {
         $this->dataModel->removeDeliveryNoteItem($itemId);
+        //$this->flashMessage('Jsem tu', 'danger');
 
         $this->redirect('DeliveryNote:default');
     }
