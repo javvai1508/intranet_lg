@@ -179,6 +179,9 @@ class DeliveryNotePresenter extends BasePresenter {
             } else {
                 $resVCSklad = $this->dataModel->checkSNFromStock($deliveryNoteId, $serialNumber);
                 if (!$resVCSklad) {
+                    if (!isset($serialNumberRow->IDPohyb) && isset($serialNumberRow->IDPohybS)) {
+                        $serialNumberRow->IDPohyb = $serialNumberRow->IDPohybS;
+                    }
                     if (!isset($serialNumberRow->IDPohyb)) {
                         // VČ není na aktuálním dodáku - kontrola EP, jestli je pro stejného odběratele jinde, případně doplnit (kontrola zatím ne!)
                         $this->flashMessage('Výrobní číslo ' . $serialNumber . ' nepatří na aktuální DL!', 'danger');
@@ -424,12 +427,12 @@ class DeliveryNotePresenter extends BasePresenter {
 
             $res = $this->dataModel->processDeliveryNoteFromStock($values->deliveryNoteId, $values->idPohyb, $values->quantity, $packageOpen, $packageNr);
             if ($res["res"] > 0) {
-                $this->flashMessage($res["msg"], 'error');
+                // $this->flashMessage($res["msg"], 'error');
             } else {
-                $packageSess->number = $res["packageNr"];
+                /*$packageSess->number = $res["packageNr"];
                 if ($res["mnozstviPriprava"] <> 0) {
                     $this->flashMessage('Všechny požadované kusy nejsou k dipozici, zbylo ještě ' . $res["mnozstviPriprava"], 'info');
-                }
+                }*/
                 
             }
             

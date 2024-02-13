@@ -200,18 +200,24 @@ class DeliveryNoteModel extends BaseModel {
                         . "pozdr.ID AS IDZdrojVC, "
                         . "podl.ID AS IDPohyb, "
                         . "podl.IDZboSklad AS IDZboSklad,"
+                        . "CASE WHEN ISNULL(kme._SNekontrolovatVPEP, 0) = 1 THEN pos.ID ELSE NULL END AS IDPohybS, "
                         . "CONVERT(INT, vc.Mnozstvi) AS Mnozstvi, "
                         . "CONVERT(INT, vc.Mnozstvi + vc.MnozstviKPrijmu - vc.MnozstviKVydeji) AS MnozstviPoPrijmuAVydeji, "
                         . "podle._exp_mnozstvi_pozad_puvodni AS MnozstviPozadavek, "
-                        . "podle._exp_mnozstvi_vc AS MnozstviPriprava "
+                        . "podle._exp_mnozstvi_vc AS MnozstviPriprava, "
+                        . "ISNULL(kme._SNekontrolovatVPEP, 0) AS KoVPEP "
                         . "FROM TabVyrCS vc "
                         . "LEFT JOIN TabVyrCisPrikaz vcpr ON vc.Nazev1 = vcpr.VyrCislo "
                         . "LEFT JOIN TabPrikaz pr ON pr.ID = vcpr.IDPrikaz "
                         . "LEFT JOIN TabPrikaz_EXT pre ON pr.ID = pre.ID "
+                        . "LEFT JOIN TabStavSkladu skl ON skl.ID = vc.IDStavSkladu "
+                        . "LEFT JOIN TabPohybyZbozi pos ON pos.IDZboSklad = skl.ID AND pos.IDDoklad = %i "
+                        . "LEFT JOIN TabKmenZbozi km ON km.ID = skl.IDKmenZbozi "
+                        . "LEFT JOIN TabKmenZbozi_EXT kme ON km.ID = kme.ID "
                         . "LEFT JOIN TabPohybyZbozi pozdr ON pozdr.ID = ISNULL(pr.IDRezervace, pre._prikaz_idrezervace_oprava) "
                         . "LEFT JOIN TabPohybyZbozi podl ON pozdr.ID = podl.IDOldPolozka AND podl.IDDoklad = %i "
                         . "LEFT JOIN TabPohybyZbozi_EXT podle ON podle.ID = podl.ID "
-                        . "WHERE vc.Nazev1 = %s", $deliveryNoteId, $serialNumber)->fetch();
+                        . "WHERE vc.Nazev1 = %s", $deliveryNoteId, $deliveryNoteId, $serialNumber)->fetch();
     }
 
     /**
@@ -246,13 +252,12 @@ class DeliveryNoteModel extends BaseModel {
         /*
          * 0 = OK, 1 = není v evidenci v příkazech, 2 = nedostatek živých kusů, 3 = přikaz není ve stavu Zadáno
          */
-        $res = $this->db->query("SELECT "
+        return $this->db->query("SELECT "
                         . "(CONVERT(NUMERIC(19,6), CASE WHEN (vcpr.Mnozstvi - vcpr.Odvedeno - vcpr.Zmetky - CONVERT(numeric(19,6), (SELECT ISNULL(SUM(CP.Mnozstvi * PZ.PrepMnozstvi), 0.0) FROM TabPohybyZbozi PZ INNER JOIN TabVyrCP CP ON (CP.IDPolozkaDokladu = PZ.ID) INNER JOIN TabVyrCS CS ON (CS.ID = CP.IDVyrCis AND CS.Nazev1 = vcpr.VyrCislo) WHERE PZ.TypVyrobnihoDokladu=0 AND PZ.IDPrikaz = vcpr.IDPrikaz AND PZ.DruhPohybuZbo=0 AND PZ.SkutecneDatReal IS NULL))) < 0 THEN 0 ELSE (vcpr.Mnozstvi - vcpr.Odvedeno - vcpr.Zmetky - CONVERT(numeric(19,6), (SELECT ISNULL(SUM(CP.Mnozstvi * PZ.PrepMnozstvi), 0.0) FROM TabPohybyZbozi PZ INNER JOIN TabVyrCP CP ON (CP.IDPolozkaDokladu = PZ.ID) INNER JOIN TabVyrCS CS ON (CS.ID = CP.IDVyrCis AND CS.Nazev1 = vcpr.VyrCislo) WHERE PZ.TypVyrobnihoDokladu=0 AND PZ.IDPrikaz = vcpr.IDPrikaz AND PZ.DruhPohybuZbo=0 AND PZ.SkutecneDatReal IS NULL))) END, 0)) AS MnKOdvodu, "
                         . "CASE WHEN (CONVERT(NUMERIC(19,6), CASE WHEN (vcpr.Mnozstvi - vcpr.Odvedeno - vcpr.Zmetky - CONVERT(numeric(19,6), (SELECT ISNULL(SUM(CP.Mnozstvi * PZ.PrepMnozstvi), 0.0) FROM TabPohybyZbozi PZ INNER JOIN TabVyrCP CP ON (CP.IDPolozkaDokladu = PZ.ID) INNER JOIN TabVyrCS CS ON (CS.ID = CP.IDVyrCis AND CS.Nazev1 = vcpr.VyrCislo) WHERE PZ.TypVyrobnihoDokladu=0 AND PZ.IDPrikaz = vcpr.IDPrikaz AND PZ.DruhPohybuZbo=0 AND PZ.SkutecneDatReal IS NULL))) < 0 THEN 0 ELSE (vcpr.Mnozstvi - vcpr.Odvedeno - vcpr.Zmetky - CONVERT(numeric(19,6), (SELECT ISNULL(SUM(CP.Mnozstvi * PZ.PrepMnozstvi), 0.0) FROM TabPohybyZbozi PZ INNER JOIN TabVyrCP CP ON (CP.IDPolozkaDokladu = PZ.ID) INNER JOIN TabVyrCS CS ON (CS.ID = CP.IDVyrCis AND CS.Nazev1 = vcpr.VyrCislo) WHERE PZ.TypVyrobnihoDokladu=0 AND PZ.IDPrikaz = vcpr.IDPrikaz AND PZ.DruhPohybuZbo=0 AND PZ.SkutecneDatReal IS NULL))) END, 0)) <= 0 THEN 2 WHEN pr.StavPrikazu <> 30 THEN 3 ELSE 1 END res "
                         . "FROM TabVyrCisPrikaz vcpr "
                         . "JOIN TabPrikaz pr ON pr.ID = vcpr.IDPrikaz "
                         . "WHERE vcpr.VyrCislo = %s", $serialNumber)->fetch();
-        return $res;
     }
 
     /**
@@ -514,9 +519,13 @@ class DeliveryNoteModel extends BaseModel {
      */
     public function processDeliveryNoteFromStock($deliveryNoteId, $pohybId, $mnozstviPriprava, $packageOpen, $packageNr) {
         // transakce
+        //$res = NULL;
+        $resmsg = "";
         $this->db->begin();
         try {
-            $resres = 0;
+            $this->db->query("EXEC dbo.hpx_agrafa_exp_sleeve_pridej_skl_pol @IDPohyb = %i, @MnozPridat = %f", $pohybId, $mnozstviPriprava);
+
+/*            $resres = 0;
             $resmsg = "";
             $itemRow = $this->db->query("SELECT "
                             . "po.ID AS ItemId, "
@@ -567,7 +576,7 @@ class DeliveryNoteModel extends BaseModel {
                             $this->db->query("INSERT INTO TabVyrCP (IDPolozkaDokladu, IDVyrCis, Nazev, Vznik, Mnozstvi) "
                                     . "VALUES (%i, %i, '', 0, %f) ", $itemId, $itemStockRow->SNId, $mnozstviUloz);
                             $itemSNId = $this->db->query("SELECT SCOPE_IDENTITY()")->fetchSingle();
-                        }
+                        }*/
 
                         // balíky
                         /*
@@ -583,32 +592,32 @@ class DeliveryNoteModel extends BaseModel {
                         }
                         */
                         // upravit tak, aby se vždy přepočítal stav z výrobních čísel položky
-                        $ext = $this->db->query("SELECT ID FROM TabPohybyZbozi_EXT WHERE ID = %i", $itemId)->fetch();
+/*                        $ext = $this->db->query("SELECT ID FROM TabPohybyZbozi_EXT WHERE ID = %i", $itemId)->fetch();
                         if ($ext) {
                             $res = $this->db->query("UPDATE TabPohybyZbozi_EXT "
                                     . "SET _exp_mnozstvi_vc = s.Mnozstvi "
                                     . "FROM (SELECT IDPolozkaDokladu, SUM(Mnozstvi) AS Mnozstvi FROM TabVyrCP GROUP BY IDPolozkaDokladu) s "
-                                    . "WHERE s.IDPolozkaDokladu = TabPohybyZbozi_EXT.ID AND TabPohybyZbozi_EXT.ID = %i", $itemId);
+                                    . "WHERE s.IDPolozkaDokladu = TabPohybyZbozi_EXT.ID AND TabPohybyZbozi_EXT.ID = %i", $itemId);*/
                             /*
                               $res = $this->db->query("UPDATE TabPohybyZbozi_EXT "
                               . "SET _exp_mnozstvi_vc = ISNULL(_exp_mnozstvi_vc, 0) + %f "
                               . "WHERE ID = %i", $mnozstviPriprava, $itemId);
                              * 
                              */
-                        } else {
+/*                        } else {
                             $res = $this->db->query("INSERT INTO TabPohybyZbozi_EXT (ID, _exp_mnozstvi_vc) "
                                     . "SELECT "
                                     . "IDPolozkaDokladu, "
                                     . "SUM(Mnozstvi) "
                                     . "FROM TabVyrCP "
                                     . "WHERE IDPolozkaDokladu = %i "
-                                    . "GROUP BY IDPolozkaDokladu", $itemId);
+                                    . "GROUP BY IDPolozkaDokladu", $itemId);*/
                             /*
                               $res = $this->db->query("INSERT INTO TabPohybyZbozi_EXT (ID, _exp_mnozstvi_vc)"
                               . "VALUES (%i, %f)", $itemId, $mnozstviPriprava);
                              * 
                              */
-                        }
+/*                        }
                         $mnozstviPriprava = $mnozstviPriprava - $mnozstviUloz;
                     }
                     // aktualizace TabPohybyZbozi.Mnozstvi
@@ -616,10 +625,10 @@ class DeliveryNoteModel extends BaseModel {
                 }
             } else {
 
-            }
+            }*/
             $this->db->commit();
             if (isset($res)) {
-                $resArr["res"] = $resres;
+                $resArr["res"] = $res;
                 $resArr["packageNr"] = $packageNr;
                 $resArr["mnozstviPriprava"] = $mnozstviPriprava;
                 $resArr["msg"] = $resmsg;
