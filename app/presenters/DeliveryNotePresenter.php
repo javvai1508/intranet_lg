@@ -159,8 +159,9 @@ class DeliveryNotePresenter extends BasePresenter {
             $serialNumberRow = $this->dataModel->checkSerialNumber($deliveryNoteId, $serialNumber);
             if ($serialNumberRow) {
                 $itemId = $serialNumberRow->IDPohyb;
-            }
-            if (!$serialNumberRow OR ( $serialNumberRow->MnozstviPoPrijmuAVydeji <= 0)) {
+            } 
+            $serialNumberRowStock = $this->dataModel->checkSerialNumberStock($deliveryNoteId, $serialNumber);
+            if (!$serialNumberRow OR ($serialNumberRow->MnozstviPoPrijmuAVydeji <= 0)) {
                 // VČ neexistuje - kontrola, jestli jde odvést a případně odvést
                 $resVyrCis = $this->dataModel->checkFinalOperation($serialNumber);
                 if (!$resVyrCis) {
@@ -179,12 +180,12 @@ class DeliveryNotePresenter extends BasePresenter {
             } else {
                 $resVCSklad = $this->dataModel->checkSNFromStock($deliveryNoteId, $serialNumber);
                 if (!$resVCSklad) {
-                    if (!isset($serialNumberRow->IDPohyb) && isset($serialNumberRow->IDPohybS)) {
-                        $serialNumberRow->IDPohyb = $serialNumberRow->IDPohybS;
+                    if (!isset($serialNumberRow->IDPohyb) && isset($serialNumberRowStock->IDPohyb)) {
+                        $serialNumberRow->IDPohyb = $serialNumberRowStock->IDPohyb;
                     }
                     if (!isset($serialNumberRow->IDPohyb)) {
                         // VČ není na aktuálním dodáku - kontrola EP, jestli je pro stejného odběratele jinde, případně doplnit (kontrola zatím ne!)
-                        $this->flashMessage('Výrobní číslo ' . $serialNumber . ' nepatří na aktuální DL!', 'danger');
+                        $this->flashMessage('Výrobní číslo ' . $serialNumber . ' nepatří na aktuální DL nebo už je položka připravená!', 'danger');
                     } elseif ($serialNumberRow->MnozstviPoPrijmuAVydeji > 1) {
                         // výrobního čísla je na skladu více než 1 kus - úprava množství podle potřeby - redirect na další formulář
                         $this->redirect('DeliveryNote:setQuantity', $deliveryNoteId, $serialNumber);
@@ -223,6 +224,7 @@ class DeliveryNotePresenter extends BasePresenter {
             } elseif ($partNumberRow->MnozstviPriprava >= $partNumberRow->MnozstviPozadavek) {
                 $this->flashMessage('Položka je v tomto dodacím listu již připravená', 'error');
             } else {
+                // serviety - TabKmenZbozi._SVyrabetNaSklad
                 $this->redirect('DeliveryNote:setQuantityFromStock', $deliveryNoteId, $serialNumber);
                 /*
                 $res = $this->dataModel->processDeliveryNoteFromStock($deliveryNoteId, $partNumberRow->IDPohyb, $partNumberRow->MnozstviPozadavek - $partNumberRow->MnozstviPriprava, $packageOpen, $packageNr);
@@ -244,7 +246,7 @@ class DeliveryNotePresenter extends BasePresenter {
         // \Tracy\Debugger::barDump($resVCSklad);
         // \Tracy\Debugger::barDump($res);
         // $this->flashMessage($values->BarCode);
-        if ($itemId) {
+        if (isset($itemId)) {
             $this->redirect('DeliveryNote:itemDetail', $itemId);
         } else {
             $this->redirect('DeliveryNote:default');
@@ -406,7 +408,7 @@ class DeliveryNotePresenter extends BasePresenter {
 
         \Tracy\Debugger::barDump($partNumberRow);
 
-        $setQuantityDefaults = array('deliveryNoteId' => $deliveryNote->ID, 'idPohyb' => $partNumberRow->IDPohyb);
+        $setQuantityDefaults = array('deliveryNoteId' => $deliveryNote->ID, 'idZboSklad' => $partNumberRow->IDZboSklad);
         $this["setQuantityFromStockForm"]->setDefaults($setQuantityDefaults);
     }
 
@@ -425,7 +427,7 @@ class DeliveryNotePresenter extends BasePresenter {
             $packageOpen = $packageSess->open;
             $packageNr = $packageSess->number;
 
-            $res = $this->dataModel->processDeliveryNoteFromStock($values->deliveryNoteId, $values->idPohyb, $values->quantity, $packageOpen, $packageNr);
+            $res = $this->dataModel->processDeliveryNoteFromStock($values->deliveryNoteId, $values->idZboSklad, $values->quantity, $packageOpen, $packageNr);
             if ($res["res"] > 0) {
                 // $this->flashMessage($res["msg"], 'error');
             } else {
@@ -436,7 +438,7 @@ class DeliveryNotePresenter extends BasePresenter {
                 
             }
             
-            $this->redirect('DeliveryNote:itemDetail', $values->idPohyb);
+            $this->redirect('DeliveryNote:default');
         };
 
         return $form;

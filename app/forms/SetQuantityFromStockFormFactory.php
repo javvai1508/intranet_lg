@@ -27,7 +27,7 @@ class SetQuantityFromStockFormFactory {
         
         $form->addHidden('deliveryNoteId');
         $form->addHidden('dispatchId');
-        $form->addHidden('idPohyb');
+        $form->addHidden('idZboSklad');
         $form->addText('quantity')
                 ->setAttribute('placeholder', 'Množství')
                 ->setAttribute('class', 'form-control form-control-sm text-center ajax')
