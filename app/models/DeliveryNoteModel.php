@@ -203,7 +203,8 @@ class DeliveryNoteModel extends BaseModel {
                         . "CONVERT(INT, vc.Mnozstvi) AS Mnozstvi, "
                         . "CONVERT(INT, vc.Mnozstvi + vc.MnozstviKPrijmu - vc.MnozstviKVydeji) AS MnozstviPoPrijmuAVydeji, "
                         . "podle._exp_mnozstvi_pozad_puvodni AS MnozstviPozadavek, "
-                        . "ISNULL(podle._exp_mnozstvi_vc, 0) AS MnozstviPriprava "
+                        . "ISNULL(podle._exp_mnozstvi_vc, 0) AS MnozstviPriprava, "
+                        . "podle._exp_mnozstvi_pozad_puvodni - ISNULL(podle._exp_mnozstvi_vc, 0) AS MnozstviZbyva "
                         . "FROM TabVyrCS vc "
                         . "LEFT JOIN TabVyrCisPrikaz vcpr ON vc.Nazev1 = vcpr.VyrCislo "
                         . "LEFT JOIN TabPrikaz pr ON pr.ID = vcpr.IDPrikaz "
@@ -215,7 +216,7 @@ class DeliveryNoteModel extends BaseModel {
     }
 
     /**
-     * kontrola zadaného výrobního čísla - kontrola na vztah mezi EP a VP
+     * kontrola zadaného výrobního čísla - bez kontroly na vztah mezi EP a VP, tj. pouze jestli existuje na DL stejná karta
      * @param type $deliveryNoteId
      * @param type $serialNumber
      * @return type
@@ -235,14 +236,16 @@ class DeliveryNoteModel extends BaseModel {
                         . "LEFT JOIN TabStavSkladu skl ON skl.ID = vc.IDStavSkladu "
                         . "LEFT JOIN TabPohybyZbozi pos ON pos.IDZboSklad = skl.ID AND pos.IDDoklad = %i "
                         . "LEFT JOIN TabPohybyZbozi_EXT pose ON pose.ID = pos.ID "
+                        . "LEFT JOIN TabPohybyZbozi pox ON pos.IDOldPolozka = pox.ID "
+                        . "LEFT JOIN TabDokladyZbozi dox ON pox.IDDoklad = dox.ID "
                         . "LEFT JOIN TabKmenZbozi km ON km.ID = skl.IDKmenZbozi "
                         . "LEFT JOIN TabKmenZbozi_EXT kme ON km.ID = kme.ID "
                         . "WHERE vc.Nazev1 = %s AND pose._exp_mnozstvi_pozad_puvodni - ISNULL(pose._exp_mnozstvi_vc, 0) > 0 AND ISNULL(kme._SNekontrolovatVPEP, 0) = 1 "
-                        . "ORDER BY pos.ID", $deliveryNoteId, $serialNumber)->fetch();
+                        . "ORDER BY dox.RadaDokladu, dox.PoradoveCislo, pox.Poradi", $deliveryNoteId, $serialNumber)->fetch();
     }
 
     /**
-     * kontrola zadaného výrobního čísla ze skladu
+     * kontrola zadaného výrobního čísla ze skladu - VČ je už zadané na DL (převedené z EP)
      * @param type $deliveryNoteId
      * @param type $serialNumber
      * @return type
@@ -320,7 +323,8 @@ class DeliveryNoteModel extends BaseModel {
                 . "WHERE vc.Nazev1 = %s", $serialNumber)->fetch();
 
         /**
-         * SELECT
+         * 
+         SELECT
           vc.ID AS IDVyrCis,
           vc.Nazev1 AS BarCode,
           CONVERT(INT, vc.Mnozstvi) AS Mnozstvi,
@@ -379,62 +383,64 @@ class DeliveryNoteModel extends BaseModel {
                     if ($mnozstviUloz > $mnozstviPriprava) {
                         $mnozstviUloz = $mnozstviPriprava;
                     }
-                    $itemSNRow = $this->db->query("SELECT "
-                                    . "ID AS ItemId, "
-                                    . "Mnozstvi AS MnozstviSN "
-                                    . "FROM TabVyrCP "
-                                    . "WHERE IDVyrCis = %i AND IDPolozkaDokladu = %i", $vyrCisloId, $itemId)->fetch();
+                    if ($mnozstviUloz > 0) {
+                        $itemSNRow = $this->db->query("SELECT "
+                                        . "ID AS ItemId, "
+                                        . "Mnozstvi AS MnozstviSN "
+                                        . "FROM TabVyrCP "
+                                        . "WHERE IDVyrCis = %i AND IDPolozkaDokladu = %i", $vyrCisloId, $itemId)->fetch();
 
-                    if ($itemSNRow) {
-                        $this->db->query("UPDATE TabVyrCP "
-                                . "SET Mnozstvi = Mnozstvi + %f "
-                                . "WHERE ID = %i", $mnozstviUloz, $itemSNRow->ItemId);
-                        $itemSNId = $itemSNRow->ItemId;
-                    } else {
-                        $this->db->query("INSERT INTO TabVyrCP (IDPolozkaDokladu, IDVyrCis, Nazev, Vznik, Mnozstvi) "
-                                . "VALUES (%i, %i, '', 0, %f) ", $itemId, $vyrCisloId, $mnozstviUloz);
-                        $itemSNId = $this->db->query("SELECT SCOPE_IDENTITY()")->fetchSingle();
-                    }
-
-                    // balíky
-                    if ($packageOpen) {
-                        $this->db->query("INSERT INTO agrafa_ligum_dl_polozka_balik (IDVyrCP, CisloBaliku, Mnozstvi) "
-                                . "VALUES (%i, %i, %f)", $itemSNId, $packageNr, $mnozstviUloz);
-                    } else {
-                        for ($ii = 1; $ii <= $mnozstviUloz; $ii++) {
-                            $this->db->query("INSERT INTO agrafa_ligum_dl_polozka_balik (IDVyrCP, CisloBaliku, Mnozstvi) "
-                                    . "VALUES (%i, %i, %f)", $itemSNId, $packageNr, 1);
-                            $packageNr = $this->getNextPackage($deliveryNoteId);
+                        if ($itemSNRow) {
+                            $this->db->query("UPDATE TabVyrCP "
+                                    . "SET Mnozstvi = Mnozstvi + %f "
+                                    . "WHERE ID = %i", $mnozstviUloz, $itemSNRow->ItemId);
+                            $itemSNId = $itemSNRow->ItemId;
+                        } else {
+                            $this->db->query("INSERT INTO TabVyrCP (IDPolozkaDokladu, IDVyrCis, Nazev, Vznik, Mnozstvi) "
+                                    . "VALUES (%i, %i, '', 0, %f) ", $itemId, $vyrCisloId, $mnozstviUloz);
+                            $itemSNId = $this->db->query("SELECT SCOPE_IDENTITY()")->fetchSingle();
                         }
+
+                        // balíky
+                        if ($packageOpen) {
+                            $this->db->query("INSERT INTO agrafa_ligum_dl_polozka_balik (IDVyrCP, CisloBaliku, Mnozstvi) "
+                                    . "VALUES (%i, %i, %f)", $itemSNId, $packageNr, $mnozstviUloz);
+                        } else {
+                            for ($ii = 1; $ii <= $mnozstviUloz; $ii++) {
+                                $this->db->query("INSERT INTO agrafa_ligum_dl_polozka_balik (IDVyrCP, CisloBaliku, Mnozstvi) "
+                                        . "VALUES (%i, %i, %f)", $itemSNId, $packageNr, 1);
+                                $packageNr = $this->getNextPackage($deliveryNoteId);
+                            }
+                        }
+                        // upravit tak, aby se vždy přepočítal stav z výrobních čísel položky
+                        $ext = $this->db->query("SELECT ID FROM TabPohybyZbozi_EXT WHERE ID = %i", $itemId)->fetch();
+                        if ($ext) {
+                            $res = $this->db->query("UPDATE TabPohybyZbozi_EXT "
+                                    . "SET _exp_mnozstvi_vc = s.Mnozstvi "
+                                    . "FROM (SELECT IDPolozkaDokladu, SUM(Mnozstvi) AS Mnozstvi FROM TabVyrCP GROUP BY IDPolozkaDokladu) s "
+                                    . "WHERE s.IDPolozkaDokladu = TabPohybyZbozi_EXT.ID AND TabPohybyZbozi_EXT.ID = %i", $itemId);
+                            /*
+                              $res = $this->db->query("UPDATE TabPohybyZbozi_EXT "
+                              . "SET _exp_mnozstvi_vc = ISNULL(_exp_mnozstvi_vc, 0) + %f "
+                              . "WHERE ID = %i", $mnozstviPriprava, $itemId);
+                             * 
+                             */
+                        } else {
+                            $res = $this->db->query("INSERT INTO TabPohybyZbozi_EXT (ID, _exp_mnozstvi_vc) "
+                                    . "SELECT "
+                                    . "IDPolozkaDokladu, "
+                                    . "SUM(Mnozstvi) "
+                                    . "FROM TabVyrCP "
+                                    . "WHERE IDPolozkaDokladu = %i "
+                                    . "GROUP BY IDPolozkaDokladu", $itemId);
+                            /*
+                              $res = $this->db->query("INSERT INTO TabPohybyZbozi_EXT (ID, _exp_mnozstvi_vc)"
+                              . "VALUES (%i, %f)", $itemId, $mnozstviPriprava);
+                             * 
+                             */
+                        }
+                        $mnozstviPriprava = $mnozstviPriprava - $mnozstviUloz;
                     }
-                    // upravit tak, aby se vždy přepočítal stav z výrobních čísel položky
-                    $ext = $this->db->query("SELECT ID FROM TabPohybyZbozi_EXT WHERE ID = %i", $itemId)->fetch();
-                    if ($ext) {
-                        $res = $this->db->query("UPDATE TabPohybyZbozi_EXT "
-                                . "SET _exp_mnozstvi_vc = s.Mnozstvi "
-                                . "FROM (SELECT IDPolozkaDokladu, SUM(Mnozstvi) AS Mnozstvi FROM TabVyrCP GROUP BY IDPolozkaDokladu) s "
-                                . "WHERE s.IDPolozkaDokladu = TabPohybyZbozi_EXT.ID AND TabPohybyZbozi_EXT.ID = %i", $itemId);
-                        /*
-                          $res = $this->db->query("UPDATE TabPohybyZbozi_EXT "
-                          . "SET _exp_mnozstvi_vc = ISNULL(_exp_mnozstvi_vc, 0) + %f "
-                          . "WHERE ID = %i", $mnozstviPriprava, $itemId);
-                         * 
-                         */
-                    } else {
-                        $res = $this->db->query("INSERT INTO TabPohybyZbozi_EXT (ID, _exp_mnozstvi_vc) "
-                                . "SELECT "
-                                . "IDPolozkaDokladu, "
-                                . "SUM(Mnozstvi) "
-                                . "FROM TabVyrCP "
-                                . "WHERE IDPolozkaDokladu = %i "
-                                . "GROUP BY IDPolozkaDokladu", $itemId);
-                        /*
-                          $res = $this->db->query("INSERT INTO TabPohybyZbozi_EXT (ID, _exp_mnozstvi_vc)"
-                          . "VALUES (%i, %f)", $itemId, $mnozstviPriprava);
-                         * 
-                         */
-                    }
-                    $mnozstviPriprava = $mnozstviPriprava - $mnozstviUloz;
                 }
                 // aktualizace TabPohybyZbozi.Mnozstvi
                 $this->updateDeliveryNoteItemQuantity($itemId);

@@ -167,7 +167,7 @@ class DeliveryNotePresenter extends BasePresenter {
                 if (!$resVyrCis) {
                     $this->flashMessage('Výrobní číslo ' . $serialNumber . ' není v evidenci u žádného výrobního příkazu!', 'error');
                 } elseif ($resVyrCis->res == 1) {
-                    // dialog odvedení operace
+                    // dialog odvedení operace - pouze se odvede požadované množství
                     $this->redirect('DeliveryNote:setFinalOperationQuantity', array('deliveryNoteId' => $deliveryNoteId, 'serialNumber' => $serialNumber, 'availableQty' => $resVyrCis->MnKOdvodu));
                     $this->flashMessage('Výrobní číslo ' . $serialNumber . ' není skladem, ale lze ho odvést!', 'info');
                 } elseif ($resVyrCis->res == 2) {
@@ -180,7 +180,7 @@ class DeliveryNotePresenter extends BasePresenter {
             } else {
                 $resVCSklad = $this->dataModel->checkSNFromStock($deliveryNoteId, $serialNumber);
                 if (!$resVCSklad) {
-                    if (!isset($serialNumberRow->IDPohyb) && isset($serialNumberRowStock->IDPohyb)) {
+                    if ((!isset($serialNumberRow->IDPohyb) || $serialNumberRow->MnozstviPriprava >= $serialNumberRow->MnozstviPozadavek) && isset($serialNumberRowStock->IDPohyb)) {
                         $serialNumberRow->IDPohyb = $serialNumberRowStock->IDPohyb;
                     }
                     if (!isset($serialNumberRow->IDPohyb)) {
