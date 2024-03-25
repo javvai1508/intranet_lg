@@ -180,7 +180,9 @@ class DeliveryNotePresenter extends BasePresenter {
             } else {
                 $resVCSklad = $this->dataModel->checkSNFromStock($deliveryNoteId, $serialNumber);
                 if (!$resVCSklad) {
+                    // běžný pstup - kontrola vztahu EP - VP
                     if ((!isset($serialNumberRow->IDPohyb) || $serialNumberRow->MnozstviPriprava >= $serialNumberRow->MnozstviPozadavek) && isset($serialNumberRowStock->IDPohyb)) {
+                        // pokud je nekontrolovat EP-VP, použije se volný řádek DL, tj. obejde se kontrola
                         $serialNumberRow->IDPohyb = $serialNumberRowStock->IDPohyb;
                     }
                     if (!isset($serialNumberRow->IDPohyb)) {
@@ -199,8 +201,12 @@ class DeliveryNotePresenter extends BasePresenter {
                         $this->flashMessage('Proč jsem tady?', 'info');
                     }
                 } else {
+/*                  
+                    Pokud se zadá šarže a je zaškrtnuto nekontrolovat EP – VP, nenapočítá se do další položky 
+                    – kompletně předělat - zjistit parametry dílce hned na začátku a potom teprve zpracovat
+*/
                     if ($resVCSklad->IDVyrCP && !$resVCSklad->PozadVCP) {
-                        // výrobní číslo je na dodacím listu zadané šarží a je potřeba ho přidat - není to skladové převedené z EP
+                        // výrobní číslo je na dodacím listu zadané šarží a je potřeba ho přidat - není to skladově převedené z EP
                         if ($serialNumberRow->MnozstviPoPrijmuAVydeji > 1) {
                             // výrobního čísla je na skladu více než 1 kus - úprava množství podle potřeby - redirect na další formulář
                             $this->redirect('DeliveryNote:setQuantity', $deliveryNoteId, $serialNumber);
@@ -354,6 +360,9 @@ class DeliveryNotePresenter extends BasePresenter {
         $this->packageOpen = $this->getSession('package')->open;
 
         $serialNumberRow = $this->dataModel->checkSerialNumber($deliveryNoteId, $serialNumber);
+        if (!$serialNumberRow->IDPohyb) {
+            $serialNumberRow = $this->dataModel->checkSerialNumberStock($deliveryNoteId, $serialNumber);
+        }
         $this->template->deliveryNoteId = $deliveryNoteId;
         $this->template->serialNumberRow = $serialNumberRow;
         $this->template->packageOpen = $this->packageOpen;
@@ -379,6 +388,7 @@ class DeliveryNotePresenter extends BasePresenter {
             $packageOpen = $packageSess->open;
             $packageNr = $packageSess->number;
 
+            \Tracy\Debugger::barDump($values);
             $packageNr = $this->dataModel->updateDeliveryNoteItem($values->deliveryNoteId, $values->idPohyb, $values->idVyrCis, $values->quantity, $packageOpen, $packageNr);
             $packageSess->number = $packageNr;
 
