@@ -175,7 +175,7 @@ class DeliveryNotePresenter extends BasePresenter {
                 // nekontrolovat EP-VP (_SNekontrolovatEPVP) - doplnit do všech nesplněných odpovídajících položek (IDZboSklad)
                 if ($serialNumberRowStock->MnozstviPoPrijmuAVydeji > 1) {
                     // výrobního čísla je na skladu více než 1 kus - úprava množství podle potřeby - redirect na další formulář
-                    $this->redirect('DeliveryNote:setQuantity', $deliveryNoteId, $serialNumber, true);
+                    $this->redirect('DeliveryNote:setQuantity', $deliveryNoteId, $serialNumber, false);
                     // $this->flashMessage('Zpracuj část', 'info');
                 } elseif ($serialNumberRowStock->MnozstviPoPrijmuAVydeji == 1) {
                     // výrobního čísla je na skladu jeden kus - přidat na DL
@@ -211,7 +211,7 @@ class DeliveryNotePresenter extends BasePresenter {
                             $this->flashMessage('Výrobní číslo ' . $serialNumber . ' nepatří na aktuální DL nebo už je položka připravená!', 'danger');
                         } elseif ($serialNumberRow->MnozstviPoPrijmuAVydeji > 1) {
                             // výrobního čísla je na skladu více než 1 kus - úprava množství podle potřeby - redirect na další formulář
-                            $this->redirect('DeliveryNote:setQuantity', $deliveryNoteId, $serialNumber, false);
+                            $this->redirect('DeliveryNote:setQuantity', $deliveryNoteId, $serialNumber, true);
                             // $this->flashMessage('Zpracuj část', 'info');
                         } elseif ($serialNumberRow->MnozstviPoPrijmuAVydeji == 1) {
                             // výrobního čísla je na skladu jeden kus - přidat na DL
@@ -385,9 +385,9 @@ class DeliveryNotePresenter extends BasePresenter {
 
             \Tracy\Debugger::barDump($values);
             if ($values->checkRelation) {
-                $packageNr = $this->dataModel->processDeliveryNoteNoCheckRelation($values->deliveryNoteId, $values->idVyrCis, $values->quantity, $packageOpen, $packageNr);
-            } else {
                 $packageNr = $this->dataModel->updateDeliveryNoteItem($values->deliveryNoteId, $values->idPohyb, $values->idVyrCis, $values->quantity, $packageOpen, $packageNr);
+            } else {
+                $packageNr = $this->dataModel->processDeliveryNoteNoCheckRelation($values->deliveryNoteId, $values->idVyrCis, $values->quantity, $packageOpen, $packageNr);
             }
             $packageSess->number = $packageNr;
 
