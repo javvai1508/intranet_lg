@@ -540,6 +540,37 @@ class DeliveryNoteModel extends BaseModel {
     }
 
     /**
+     * doplní postupně podle zadaného množství ke všem shodným položkám do naplnění - nekontroluje se vztah EP-VP
+     * @param type $itemId
+     * @param type $vyrCisloId
+     * @param type $mnozstviPriprava
+     * @return type
+     */
+    public function processDeliveryNoteNoCheckRelation($deliveryNoteId, $vyrCisId, $mnozstviPriprava, $packageOpen, $packageNr) {
+        // transakce
+        //$res = NULL;
+        $resmsg = "";
+        $this->db->begin();
+        try {
+            $this->db->query("EXEC dbo.hpx_agrafa_exp_sleeve_dopln_noepvp @IDDoklad = %i, @IDVyrCis = %i, @MnozPridat = %f", $deliveryNoteId, $vyrCisId, $mnozstviPriprava);
+
+            $this->db->commit();
+            if (isset($res)) {
+                $resArr["res"] = $res;
+                $resArr["packageNr"] = $packageNr;
+                $resArr["mnozstviPriprava"] = $mnozstviPriprava;
+                $resArr["msg"] = $resmsg;
+            } else {
+                $resArr["res"] = 1;
+            }
+            return $resArr;
+        } catch (DibiException $e) {
+            $this->db->rollback();
+            return false;
+        }
+    }
+
+    /**
      * doplní výrobní číslo do dokladu - při expedici ze skladu
      * @param type $itemId
      * @param type $vyrCisloId

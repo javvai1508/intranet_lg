@@ -28,6 +28,7 @@ class SetQuantityFormFactory {
         $form->addHidden('deliveryNoteId');
         $form->addHidden('dispatchId');
         $form->addHidden('idPohyb');
+        $form->addHidden('checkRelation');
         $form->addHidden('idVyrCis');
         $form->addText('quantity')
                 ->setAttribute('placeholder', 'Množství')
