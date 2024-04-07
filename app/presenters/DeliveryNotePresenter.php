@@ -226,7 +226,7 @@ class DeliveryNotePresenter extends BasePresenter {
                             // výrobní číslo je na dodacím listu zadané šarží a je potřeba ho přidat - není to skladově převedené z EP
                             if ($serialNumberRow->MnozstviPoPrijmuAVydeji > 1) {
                                 // výrobního čísla je na skladu více než 1 kus - úprava množství podle potřeby - redirect na další formulář
-                                $this->redirect('DeliveryNote:setQuantity', $deliveryNoteId, $serialNumber);
+                                $this->redirect('DeliveryNote:setQuantity', $deliveryNoteId, $serialNumber, true);
                                 // $this->flashMessage('Zpracuj část', 'info');
                             } elseif ($serialNumberRow->MnozstviPoPrijmuAVydeji == 1) {
                                 // výrobního čísla je na skladu jeden kus - přidat na DL
