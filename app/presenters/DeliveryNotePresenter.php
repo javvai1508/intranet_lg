@@ -152,14 +152,21 @@ class DeliveryNotePresenter extends BasePresenter {
         $packageOpen = $packageSess->open;
         $packageNr = $packageSess->number;
 
+        $checkSNRowStock = false;
+        $errorMsg = "";
+        $errorMsgType = "";
         // nejdřív zkontrolovat, jestli se nejedná o skladovou položku
         $partNumberRow = $this->dataModel->checkPartNumber($deliveryNoteId, $serialNumber);
         if ($partNumberRow) {
             // zpracování skladové položky (_SVyrabetNaSklad) - dotáhnout VČ postupně podle data vložení
             if ($partNumberRow->JeSklad != 1) {
-                $this->flashMessage('Dílec není nastaven pro použíti jako skladová položka', 'error');
+                $errorMsg = "Dílec není nastaven pro použíti jako skladová položka";
+                $errorMsgType = "error";
+                //$this->flashMessage('Dílec není nastaven pro použíti jako skladová položka', 'error');
             } elseif ($partNumberRow->MnozstviPriprava >= $partNumberRow->MnozstviPozadavek) {
-                $this->flashMessage('Položka je v tomto dodacím listu již připravená', 'error');
+                $errorMsg = "Položka je v tomto dodacím listu již připravená";
+                $errorMsgType = "error";
+                //$this->flashMessage('Položka je v tomto dodacím listu již připravená', 'error');
             } else {
                 // serviety - TabKmenZbozi._SVyrabetNaSklad
                 $this->redirect('DeliveryNote:setQuantityFromStock', $deliveryNoteId, $serialNumber);
@@ -170,37 +177,36 @@ class DeliveryNotePresenter extends BasePresenter {
             if ($serialNumberRow) {
                 $itemId = $serialNumberRow->IDPohyb;
             } 
-            $serialNumberRowStock = $this->dataModel->checkSerialNumberStock($deliveryNoteId, $serialNumber);
-            if (isset($serialNumberRowStock->IDPohyb)) {
-                // nekontrolovat EP-VP (_SNekontrolovatEPVP) - doplnit do všech nesplněných odpovídajících položek (IDZboSklad)
-                if ($serialNumberRowStock->MnozstviPoPrijmuAVydeji > 1) {
-                    // výrobního čísla je na skladu více než 1 kus - úprava množství podle potřeby - redirect na další formulář
-                    $this->redirect('DeliveryNote:setQuantity', $deliveryNoteId, $serialNumber, false);
-                    // $this->flashMessage('Zpracuj část', 'info');
-                } elseif ($serialNumberRowStock->MnozstviPoPrijmuAVydeji == 1) {
-                    // výrobního čísla je na skladu jeden kus - přidat na DL
-                    $packageNr = $this->dataModel->processDeliveryNoteNoCheckRelation($deliveryNoteId, $serialNumberRowStock->IDVyrCis, 1, $packageOpen, $packageNr);
-                    $packageSess->number = $packageNr;
-                } else {
-                    // sem by se to asi nemělo vůbec dostat
-                    $this->flashMessage('Proč jsem tady?', 'info');
-                }
-            } else {
-                if (!$serialNumberRow OR ($serialNumberRow->MnozstviPoPrijmuAVydeji <= 0)) {
+            if ($serialNumberRow AND ($serialNumberRow->MnozstviZbyva > 0)) {
+                if ($serialNumberRow->MnozstviPoPrijmuAVydeji <= 0) {
                     // VČ neexistuje - kontrola, jestli jde odvést a případně odvést
                     $resVyrCis = $this->dataModel->checkFinalOperation($serialNumber);
                     if (!$resVyrCis) {
-                        $this->flashMessage('Výrobní číslo ' . $serialNumber . ' není v evidenci u žádného výrobního příkazu!', 'error');
+                        $checkSNRowStock = true;
+                        $errorMsg = "Výrobní číslo ' . $serialNumber . ' není v evidenci u žádného výrobního příkazu!";
+                        $errorMsgType = "error";
+                        //$this->flashMessage('Výrobní číslo ' . $serialNumber . ' není v evidenci u žádného výrobního příkazu!', 'error');
                     } elseif ($resVyrCis->res == 1) {
                         // dialog odvedení operace - pouze se odvede požadované množství
                         $this->redirect('DeliveryNote:setFinalOperationQuantity', array('deliveryNoteId' => $deliveryNoteId, 'serialNumber' => $serialNumber, 'availableQty' => $resVyrCis->MnKOdvodu));
-                        $this->flashMessage('Výrobní číslo ' . $serialNumber . ' není skladem, ale lze ho odvést!', 'info');
+                        $errorMsg = "Výrobní číslo ' . $serialNumber . ' není skladem, ale lze ho odvést!";
+                        $errorMsgType = "info";
+                        //$this->flashMessage('Výrobní číslo ' . $serialNumber . ' není skladem, ale lze ho odvést!', 'info');
                     } elseif ($resVyrCis->res == 2) {
-                        $this->flashMessage('Výrobní číslo ' . $serialNumber . ' není skladem a není dostatek živých kusů ve výrobě!', 'error');
+                        $checkSNRowStock = true;
+                        $errorMsg = "Výrobní číslo ' . $serialNumber . ' není skladem a není dostatek živých kusů ve výrobě!";
+                        $errorMsgType = "error";
+                        //$this->flashMessage('Výrobní číslo ' . $serialNumber . ' není skladem a není dostatek živých kusů ve výrobě!', 'error');
                     } elseif ($resVyrCis->res == 3) {
-                        $this->flashMessage('Výrobní číslo ' . $serialNumber . ' není skladem a odpovídající výrobní příkaz není ve stavu Zadáno!', 'error');
+                        $checkSNRowStock = true;
+                        $errorMsg = "Výrobní číslo ' . $serialNumber . ' není skladem a odpovídající výrobní příkaz není ve stavu Zadáno!";
+                        $errorMsgType = "error";
+                        //$this->flashMessage('Výrobní číslo ' . $serialNumber . ' není skladem a odpovídající výrobní příkaz není ve stavu Zadáno!', 'error');
                     } else {
-                        $this->flashMessage('Výrobní číslo ' . $serialNumber . ' není v evidenci u žádného výrobního příkazu!', 'error');
+                        $checkSNRowStock = true;
+                        $errorMsg = "Výrobní číslo ' . $serialNumber . ' není v evidenci u žádného výrobního příkazu!";
+                        $errorMsgType = "error";
+                        //$this->flashMessage('Výrobní číslo ' . $serialNumber . ' není v evidenci u žádného výrobního příkazu!', 'error');
                     }
                 } else {
                     $resVCSklad = $this->dataModel->checkSNFromStock($deliveryNoteId, $serialNumber);
@@ -208,17 +214,27 @@ class DeliveryNotePresenter extends BasePresenter {
                         // běžný postup - kontrola vztahu EP - VP
                         if (!isset($serialNumberRow->IDPohyb)) {
                             // VČ není na aktuálním dodáku - kontrola EP, jestli je pro stejného odběratele jinde, případně doplnit (kontrola zatím ne!)
-                            $this->flashMessage('Výrobní číslo ' . $serialNumber . ' nepatří na aktuální DL nebo už je položka připravená!', 'danger');
+                            $checkSNRowStock = true;
+                            $errorMsg = "Výrobní číslo ' . $serialNumber . ' nepatří na aktuální DL nebo už je položka připravená!";
+                            $errorMsgType = "danger";
+                            //$this->flashMessage('Výrobní číslo ' . $serialNumber . ' nepatří na aktuální DL nebo už je položka připravená!', 'danger');
                         } elseif ($serialNumberRow->MnozstviPoPrijmuAVydeji > 1) {
                             // výrobního čísla je na skladu více než 1 kus - úprava množství podle potřeby - redirect na další formulář
+                            $errorMsg = "";
+                            $errorMsgType = "";
                             $this->redirect('DeliveryNote:setQuantity', $deliveryNoteId, $serialNumber, true);
                             // $this->flashMessage('Zpracuj část', 'info');
                         } elseif ($serialNumberRow->MnozstviPoPrijmuAVydeji == 1) {
                             // výrobního čísla je na skladu jeden kus - přidat na DL
+                            $errorMsg = "";
+                            $errorMsgType = "";
                             $packageNr = $this->dataModel->updateDeliveryNoteItem($deliveryNoteId, $serialNumberRow->IDPohyb, $serialNumberRow->IDVyrCis, $serialNumberRow->MnozstviPoPrijmuAVydeji, $packageOpen, $packageNr);
                             $packageSess->number = $packageNr;
                         } else {
                             // sem by se to asi nemělo vůbec dostat
+                            $checkSNRowStock = true;
+                            $errorMsg = "Proč jsem tady (1)?";
+                            $errorMsgType = "info";
                             $this->flashMessage('Proč jsem tady?', 'info');
                         }
                     } else {
@@ -226,10 +242,14 @@ class DeliveryNotePresenter extends BasePresenter {
                             // výrobní číslo je na dodacím listu zadané šarží a je potřeba ho přidat - není to skladově převedené z EP
                             if ($serialNumberRow->MnozstviPoPrijmuAVydeji > 1) {
                                 // výrobního čísla je na skladu více než 1 kus - úprava množství podle potřeby - redirect na další formulář
+                                $errorMsg = "";
+                                $errorMsgType = "";
                                 $this->redirect('DeliveryNote:setQuantity', $deliveryNoteId, $serialNumber, true);
                                 // $this->flashMessage('Zpracuj část', 'info');
                             } elseif ($serialNumberRow->MnozstviPoPrijmuAVydeji == 1) {
                                 // výrobního čísla je na skladu jeden kus - přidat na DL
+                                $errorMsg = "";
+                                $errorMsgType = "";
                                 $packageNr = $this->dataModel->updateDeliveryNoteItem($deliveryNoteId, $serialNumberRow->IDPohyb, $serialNumberRow->IDVyrCis, $serialNumberRow->MnozstviPoPrijmuAVydeji, $packageOpen, $packageNr);
                                 $packageSess->number = $packageNr;
                             } 
@@ -240,8 +260,44 @@ class DeliveryNotePresenter extends BasePresenter {
                         }
                     }
                 }
+            } else {
+                $checkSNRowStock = true;
+                $errorMsg = "Položka je v tomto dodacím listu již připravená";
+                $errorMsgType = "error";
+            }
+            if ($checkSNRowStock) {
+                $serialNumberRowStock = $this->dataModel->checkSerialNumberStock($deliveryNoteId, $serialNumber);
+                if (isset($serialNumberRowStock->IDPohyb)) {
+                    // nekontrolovat EP-VP (_SNekontrolovatEPVP) - doplnit do všech nesplněných odpovídajících položek (IDZboSklad)
+                    if ($serialNumberRowStock->MnozstviPoPrijmuAVydeji > 1) {
+                        // výrobního čísla je na skladu více než 1 kus - úprava množství podle potřeby - redirect na další formulář
+                        $errorMsg = "";
+                        $errorMsgType = "";
+                        $this->redirect('DeliveryNote:setQuantity', $deliveryNoteId, $serialNumber, false);
+                        // $this->flashMessage('Zpracuj část', 'info');
+                    } elseif ($serialNumberRowStock->MnozstviPoPrijmuAVydeji == 1) {
+                        // výrobního čísla je na skladu jeden kus - přidat na DL
+                        $errorMsg = "";
+                        $errorMsgType = "";
+                        $packageNr = $this->dataModel->processDeliveryNoteNoCheckRelation($deliveryNoteId, $serialNumberRowStock->IDVyrCis, 1, $packageOpen, $packageNr);
+                        $packageSess->number = $packageNr;
+                    } else {
+                        // sem by se to asi nemělo vůbec dostat
+                        $errorMsg = "Výrobní číslo " . $serialNumber . " není na skladu?"; //$errorMsg = "Proč jsem tady (2)?";
+                        $errorMsgType = "error";
+                        //$this->flashMessage('Proč jsem tady?', 'info');
+                    }
+                } else {
+                    if ($errorMsg == "") {
+                        $errorMsg = "Výrobní číslo " . $serialNumber . " neexistuje?"; 
+                        $errorMsgType = "error";
+                    }
+                }
             }
         } 
+        if ($errorMsg != "") {
+            $this->flashMessage($errorMsg, $errorMsgType);
+        }
         // \Tracy\Debugger::barDump($serialNumberRow);
         // \Tracy\Debugger::barDump($resVCSklad);
         // \Tracy\Debugger::barDump($res);
