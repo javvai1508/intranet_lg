@@ -268,6 +268,7 @@ class DeliveryNotePresenter extends BasePresenter {
             if ($checkSNRowStock) {
                 $serialNumberRowStock = $this->dataModel->checkSerialNumberStock($deliveryNoteId, $serialNumber);
                 if (isset($serialNumberRowStock->IDPohyb)) {
+                    $itemId = $serialNumberRowStock->IDPohyb;
                     // nekontrolovat EP-VP (_SNekontrolovatEPVP) - doplnit do všech nesplněných odpovídajících položek (IDZboSklad)
                     if ($serialNumberRowStock->MnozstviPoPrijmuAVydeji > 1) {
                         // výrobního čísla je na skladu více než 1 kus - úprava množství podle potřeby - redirect na další formulář
