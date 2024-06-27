@@ -244,7 +244,7 @@ class DeliveryNotePresenter extends BasePresenter {
                     }
                 } else {
                     $checkSNRowStock = true;
-                    $errorMsg = "Položka je v tomto dodacím listu již připravená";
+                    $errorMsg = "VČ není na skladu";
                     $errorMsgType = "error";
                 }
                 if ($checkSNRowStock) {
