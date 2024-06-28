@@ -172,6 +172,7 @@ class DeliveryNoteModel extends BaseModel {
     public function checkPartNumber($deliveryNoteId, $partNumber) {
         return $this->db->query("SELECT "
                         . "skl.ID AS IDZboSklad,"
+                        . "CASE WHEN SUBSTRING(km.SkupZbo, 1, 2) = '51' THEN ISNULL(CONVERT(NVARCHAR(20), kme._SPrumerJadra), '-') + '/U' + ISNULL(CONVERT(NVARCHAR(20), kme._STiskovyObvod), '-') + '/' + ISNULL(CONVERT(NVARCHAR(20), kme._SPracovniDelkaSleeve), '-') + '/' + ISNULL(CONVERT(NVARCHAR(20), kme._SCelkovaDelkaSleeve), '-') WHEN SUBSTRING(km.SkupZbo, 1, 2) = '55' THEN ISNULL(CONVERT(NVARCHAR(20), kme._VPrumerJadra), '-') + '/' + ISNULL(CONVERT(NVARCHAR(20), kme._VPrumerPogumu), '-') + '/' + ISNULL(CONVERT(NVARCHAR(20), kme._VDelkaPogumu), '-') + '/' + ISNULL(CONVERT(NVARCHAR(20), kme._VPracDelka), '-') + '/' + ISNULL(CONVERT(NVARCHAR(20), kme._VDelkaValce), '-') ELSE '' END AS Rozmery, "
                         . "SUM(CONVERT(INT, skl.Mnozstvi)) AS Mnozstvi, "
                         . "SUM(CONVERT(INT, skl.Mnozstvi + skl.MnozstviKPrijmu - skl.MnozstviKVydeji)) AS MnozstviPoPrijmuAVydeji, "
                         . "SUM(poe._exp_mnozstvi_pozad_puvodni) AS MnozstviPozadavek, "

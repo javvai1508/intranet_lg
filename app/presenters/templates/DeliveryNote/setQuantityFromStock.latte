@@ -49,7 +49,11 @@
                                 <th scope="row" class=" text-right">Přidat na DL</th>
                                 <td class="text-center">{include '../components/setQuantityFromStockForm.latte', form => setQuantityFromStockForm}</td>
                             </tr>
-                            <tr>
+                                                        <tr>
+                                <th scope="col" class=" text-right">Rozměry</th>
+                                <th scope="col">{$partNumberRow->Rozmery}</th>
+                            </tr>
+<tr>
                                 <th scope="row" class=" text-right">Množství skladem</th>
                                 <td class="text-center">{$partNumberRow->MnozstviPoPrijmuAVydeji}</td>
                             </tr>
