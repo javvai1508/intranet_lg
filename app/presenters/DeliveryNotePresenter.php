@@ -244,7 +244,7 @@ class DeliveryNotePresenter extends BasePresenter {
                     }
                 } else {
                     $checkSNRowStock = true;
-                    $errorMsg = "VČ není na skladu";
+                    $errorMsg = "VČ není na skladu nebo nesouhlasí nastavení výroby na sklad";
                     $errorMsgType = "error";
                 }
                 if ($checkSNRowStock) {
