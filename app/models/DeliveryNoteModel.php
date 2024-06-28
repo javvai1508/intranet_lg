@@ -184,7 +184,7 @@ class DeliveryNoteModel extends BaseModel {
                         . "JOIN TabKmenZbozi km ON skl.IDKmenZbozi = km.ID "
                         . "LEFT JOIN TabKmenZbozi_EXT kme ON km.ID = kme.ID "
                         . "WHERE po.IDDoklad = %i AND (km.SkupZbo + km.RegCis) = %s "
-                        . "GROUP BY skl.ID", $deliveryNoteId, $partNumber)->fetch();
+                        . "GROUP BY skl.ID, CASE WHEN SUBSTRING(km.SkupZbo, 1, 2) = '51' THEN ISNULL(CONVERT(NVARCHAR(20), kme._SPrumerJadra), '-') + '/U' + ISNULL(CONVERT(NVARCHAR(20), kme._STiskovyObvod), '-') + '/' + ISNULL(CONVERT(NVARCHAR(20), kme._SPracovniDelkaSleeve), '-') + '/' + ISNULL(CONVERT(NVARCHAR(20), kme._SCelkovaDelkaSleeve), '-') WHEN SUBSTRING(km.SkupZbo, 1, 2) = '55' THEN ISNULL(CONVERT(NVARCHAR(20), kme._VPrumerJadra), '-') + '/' + ISNULL(CONVERT(NVARCHAR(20), kme._VPrumerPogumu), '-') + '/' + ISNULL(CONVERT(NVARCHAR(20), kme._VDelkaPogumu), '-') + '/' + ISNULL(CONVERT(NVARCHAR(20), kme._VPracDelka), '-') + '/' + ISNULL(CONVERT(NVARCHAR(20), kme._VDelkaValce), '-') ELSE '' END ", $deliveryNoteId, $partNumber)->fetch();
     }
 
     /**
