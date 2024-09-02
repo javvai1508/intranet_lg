@@ -528,6 +528,18 @@ class DeliveryNotePresenter extends BasePresenter {
     }
 
     /**
+     * tisk uzavřeného dodacího listu
+     */
+    public function handlePrintDeliveryNote() {
+        $deliveryNote = $this->dataModel->getDeliveryNote($this->getSession('deliveryNoteId')->deliveryNoteId);
+
+        $f = fopen("c:\\inetpub\\wwwroot\\www\\batch_" . $deliveryNote->SkupinaTisk . "\\" . $this->getSession('deliveryNoteId')->deliveryNoteId . ".txt", "w");
+        fwrite($f, $this->getSession('deliveryNoteId')->deliveryNoteId);
+        $f = fopen("e:\\fs\\data_helios\\batch_" . $deliveryNote->SkupinaTisk . "\\" . $this->getSession('deliveryNoteId')->deliveryNoteId . ".txt", "w");
+        fwrite($f, $this->getSession('deliveryNoteId')->deliveryNoteId);
+    }
+
+    /**
      * uzavření dodacího listu
      */
     public function handleCloseDeliveryNote() {

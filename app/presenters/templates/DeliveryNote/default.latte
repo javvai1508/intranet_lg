@@ -80,6 +80,7 @@
                         {else}
                             <span class="text-danger font-weight-bold">Vyfakturováno</span>
                         {/ifset}
+                        <a n:href="printDeliveryNote!" n:if="($deliveryNote->StavDLExp == 1)" class="btn btn-primary btn-lg m-1"><i class="far fa-print"></i> Vytisknout DL</a>
                     {else}
                     <a n:href="closeDeliveryNote!" n:if="($deliveryNote->StavDLExp == 0)" class="btn btn-success btn-lg m-1"><i class="far fa-forklift"></i> Uzavřít DL</a>
                     {/if}
