@@ -944,6 +944,13 @@ class DeliveryNoteModel extends BaseModel {
     }
 
     /**
+     * nový tisk DL - zrušit příznak tisku
+     */
+    public function reprintDeliveryNote($deliveryNoteId) {
+        $this->db->query("UPDATE TabDokladyZbozi_EXT SET _exp_dat_tisku = NULL WHERE ID = %i", $deliveryNoteId);
+    }
+
+    /**
      * uzavření dodacího listu
      * @param type $deliveryNoteId
      * @return boolean
