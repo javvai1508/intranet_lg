@@ -43,6 +43,7 @@ class DeliveryNoteModel extends BaseModel {
                         . "CONVERT(NVARCHAR(20), do.DatPovinnostiFa, 104) AS DatVystaveni, "
                         . "CONVERT(NVARCHAR(20), ISNULL(do.Splatnost, do.DatPorizeni), 104) AS DatDodavky, "
                         . "co.CisloOrg AS CisloOrg, "
+                        . "coe._exp_doplnit_baleni AS DoplnitBaleni, "
                         . "mu.CisloOrg AS CisloMU, "
                         . "COALESCE(mu.CisloOrg, co.CisloOrg) AS CisloOdb,"
                         . "CONCAT(co.Firma, ', ', co.Misto) AS Organizace, "
@@ -58,10 +59,12 @@ class DeliveryNoteModel extends BaseModel {
                         . "CONVERT(INT, sumy.MnozstviPozad) AS MnozstviPozad, "
                         . "sumy.PocetVC AS PocetVC, "
                         . "CONVERT(INT, ISNULL(sumy.MnozstviVC, 0)) AS MnozstviVC, "
-                        . "ISNULL(baliky.PocetBaliku, 0) AS PocetBaliku "
+                        . "ISNULL(baliky.PocetBaliku, 0) AS PocetBaliku, "
+                        . "ISNULL(doe._exp_balenitx, '') AS BaleniTx "
                         . "FROM TabDokladyZbozi do "
                         . "LEFT JOIN TabDokladyZbozi_EXT doe ON do.ID = doe.ID "
                         . "LEFT JOIN TabCisOrg co ON do.CisloOrg = co.CisloOrg "
+                        . "LEFT JOIN TabCisOrg_EXT coe ON coe.ID = co.ID "
                         . "LEFT JOIN TabCisOrg mu ON do.MistoUrceni = mu.CisloOrg "
                         . "LEFT JOIN TabUmisteni um ON um.Kod = doe._exp_umisteni "
                         . "LEFT JOIN TabUmisteni_EXT ume ON um.ID = ume.ID "
@@ -944,6 +947,14 @@ class DeliveryNoteModel extends BaseModel {
     }
 
     /**
+     * odeslání mailu po uzavření DL na NH
+     */
+    public function sendMailAfterDeliveryNoteClose($deliveryNoteId, $jeAtt) {
+        $this->db->query("EXEC dbo.hpx_agrafa_exp_uzavdl_mail @JeAtt = %i, @IDDoklad = %i", $jeAtt, $deliveryNoteId);
+        return true;
+    }
+
+    /**
      * nový tisk DL - zrušit příznak tisku
      */
     public function reprintDeliveryNote($deliveryNoteId) {
@@ -955,8 +966,8 @@ class DeliveryNoteModel extends BaseModel {
      * @param type $deliveryNoteId
      * @return boolean
      */
-    public function closeDeliveryNote($deliveryNoteId) {
-        $this->db->query("EXEC dbo.hpx_agrafa_exp_uzavrit_dl @ID = %i", $deliveryNoteId);
+    public function closeDeliveryNote($deliveryNoteId, $baleniTx) {
+        $this->db->query("EXEC dbo.hpx_agrafa_exp_uzavrit_dl @BaleniTx = %s, @ID = %i", $baleniTx, $deliveryNoteId);
         return true;
     }
 

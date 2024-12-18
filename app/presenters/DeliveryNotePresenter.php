@@ -9,6 +9,7 @@ use App\Models\DeliveryNoteModel,
     App\Forms\SetQuantityFormFactory,
     App\Forms\SetQuantityFromStockFormFactory,
     App\Forms\SetFinalOperationQuantityFormFactory,
+    App\Forms\PackageTxtFormFactory,
     Nette\Application\UI\Form;
 
 class DeliveryNotePresenter extends BasePresenter {
@@ -33,6 +34,9 @@ class DeliveryNotePresenter extends BasePresenter {
 
     /** @var SetFinalOperationQuantityFormFactory @inject */
     public $setFinalOperationQuantityFactory;
+
+    /** @var PackageTxtFormFactory @inject */
+    public $packageTxtFactory;
 
     /** @var DeliveryNoteId */
     private $deliveryNoteId;
@@ -160,7 +164,7 @@ class DeliveryNotePresenter extends BasePresenter {
         if ($partNumberRow) {
             // zpracování skladové položky (_SVyrabetNaSklad) - dotáhnout VČ postupně podle data vložení
             if ($partNumberRow->JeSklad != 1) {
-                $errorMsg = "Dílec není nastaven pro použíti jako skladová položka";
+                $errorMsg = "Dílec není nastaven pro použití jako skladová položka";
                 $errorMsgType = "error";
                 //$this->flashMessage('Dílec není nastaven pro použíti jako skladová položka', 'error');
             } elseif ($partNumberRow->MnozstviPriprava >= $partNumberRow->MnozstviPozadavek) {
@@ -518,11 +522,13 @@ class DeliveryNotePresenter extends BasePresenter {
 
         $pdf->pageFormat = "A4";
         $pdf->setPageMargins("10, 10, 10, 10, 1, 1");
-        $pdf->styles = file_get_contents("c:\\inetpub\\wwwroot\\www\\css\\pdf-style.css");
+        $pdf->styles = file_get_contents("__DIR__" . "\\..\\..\\www\\css\\pdf-style.css");
+        //$pdf->styles = file_get_contents("c:\\inetpub\\wwwroot\\www\\css\\pdf-style.css");
         $pdf->getMPDF()->setFooter("Ligum Intranet");
 
         /* server */
-        $pdf->save("e:\\fs\\data_helios\\TBLT_EXPED_NH\\",  "dl" . $deliveryNote->ParovaciZnak);        
+        $pdf->save("c:\\fs\\data_helios\\TBLT_EXPED_NH\\",  "dl" . $deliveryNote->ParovaciZnak);        
+        // $pdf->save("e:\\fs\\data_helios\\TBLT_EXPED_NH\\",  "dl" . $deliveryNote->ParovaciZnak);        
         // \Tracy\Debugger::barDump($printCmd);
 
     }
@@ -544,32 +550,47 @@ class DeliveryNotePresenter extends BasePresenter {
     /**
      * uzavření dodacího listu
      */
-    public function handleCloseDeliveryNote() {
+    private function closeDeliveryNote($baleniTx) {
         $deliveryNote = $this->dataModel->getDeliveryNote($this->getSession('deliveryNoteId')->deliveryNoteId);
 
-        if ($deliveryNote->SkupinaTisk == 'nh') {
-            $res = $this->dataModel->checkDeliveryNoteBeforeClosing($this->getSession('deliveryNoteId')->deliveryNoteId);
-            // $this->flashMessage($res);
-            // odeslání zprávy o nedodaném zboží
-            if ($res > 0) {
-                // generovat PDF
-                $this->createDeliveryNoteErrorPDF($this->getSession('deliveryNoteId')->deliveryNoteId);
-                // generovat soubor s mailem, kam to poslat
-                $deliveryNote = $this->dataModel->getDeliveryNote($this->getSession('deliveryNoteId')->deliveryNoteId);
-                $responsibleMail = $this->dataModel->getResponsibleMail($this->getSession('deliveryNoteId')->deliveryNoteId);
-                $f = fopen("e:\\fs\\data_helios\\TBLT_EXPED_NH\\" . "dl" . $deliveryNote->ParovaciZnak . ".pdf.to", "w");
-                fwrite($f, $responsibleMail);
-                fclose($f);
-            }
-        }
         // \Tracy\Debugger::barDump($deliveryNote);
         // $this->redirect('DeliveryNote:default');
 
-        $res = $this->dataModel->closeDeliveryNote($this->getSession('deliveryNoteId')->deliveryNoteId);
+        $res = $this->dataModel->closeDeliveryNote($this->getSession('deliveryNoteId')->deliveryNoteId, $baleniTx);
         if (!$res) {
             $this->flashMessage('Dodací list se nepodařilo uzavřít!', 'danger');
         } else {
-// vytvořit soubor v adresáři pro tisk DL
+        // odeslat mail odpovědné osobě - v každém případě s textem balení
+            if ($deliveryNote->SkupinaTisk == 'nh') {
+
+                $jeAtt = 0;
+                $res = $this->dataModel->checkDeliveryNoteBeforeClosing($this->getSession('deliveryNoteId')->deliveryNoteId);
+                if ($res > 0) {
+                    // generovat PDF
+                    $this->createDeliveryNoteErrorPDF($this->getSession('deliveryNoteId')->deliveryNoteId);
+                    $jeAtt = 1;
+                }
+
+                if ($jeAtt == 1 || $deliveryNote->DoplnitBaleni == 1) {
+                    $this->dataModel->sendMailAfterDeliveryNoteClose($this->getSession('deliveryNoteId')->deliveryNoteId, $jeAtt);
+                }
+
+                /*
+                $res = $this->dataModel->checkDeliveryNoteBeforeClosing($this->getSession('deliveryNoteId')->deliveryNoteId);
+                // $this->flashMessage($res);
+                // odeslání zprávy o nedodaném zboží - zpráva vždy od 24. 9. 2024
+                // if ($res > 0) {
+                    // generovat PDF
+                    $this->createDeliveryNoteErrorPDF($this->getSession('deliveryNoteId')->deliveryNoteId);
+                    // generovat soubor s mailem, kam to poslat
+                    $deliveryNote = $this->dataModel->getDeliveryNote($this->getSession('deliveryNoteId')->deliveryNoteId);
+                    $responsibleMail = $this->dataModel->getResponsibleMail($this->getSession('deliveryNoteId')->deliveryNoteId);
+                    $f = fopen("e:\\fs\\data_helios\\TBLT_EXPED_NH\\" . "dl" . $deliveryNote->ParovaciZnak . ".pdf.to", "w");
+                    fwrite($f, $responsibleMail);
+                    fclose($f);
+                //}*/
+            }
+        // vytvořit soubor v adresáři pro tisk DL
             $f = fopen("c:\\inetpub\\wwwroot\\www\\batch_" . $deliveryNote->SkupinaTisk . "\\" . $this->getSession('deliveryNoteId')->deliveryNoteId . ".txt", "w");
             fwrite($f, $this->getSession('deliveryNoteId')->deliveryNoteId);
             $f = fopen("e:\\fs\\data_helios\\batch_" . $deliveryNote->SkupinaTisk . "\\" . $this->getSession('deliveryNoteId')->deliveryNoteId . ".txt", "w");
@@ -579,6 +600,64 @@ class DeliveryNotePresenter extends BasePresenter {
             $this->getSession('package')->remove();
             $this->redirect('DeliveryNote:default');
         }
+    }
+
+    /**
+     * PackageTxt form factory.
+     * načtení výrobního čísla čárovým kódem a zpracování
+     * přečte čárový kód
+     * 
+     * @return Nette\Application\UI\Form
+     */
+    protected function createComponentPackageTxtForm() {
+        $form = $this->packageTxtFactory->create();
+
+        /**
+         * vybrat tlačítko:
+         * odeslat - spustit uzavření DL
+         * storno - vrátit zpět 
+         */
+        $form->onSuccess[] = function (Form $form, $values) {
+            if ($form['send']->isSubmittedBy()) {
+
+                //$this->dataModel->updateDocRow($data);
+                $this->closeDeliveryNote($values->BaleniTx);
+                /*$this->flashMessage('Uzavřít');
+                $this->redirect('DeliveryNote:default');*/
+
+            } else {
+                $this->flashMessage('Neuzavřít');
+                $this->redirect('DeliveryNote:default');
+            }
+            /*
+            if ($data->doctype == 0) {
+                $this->redirect('Fakturoid:showInvoices');
+            } elseif ($data->doctype == 1) {
+                $this->redirect('Fakturoid:showExpenses');
+            } else {
+                $this->redirect('Admin:default');
+            }
+                */
+
+
+        };
+
+        return $form;
+    }
+
+    /**
+     * 
+     */
+    public function renderCloseDeliveryNote() {
+        $deliveryNote = $this->dataModel->getDeliveryNote($this->getSession('deliveryNoteId')->deliveryNoteId);
+
+        $this->template->deliveryNoteNr = $deliveryNote->ParovaciZnak;
+        $this->template->deliveryNote = $deliveryNote;
+
+        \Tracy\Debugger::barDump($deliveryNote);
+
+        $packageTxtDefaults = array('deliveryNoteId' => $deliveryNote->ID);
+        $this["packageTxtForm"]->setDefaults($packageTxtDefaults);
     }
 
     /**

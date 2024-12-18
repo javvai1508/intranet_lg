@@ -1,12 +1,12 @@
 <div class="pdf-header">
     <img class="logo" src="images/logo.jpg" />
-    <h1 class="text-right">Nedodané zboží DL č.: {$deliveryNote->ParovaciZnak}</h1>
+    <h1 class="text-right">Zpráva o uzavření DL č.: {$deliveryNote->ParovaciZnak}</h1>
     <h2 class="text-right">Uzavřeno: {="now"|date:'j.n.Y H:i:s'}</h2>
 </div>
 <div class="clearer"></div>
-{if count($deliveryNoteItems) > 0}
 <div class="content">
-    <h3>Seznam položek s rozdíly</h3>
+{if count($deliveryNoteItems) > 0}
+    <h2>Seznam položek s rozdíly</h2>
                     <table>
                         <thead>
                             <tr>
@@ -31,8 +31,10 @@
                             {/foreach}
                         </tbody>
                     </table>
-</div>
 {/if}
+    <h2>Balení:</h2>
+    <div>{$deliveryNote->BaleniTx}</div>
+</div>
 <div class="err-text">
     <p>Vygenerováno: {="now"|date:'j.n.Y H:i:s'}</p>
 </div>
