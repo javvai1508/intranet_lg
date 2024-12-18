@@ -527,8 +527,8 @@ class DeliveryNotePresenter extends BasePresenter {
         $pdf->getMPDF()->setFooter("Ligum Intranet");
 
         /* server */
-        $pdf->save("c:\\fs\\data_helios\\TBLT_EXPED_NH\\",  "dl" . $deliveryNote->ParovaciZnak);        
-        // $pdf->save("e:\\fs\\data_helios\\TBLT_EXPED_NH\\",  "dl" . $deliveryNote->ParovaciZnak);        
+        // dev $pdf->save("c:\\fs\\data_helios\\TBLT_EXPED_NH\\",  "dl" . $deliveryNote->ParovaciZnak);        
+        $pdf->save("e:\\fs\\data_helios\\TBLT_EXPED_NH\\",  "dl" . $deliveryNote->ParovaciZnak);        
         // \Tracy\Debugger::barDump($printCmd);
 
     }
@@ -545,6 +545,7 @@ class DeliveryNotePresenter extends BasePresenter {
         fwrite($f, $this->getSession('deliveryNoteId')->deliveryNoteId);
         $f = fopen("e:\\fs\\data_helios\\batch_" . $deliveryNote->SkupinaTisk . "\\" . $this->getSession('deliveryNoteId')->deliveryNoteId . ".txt", "w");
         fwrite($f, $this->getSession('deliveryNoteId')->deliveryNoteId);
+
     }
 
     /**
