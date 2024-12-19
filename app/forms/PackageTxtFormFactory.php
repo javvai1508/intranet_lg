@@ -24,11 +24,14 @@ class PackageTxtFormFactory {
 
         $form = new Form;
         $form->setTranslator($this->translator);
+
+        $form->addHidden('jeReq');
         
         $form->addTextArea('BaleniTx', 'Balení')
                 ->setAttribute('class', 'form-control form-control-lg')
                 ->setAttribute('rows', '3')
-                ->setRequired(false);
+                ->addConditionOn($form['jeReq'], $form::EQUAL, true)
+                    ->setRequired('Vyplňte údaje o balení');
 
         $form->addSubmit('send', 'Opravdu uzavřít?')
                 ->setAttribute('class', 'btn btn-lg btn-success');

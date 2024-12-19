@@ -572,10 +572,11 @@ class DeliveryNotePresenter extends BasePresenter {
 
                     $jeAtt = 1;
 
+                    /* možno zrušit
                     $responsibleMail = $this->dataModel->getResponsibleMail($this->getSession('deliveryNoteId')->deliveryNoteId) . ";vinkler@agrafa.cz";
                     $f = fopen("e:\\fs\\data_helios\\TBLT_EXPED_NH\\" . "dl" . $deliveryNote->ParovaciZnak . ".pdf.to", "w");
                     fwrite($f, $responsibleMail);
-                    fclose($f);
+                    fclose($f);*/
 
                 }
 
@@ -601,7 +602,7 @@ class DeliveryNotePresenter extends BasePresenter {
             fwrite($f, $this->getSession('deliveryNoteId')->deliveryNoteId);
             $f = fopen("e:\\fs\\data_helios\\batch_" . $deliveryNote->SkupinaTisk . "\\" . $this->getSession('deliveryNoteId')->deliveryNoteId . ".txt", "w");
             fwrite($f, $this->getSession('deliveryNoteId')->deliveryNoteId);
-
+        
             $this->getSession('deliveryNoteId')->remove();
             $this->getSession('package')->remove();
             $this->redirect('DeliveryNote:default');
@@ -662,7 +663,7 @@ class DeliveryNotePresenter extends BasePresenter {
 
         \Tracy\Debugger::barDump($deliveryNote);
 
-        $packageTxtDefaults = array('deliveryNoteId' => $deliveryNote->ID);
+        $packageTxtDefaults = array('deliveryNoteId' => $deliveryNote->ID, 'jeReq' => $deliveryNote->DoplnitBaleni);
         $this["packageTxtForm"]->setDefaults($packageTxtDefaults);
     }
 
