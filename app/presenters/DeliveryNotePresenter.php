@@ -572,7 +572,7 @@ class DeliveryNotePresenter extends BasePresenter {
 
                     $jeAtt = 1;
 
-                    $responsibleMail = $this->dataModel->getResponsibleMail($this->getSession('deliveryNoteId')->deliveryNoteId);
+                    $responsibleMail = $this->dataModel->getResponsibleMail($this->getSession('deliveryNoteId')->deliveryNoteId) . ";vinkler@agrafa.cz";
                     $f = fopen("e:\\fs\\data_helios\\TBLT_EXPED_NH\\" . "dl" . $deliveryNote->ParovaciZnak . ".pdf.to", "w");
                     fwrite($f, $responsibleMail);
                     fclose($f);
