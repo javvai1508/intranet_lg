@@ -569,7 +569,14 @@ class DeliveryNotePresenter extends BasePresenter {
                 if ($res > 0) {
                     // generovat PDF
                     $this->createDeliveryNoteErrorPDF($this->getSession('deliveryNoteId')->deliveryNoteId);
+
                     $jeAtt = 1;
+
+                    $responsibleMail = $this->dataModel->getResponsibleMail($this->getSession('deliveryNoteId')->deliveryNoteId);
+                    $f = fopen("e:\\fs\\data_helios\\TBLT_EXPED_NH\\" . "dl" . $deliveryNote->ParovaciZnak . ".pdf.to", "w");
+                    fwrite($f, $responsibleMail);
+                    fclose($f);
+
                 }
 
                 if ($jeAtt == 1 || $deliveryNote->DoplnitBaleni == 1) {
