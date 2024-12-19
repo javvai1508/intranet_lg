@@ -579,9 +579,7 @@ class DeliveryNotePresenter extends BasePresenter {
 
                 }
 
-                if ($jeAtt == 1 || $deliveryNote->DoplnitBaleni == 1) {
-                    $this->dataModel->sendMailAfterDeliveryNoteClose($this->getSession('deliveryNoteId')->deliveryNoteId, $jeAtt);
-                }
+                $this->dataModel->sendMailAfterDeliveryNoteClose($this->getSession('deliveryNoteId')->deliveryNoteId, $jeAtt);
 
                 /*
                 $res = $this->dataModel->checkDeliveryNoteBeforeClosing($this->getSession('deliveryNoteId')->deliveryNoteId);
