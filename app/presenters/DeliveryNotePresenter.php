@@ -557,6 +557,26 @@ class DeliveryNotePresenter extends BasePresenter {
         // \Tracy\Debugger::barDump($deliveryNote);
         // $this->redirect('DeliveryNote:default');
 
+        $jeAtt = 0;
+        if ($deliveryNote->SkupinaTisk == 'nh') {
+
+            $isPdf = $this->dataModel->checkDeliveryNoteBeforeClosing($this->getSession('deliveryNoteId')->deliveryNoteId);
+            if ($isPdf > 0) {
+                // generovat PDF
+                $this->createDeliveryNoteErrorPDF($this->getSession('deliveryNoteId')->deliveryNoteId);
+
+                $jeAtt = 1;
+
+                /* možno zrušit
+                $responsibleMail = $this->dataModel->getResponsibleMail($this->getSession('deliveryNoteId')->deliveryNoteId) . ";vinkler@agrafa.cz";
+                $f = fopen("e:\\fs\\data_helios\\TBLT_EXPED_NH\\" . "dl" . $deliveryNote->ParovaciZnak . ".pdf.to", "w");
+                fwrite($f, $responsibleMail);
+                fclose($f);*/
+
+            }
+        }
+
+
         $res = $this->dataModel->closeDeliveryNote($this->getSession('deliveryNoteId')->deliveryNoteId, $baleniTx);
         if (!$res) {
             $this->flashMessage('Dodací list se nepodařilo uzavřít!', 'danger');
@@ -564,21 +584,14 @@ class DeliveryNotePresenter extends BasePresenter {
         // odeslat mail odpovědné osobě - v každém případě s textem balení
             if ($deliveryNote->SkupinaTisk == 'nh') {
 
-                $jeAtt = 0;
+/*                $jeAtt = 0;
                 $res = $this->dataModel->checkDeliveryNoteBeforeClosing($this->getSession('deliveryNoteId')->deliveryNoteId);
                 if ($res > 0) {
                     // generovat PDF
                     $this->createDeliveryNoteErrorPDF($this->getSession('deliveryNoteId')->deliveryNoteId);
 
                     $jeAtt = 1;
-
-                    /* možno zrušit
-                    $responsibleMail = $this->dataModel->getResponsibleMail($this->getSession('deliveryNoteId')->deliveryNoteId) . ";vinkler@agrafa.cz";
-                    $f = fopen("e:\\fs\\data_helios\\TBLT_EXPED_NH\\" . "dl" . $deliveryNote->ParovaciZnak . ".pdf.to", "w");
-                    fwrite($f, $responsibleMail);
-                    fclose($f);*/
-
-                }
+                }*/
 
                 $this->dataModel->sendMailAfterDeliveryNoteClose($this->getSession('deliveryNoteId')->deliveryNoteId, $jeAtt);
 
