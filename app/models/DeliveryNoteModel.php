@@ -287,14 +287,15 @@ class DeliveryNoteModel extends BaseModel {
      */
     public function checkFinalOperation($serialNumber) {
         /*
-         * 0 = OK, 1 = není v evidenci v příkazech, 2 = nedostatek živých kusů, 3 = přikaz není ve stavu Zadáno
+         * 1 = OK lze odvést, 2 = nedostatek živých kusů, 3 = přikaz není ve stavu Zadáno
          */
         return $this->db->query("SELECT "
                         . "(CONVERT(NUMERIC(19,6), CASE WHEN (vcpr.Mnozstvi - vcpr.Odvedeno - vcpr.Zmetky - CONVERT(numeric(19,6), (SELECT ISNULL(SUM(CP.Mnozstvi * PZ.PrepMnozstvi), 0.0) FROM TabPohybyZbozi PZ INNER JOIN TabVyrCP CP ON (CP.IDPolozkaDokladu = PZ.ID) INNER JOIN TabVyrCS CS ON (CS.ID = CP.IDVyrCis AND CS.Nazev1 = vcpr.VyrCislo) WHERE PZ.TypVyrobnihoDokladu=0 AND PZ.IDPrikaz = vcpr.IDPrikaz AND PZ.DruhPohybuZbo=0 AND PZ.SkutecneDatReal IS NULL))) < 0 THEN 0 ELSE (vcpr.Mnozstvi - vcpr.Odvedeno - vcpr.Zmetky - CONVERT(numeric(19,6), (SELECT ISNULL(SUM(CP.Mnozstvi * PZ.PrepMnozstvi), 0.0) FROM TabPohybyZbozi PZ INNER JOIN TabVyrCP CP ON (CP.IDPolozkaDokladu = PZ.ID) INNER JOIN TabVyrCS CS ON (CS.ID = CP.IDVyrCis AND CS.Nazev1 = vcpr.VyrCislo) WHERE PZ.TypVyrobnihoDokladu=0 AND PZ.IDPrikaz = vcpr.IDPrikaz AND PZ.DruhPohybuZbo=0 AND PZ.SkutecneDatReal IS NULL))) END, 0)) AS MnKOdvodu, "
                         . "CASE WHEN (CONVERT(NUMERIC(19,6), CASE WHEN (vcpr.Mnozstvi - vcpr.Odvedeno - vcpr.Zmetky - CONVERT(numeric(19,6), (SELECT ISNULL(SUM(CP.Mnozstvi * PZ.PrepMnozstvi), 0.0) FROM TabPohybyZbozi PZ INNER JOIN TabVyrCP CP ON (CP.IDPolozkaDokladu = PZ.ID) INNER JOIN TabVyrCS CS ON (CS.ID = CP.IDVyrCis AND CS.Nazev1 = vcpr.VyrCislo) WHERE PZ.TypVyrobnihoDokladu=0 AND PZ.IDPrikaz = vcpr.IDPrikaz AND PZ.DruhPohybuZbo=0 AND PZ.SkutecneDatReal IS NULL))) < 0 THEN 0 ELSE (vcpr.Mnozstvi - vcpr.Odvedeno - vcpr.Zmetky - CONVERT(numeric(19,6), (SELECT ISNULL(SUM(CP.Mnozstvi * PZ.PrepMnozstvi), 0.0) FROM TabPohybyZbozi PZ INNER JOIN TabVyrCP CP ON (CP.IDPolozkaDokladu = PZ.ID) INNER JOIN TabVyrCS CS ON (CS.ID = CP.IDVyrCis AND CS.Nazev1 = vcpr.VyrCislo) WHERE PZ.TypVyrobnihoDokladu=0 AND PZ.IDPrikaz = vcpr.IDPrikaz AND PZ.DruhPohybuZbo=0 AND PZ.SkutecneDatReal IS NULL))) END, 0)) <= 0 THEN 2 WHEN pr.StavPrikazu <> 30 THEN 3 ELSE 1 END res "
                         . "FROM TabVyrCisPrikaz vcpr "
                         . "JOIN TabPrikaz pr ON pr.ID = vcpr.IDPrikaz "
-                        . "WHERE vcpr.VyrCislo = %s", $serialNumber)->fetch();
+                        . "WHERE (CONVERT(NUMERIC(19,6), CASE WHEN (vcpr.Mnozstvi - vcpr.Odvedeno - vcpr.Zmetky - CONVERT(numeric(19,6), (SELECT ISNULL(SUM(CP.Mnozstvi * PZ.PrepMnozstvi), 0.0) FROM TabPohybyZbozi PZ INNER JOIN TabVyrCP CP ON (CP.IDPolozkaDokladu = PZ.ID) INNER JOIN TabVyrCS CS ON (CS.ID = CP.IDVyrCis AND CS.Nazev1 = vcpr.VyrCislo) WHERE PZ.TypVyrobnihoDokladu=0 AND PZ.IDPrikaz = vcpr.IDPrikaz AND PZ.DruhPohybuZbo=0 AND PZ.SkutecneDatReal IS NULL))) < 0 THEN 0 ELSE (vcpr.Mnozstvi - vcpr.Odvedeno - vcpr.Zmetky - CONVERT(numeric(19,6), (SELECT ISNULL(SUM(CP.Mnozstvi * PZ.PrepMnozstvi), 0.0) FROM TabPohybyZbozi PZ INNER JOIN TabVyrCP CP ON (CP.IDPolozkaDokladu = PZ.ID) INNER JOIN TabVyrCS CS ON (CS.ID = CP.IDVyrCis AND CS.Nazev1 = vcpr.VyrCislo) WHERE PZ.TypVyrobnihoDokladu=0 AND PZ.IDPrikaz = vcpr.IDPrikaz AND PZ.DruhPohybuZbo=0 AND PZ.SkutecneDatReal IS NULL))) END, 0)) > 0 AND  "
+                        . "vcpr.VyrCislo = %s", $serialNumber)->fetch();
     }
 
     /**
@@ -966,8 +967,18 @@ class DeliveryNoteModel extends BaseModel {
      * @param type $deliveryNoteId
      * @return boolean
      */
-    public function closeDeliveryNote($deliveryNoteId, $baleniTx) {
-        $this->db->query("EXEC dbo.hpx_agrafa_exp_uzavrit_dl @BaleniTx = %s, @ID = %i", $baleniTx, $deliveryNoteId);
+    public function closeDeliveryNote($deliveryNoteId) {
+        $this->db->query("EXEC dbo.hpx_agrafa_exp_uzavrit_dl @ID = %i", $deliveryNoteId);
+        return true;
+    }
+
+    /**
+     * uloži balení k dodacímu listu
+     * @param type $deliveryNoteId
+     * @return boolean
+     */
+    public function savePackageTxt($deliveryNoteId, $baleniTx) {
+        $this->db->query("EXEC dbo.hpx_agrafa_exp_vlozit_baleni_dl @BaleniTx = %s, @ID = %i", $baleniTx, $deliveryNoteId);
         return true;
     }
 

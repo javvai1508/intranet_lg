@@ -40,5 +40,6 @@ services:
     - App\Forms\StdInventoryBarCodeFormFactory
     - App\Forms\StdInventoryFormFactory
     - App\Forms\PackageTxtFormFactory
+    - App\Forms\CloseDeliveryNoteFormFactory
 
     router: App\RouterFactory::createRouter

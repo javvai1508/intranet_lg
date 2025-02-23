@@ -1,0 +1,23 @@
+{block content}
+{include 'headerDeliveryNote.latte'}
+            <div class="row delivery-note-header">
+                <div class="col-sm-12">
+                <!-- div class="float-right"><a n:href="changeDeliveryNote!" class="btn btn-primary btn-sm"><i class="far fa-exchange-alt"></i></a></div -->
+                <h1>{$deliveryNote->Odberatel}</strong></h1>
+                </div>
+            </div>
+            <div class="row delivery-note-header">
+                <div class="col-sm-12">
+                <div class="float-right delivery-note-status"><span class="{if $deliveryNote->MnozstviVC == $deliveryNote->MnozstviPozad}text-success{elseif $deliveryNote->MnozstviVC > $deliveryNote->MnozstviPozad}text-warning{else}text-danger{/if}">{$deliveryNote->MnozstviVC|number:2}</span> / {$deliveryNote->MnozstviPozad|number:2}</span></div>
+                <strong>{$deliveryNote->DatDodavky}</strong>
+                </div>
+            </div>
+            <div class="row delivery-note-status">
+                {if $deliveryNote->StavDLExp == 1}
+                    <div class="col-sm-12">
+                        <div class="set-dn-form">
+                            {include '../components/packageTxtForm.latte', form => packageTxtForm}
+                        </div>
+                    </div>
+                {/if}
+            </div>

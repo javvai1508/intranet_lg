@@ -10,6 +10,7 @@ use App\Models\DeliveryNoteModel,
     App\Forms\SetQuantityFromStockFormFactory,
     App\Forms\SetFinalOperationQuantityFormFactory,
     App\Forms\PackageTxtFormFactory,
+    App\Forms\CloseDeliveryNoteFormFactory,
     Nette\Application\UI\Form;
 
 class DeliveryNotePresenter extends BasePresenter {
@@ -37,6 +38,9 @@ class DeliveryNotePresenter extends BasePresenter {
 
     /** @var PackageTxtFormFactory @inject */
     public $packageTxtFactory;
+
+    /** @var CloseDeliveryNoteFormFactory @inject */
+    public $closeDeliveryNoteFactory;
 
     /** @var DeliveryNoteId */
     private $deliveryNoteId;
@@ -549,9 +553,24 @@ class DeliveryNotePresenter extends BasePresenter {
     }
 
     /**
+     * doplnit balení k dodacímu listu
+     */
+    public function renderAddPackageDeliveryNote() {
+        $deliveryNote = $this->dataModel->getDeliveryNote($this->getSession('deliveryNoteId')->deliveryNoteId);
+
+        $this->template->deliveryNoteNr = $deliveryNote->ParovaciZnak;
+        $this->template->deliveryNote = $deliveryNote;
+
+        //\Tracy\Debugger::barDump($deliveryNote);
+
+        $packageTxtDefaults = array('deliveryNoteId' => $deliveryNote->ID, 'BaleniTx' => $deliveryNote->BaleniTx);
+        $this["packageTxtForm"]->setDefaults($packageTxtDefaults);
+    }
+
+    /**
      * uzavření dodacího listu
      */
-    private function closeDeliveryNote($baleniTx) {
+    private function closeDeliveryNote() {
         $deliveryNote = $this->dataModel->getDeliveryNote($this->getSession('deliveryNoteId')->deliveryNoteId);
 
         // \Tracy\Debugger::barDump($deliveryNote);
@@ -577,7 +596,7 @@ class DeliveryNotePresenter extends BasePresenter {
         }
 
 
-        $res = $this->dataModel->closeDeliveryNote($this->getSession('deliveryNoteId')->deliveryNoteId, $baleniTx);
+        $res = $this->dataModel->closeDeliveryNote($this->getSession('deliveryNoteId')->deliveryNoteId);
         if (!$res) {
             $this->flashMessage('Dodací list se nepodařilo uzavřít!', 'danger');
         } else {
@@ -623,6 +642,19 @@ class DeliveryNotePresenter extends BasePresenter {
     }
 
     /**
+     * uloží balení k dodacímu listu
+     */
+    private function savePackageTxt($baleniTx) {
+        $deliveryNote = $this->dataModel->getDeliveryNote($this->getSession('deliveryNoteId')->deliveryNoteId);
+
+        $res = $this->dataModel->savePackageTxt($this->getSession('deliveryNoteId')->deliveryNoteId, $baleniTx);
+
+        $this->getSession('deliveryNoteId')->remove();
+        $this->getSession('package')->remove();
+        $this->redirect('DeliveryNote:default');
+}
+
+    /**
      * PackageTxt form factory.
      * načtení výrobního čísla čárovým kódem a zpracování
      * přečte čárový kód
@@ -641,12 +673,55 @@ class DeliveryNotePresenter extends BasePresenter {
             if ($form['send']->isSubmittedBy()) {
 
                 //$this->dataModel->updateDocRow($data);
-                $this->closeDeliveryNote($values->BaleniTx);
+                $this->savePackageTxt($values->BaleniTx);
+                //$this->closeDeliveryNote($values->BaleniTx);
                 /*$this->flashMessage('Uzavřít');
                 $this->redirect('DeliveryNote:default');*/
 
             } else {
-                $this->flashMessage('Neuzavřít');
+                $this->redirect('DeliveryNote:default');
+            }
+            /*
+            if ($data->doctype == 0) {
+                $this->redirect('Fakturoid:showInvoices');
+            } elseif ($data->doctype == 1) {
+                $this->redirect('Fakturoid:showExpenses');
+            } else {
+                $this->redirect('Admin:default');
+            }
+                */
+
+
+        };
+
+        return $form;
+    }
+
+    /**
+     * CloseDeliveryNote form factory.
+     * načtení výrobního čísla čárovým kódem a zpracování
+     * přečte čárový kód
+     * 
+     * @return Nette\Application\UI\Form
+     */
+    protected function createComponentCloseDeliveryNoteForm() {
+        $form = $this->closeDeliveryNoteFactory->create();
+
+        /**
+         * vybrat tlačítko:
+         * odeslat - spustit uzavření DL
+         * storno - vrátit zpět 
+         */
+        $form->onSuccess[] = function (Form $form, $values) {
+            if ($form['send']->isSubmittedBy()) {
+
+                //$this->dataModel->updateDocRow($data);
+                $this->closeDeliveryNote();
+                /*$this->flashMessage('Uzavřít');
+                $this->redirect('DeliveryNote:default');*/
+
+            } else {
+                $this->flashMessage('Neuzavřeno');
                 $this->redirect('DeliveryNote:default');
             }
             /*
@@ -676,8 +751,8 @@ class DeliveryNotePresenter extends BasePresenter {
 
         \Tracy\Debugger::barDump($deliveryNote);
 
-        $packageTxtDefaults = array('deliveryNoteId' => $deliveryNote->ID, 'jeReq' => $deliveryNote->DoplnitBaleni);
-        $this["packageTxtForm"]->setDefaults($packageTxtDefaults);
+/*        $packageTxtDefaults = array('deliveryNoteId' => $deliveryNote->ID, 'jeReq' => $deliveryNote->DoplnitBaleni);
+        $this["closeDeliveryNoteForm"]->setDefaults($closeDeliveryNoteDefaults);*/
     }
 
     /**

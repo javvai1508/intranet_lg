@@ -29,14 +29,14 @@ class PackageTxtFormFactory {
         
         $form->addTextArea('BaleniTx', 'Balení')
                 ->setAttribute('class', 'form-control form-control-lg')
-                ->setAttribute('rows', '3')
+                ->setAttribute('rows', '3')/*
                 ->addConditionOn($form['jeReq'], $form::EQUAL, true)
-                    ->setRequired('Vyplňte údaje o balení');
+                    ->setRequired('Vyplňte údaje o balení')*/;
 
-        $form->addSubmit('send', 'Opravdu uzavřít?')
+        $form->addSubmit('send', 'Uložit')
                 ->setAttribute('class', 'btn btn-lg btn-success');
 
-        $form->addSubmit('cancel', 'Neuzavírat')
+        $form->addSubmit('cancel', 'Zpět')
                 ->setAttribute('class', 'btn btn-lg btn-secondary');
 
         return $form;
