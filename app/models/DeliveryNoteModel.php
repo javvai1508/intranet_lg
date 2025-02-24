@@ -956,6 +956,14 @@ class DeliveryNoteModel extends BaseModel {
     }
 
     /**
+     * odeslání mailu po doplnění balení k DL na NH
+     */
+    public function sendMailAfterAddPackageTxtClose($deliveryNoteId) {
+        $this->db->query("EXEC dbo.hpx_agrafa_exp_vlozit_baleni_dl_mail @IDDoklad = %i", $deliveryNoteId);
+        return true;
+    }
+
+    /**
      * nový tisk DL - zrušit příznak tisku
      */
     public function reprintDeliveryNote($deliveryNoteId) {

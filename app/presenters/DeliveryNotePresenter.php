@@ -649,6 +649,8 @@ class DeliveryNotePresenter extends BasePresenter {
 
         $res = $this->dataModel->savePackageTxt($this->getSession('deliveryNoteId')->deliveryNoteId, $baleniTx);
 
+        $this->dataModel->sendMailAfterAddPackageTxtClose($this->getSession('deliveryNoteId')->deliveryNoteId);
+
         $this->getSession('deliveryNoteId')->remove();
         $this->getSession('package')->remove();
         $this->redirect('DeliveryNote:default');
