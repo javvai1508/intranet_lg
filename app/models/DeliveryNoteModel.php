@@ -1020,4 +1020,13 @@ class DeliveryNoteModel extends BaseModel {
         return $nextPack;
     }
 
+    /**
+     * zápis do logu expedice
+     */
+    public function writeExpLog($deliveryNoteId, $action, $itemId, $snId, $partNumber, $barCode, $quantity, $result, $errMsg) {
+        $res = $this->db->query("INSERT INTO eTab_LogExpNH (IDDoklad, Akce, IDPohyb, IDVyrCis, RegCis, VyrCislo, Mnozstvi, Vysledek, Chyba, DatZaznamu)"
+                        . "VALUES (%i, %i, %i, %i, %s, %s, %f, %i, %s, GETDATE())", $deliveryNoteId, $action, $itemId, $snId, $partNumber, $barCode, $quantity, $result, $errMsg);
+
+        return $res;
+    }
 }

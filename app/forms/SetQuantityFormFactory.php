@@ -30,6 +30,7 @@ class SetQuantityFormFactory {
         $form->addHidden('idPohyb');
         $form->addHidden('checkRelation');
         $form->addHidden('idVyrCis');
+        $form->addHidden('vyrCis');
         $form->addText('quantity')
                 ->setAttribute('placeholder', 'Množství')
                 ->setAttribute('class', 'form-control form-control-sm text-center ajax')
