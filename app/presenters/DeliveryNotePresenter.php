@@ -172,12 +172,12 @@ class DeliveryNotePresenter extends BasePresenter {
             if ($partNumberRow->JeSklad != 1) {
                 $errorMsg = "Dílec není nastaven pro použití jako skladová položka";
                 $errorMsgType = "error";
-                $this->dataModel->writeExpLog($deliveryNoteId, 1, null, null, $serialNumber, null, 0, 1, $errorMsg);
+                $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, $serialNumber, null, 0, 1, $errorMsg);
                 //$this->flashMessage('Dílec není nastaven pro použíti jako skladová položka', 'error');
             } elseif ($partNumberRow->MnozstviPriprava >= $partNumberRow->MnozstviPozadavek) {
                 $errorMsg = "Položka je v tomto dodacím listu již připravená";
                 $errorMsgType = "error";
-                $this->dataModel->writeExpLog($deliveryNoteId, 1, null, null, $serialNumber, null, 0, 1, $errorMsg);
+                $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, $serialNumber, null, 0, 1, $errorMsg);
                 //$this->flashMessage('Položka je v tomto dodacím listu již připravená', 'error');
             } else {
                 // serviety - TabKmenZbozi._SVyrabetNaSklad
@@ -456,7 +456,7 @@ class DeliveryNotePresenter extends BasePresenter {
                 $packageNr = $this->dataModel->processDeliveryNoteNoCheckRelation($values->deliveryNoteId, $values->idVyrCis, $values->quantity, $packageOpen, $packageNr);
             }
             $packageSess->number = $packageNr;
-            $this->dataModel->writeExpLog($values->deliveryNoteId, 2, $values->idPohyb, $values->idVyrCis, null, $values->vyrCislo, $values->quantity, 0, '');
+            $this->dataModel->writeExpLog($values->deliveryNoteId, 2, $values->idPohyb, $values->idVyrCis, null, $values->vyrCislo, $values->quantity, 0, 'Doplnění množství');
 
             $this->redirect('DeliveryNote:itemDetail', $values->idPohyb);
         };
@@ -508,7 +508,7 @@ class DeliveryNotePresenter extends BasePresenter {
                 $this->dataModel->writeExpLog($values->deliveryNoteId, 1, null, null, $values->partNumber, null, $values->quantity, 0, 'Zadané množství upraveno');
                 // $this->flashMessage($res["msg"], 'error');
             } else {
-                $this->dataModel->writeExpLog($values->deliveryNoteId, 1, null, null, $values->partNumber, null, $values->quantity, 0, '');
+                $this->dataModel->writeExpLog($values->deliveryNoteId, 1, null, null, $values->partNumber, null, $values->quantity, 0, 'Doplnění množství ze skladu');
                 /*$packageSess->number = $res["packageNr"];
                 if ($res["mnozstviPriprava"] <> 0) {
                     $this->flashMessage('Všechny požadované kusy nejsou k dipozici, zbylo ještě ' . $res["mnozstviPriprava"], 'info');
@@ -654,6 +654,8 @@ class DeliveryNotePresenter extends BasePresenter {
             $f = fopen("e:\\fs\\data_helios\\batch_" . $deliveryNote->SkupinaTisk . "\\" . $this->getSession('deliveryNoteId')->deliveryNoteId . ".txt", "w");
             fwrite($f, $this->getSession('deliveryNoteId')->deliveryNoteId);
         
+            $this->dataModel->writeExpLog($this->getSession('deliveryNoteId')->deliveryNoteId, 1, null, null, null, null, 0, 0, '');
+
             $this->getSession('deliveryNoteId')->remove();
             $this->getSession('package')->remove();
             $this->redirect('DeliveryNote:default');
@@ -669,6 +671,8 @@ class DeliveryNotePresenter extends BasePresenter {
         $res = $this->dataModel->savePackageTxt($this->getSession('deliveryNoteId')->deliveryNoteId, $baleniTx);
 
         $this->dataModel->sendMailAfterAddPackageTxtClose($this->getSession('deliveryNoteId')->deliveryNoteId);
+
+        $this->dataModel->writeExpLog($this->getSession('deliveryNoteId')->deliveryNoteId, 3, null, null, null, null, 0, 0, '');
 
         $this->getSession('deliveryNoteId')->remove();
         $this->getSession('package')->remove();
