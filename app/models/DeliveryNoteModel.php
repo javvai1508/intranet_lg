@@ -381,6 +381,7 @@ class DeliveryNoteModel extends BaseModel {
         // transakce
         $this->db->begin();
         try {
+            $vyrCislo = $this->db->query('SELECT Nazev FROM TabVyrCS WHERE ID = %i', $vyrCisloId)->fetch()->Nazev;
             $itemRows = $this->db->query("SELECT "
                             . "po.ID AS ItemId,"
                             . "CONVERT(INT, poe._exp_mnozstvi_pozad_puvodni) AS MnozstviPozadavek, "
@@ -455,6 +456,7 @@ class DeliveryNoteModel extends BaseModel {
                         }
                         $mnozstviPriprava = $mnozstviPriprava - $mnozstviUloz;
                     }
+                    $this->writeExpLog($deliveryNoteId, 2, $pohybId, $vyrCisloId, null, $vyrCislo, $mnozstviPriprava, $mnozstviUloz, 0, '');
                 }
                 // aktualizace TabPohybyZbozi.Mnozstvi
                 $this->updateDeliveryNoteItemQuantity($itemId);
@@ -1023,9 +1025,9 @@ class DeliveryNoteModel extends BaseModel {
     /**
      * zápis do logu expedice
      */
-    public function writeExpLog($deliveryNoteId, $action, $itemId, $snId, $partNumber, $barCode, $quantity, $result, $errMsg) {
-        $res = $this->db->query("INSERT INTO eTab_LogExpNH (IDDoklad, Akce, IDPohyb, IDVyrCis, RegCis, VyrCislo, Mnozstvi, Vysledek, Chyba, DatZaznamu)"
-                        . "VALUES (%i, %i, %i, %i, %s, %s, %f, %i, %s, GETDATE())", $deliveryNoteId, $action, $itemId, $snId, $partNumber, $barCode, $quantity, $result, $errMsg);
+    public function writeExpLog($deliveryNoteId, $action, $itemId, $snId, $partNumber, $barCode, $quantitySet, $quantity, $result, $errMsg) {
+        $res = $this->db->query("INSERT INTO eTab_LogExpNH (IDDoklad, Akce, IDPohyb, IDVyrCis, RegCis, VyrCislo, MnozstviZad, Mnozstvi, Vysledek, Chyba, DatZaznamu)"
+                        . "VALUES (%i, %i, %i, %i, %s, %s, %f, %f, %i, %s, GETDATE())", $deliveryNoteId, $action, $itemId, $snId, $partNumber, $barCode, $quantitySet, $quantity, $result, $errMsg);
 
         return $res;
     }

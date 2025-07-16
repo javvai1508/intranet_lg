@@ -118,7 +118,7 @@ class DeliveryNotePresenter extends BasePresenter {
                 $packageSess->open = false;
                 $packageSess->number = $this->dataModel->getNextPackage($deliveryNoteId);
 
-                $this->dataModel->writeExpLog($deliveryNoteId, 0, null, null, null, null, 0, 0, '');
+                $this->dataModel->writeExpLog($deliveryNoteId, 0, null, null, null, null, null, null, 0, '');
 
                 $this->redirect('DeliveryNote:default');
             }
@@ -170,14 +170,14 @@ class DeliveryNotePresenter extends BasePresenter {
         if ($partNumberRow) {
             // zpracování skladové položky (_SVyrabetNaSklad) - dotáhnout VČ postupně podle data vložení
             if ($partNumberRow->JeSklad != 1) {
-                $errorMsg = "Dílec není nastaven pro použití jako skladová položka";
+                $errorMsg = "Položka není nastavená pro použití jako skladová";
                 $errorMsgType = "error";
-                $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, $serialNumber, null, 0, 1, $errorMsg);
+                $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, $serialNumber, null, null, null, 1, $errorMsg);
                 //$this->flashMessage('Dílec není nastaven pro použíti jako skladová položka', 'error');
             } elseif ($partNumberRow->MnozstviPriprava >= $partNumberRow->MnozstviPozadavek) {
                 $errorMsg = "Položka je v tomto dodacím listu již připravená";
                 $errorMsgType = "error";
-                $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, $serialNumber, null, 0, 1, $errorMsg);
+                $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, $serialNumber, null, null, null, 1, $errorMsg);
                 //$this->flashMessage('Položka je v tomto dodacím listu již připravená', 'error');
             } else {
                 // serviety - TabKmenZbozi._SVyrabetNaSklad
@@ -203,32 +203,32 @@ class DeliveryNotePresenter extends BasePresenter {
                         $checkSNRowStock = true;
                         $errorMsg = "Výrobní číslo " . $serialNumber . " není skladem a nelze ho odvést z výroby";
                         $errorMsgType = "error";
-                        $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, 0, 1, $errorMsg);
+                        $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, 1, null, 1, $errorMsg);
                         //$this->flashMessage('Výrobní číslo ' . $serialNumber . ' není v evidenci u žádného výrobního příkazu!', 'error');
                     } elseif ($resVyrCis->res == 1) {
                         // dialog odvedení operace - pouze se odvede požadované množství
                         $errorMsg = "Výrobní číslo " . $serialNumber . " není skladem, ale zkusím ho odvést z výroby!";
                         $errorMsgType = "info";
-                        $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, 0, 0, $errorMsg);
+                        $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, 1, null, 0, $errorMsg);
                         $this->redirect('DeliveryNote:setFinalOperationQuantity', array('deliveryNoteId' => $deliveryNoteId, 'serialNumber' => $serialNumber, 'availableQty' => $resVyrCis->MnKOdvodu));
                         //$this->flashMessage('Výrobní číslo " . $serialNumber . " není skladem, ale lze ho odvést!', 'info');
                     } elseif ($resVyrCis->res == 2) {
                         $checkSNRowStock = true;
                         $errorMsg = "Výrobní číslo " . $serialNumber . " není skladem a není dostatek živých kusů ve výrobě!";
                         $errorMsgType = "error";
-                        $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, 0, 1, $errorMsg);
+                        $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, 1, null, 1, $errorMsg);
                         //$this->flashMessage('Výrobní číslo " . $serialNumber . " není skladem a není dostatek živých kusů ve výrobě!', 'error');
                     } elseif ($resVyrCis->res == 3) {
                         $checkSNRowStock = true;
                         $errorMsg = "Výrobní číslo " . $serialNumber . " není skladem a odpovídající výrobní příkaz není ve stavu Zadáno!";
                         $errorMsgType = "error";
-                        $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, 0, 1, $errorMsg);
+                        $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, 1, null, 1, $errorMsg);
                         //$this->flashMessage('Výrobní číslo ' . $serialNumber . ' není skladem a odpovídající výrobní příkaz není ve stavu Zadáno!', 'error');
                     } else {
                         $checkSNRowStock = true;
                         $errorMsg = "Výrobní číslo " . $serialNumber . " není v evidenci u žádného výrobního příkazu (11)!";
                         $errorMsgType = "error";
-                        $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, 0, 1, $errorMsg);
+                        $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, 1, null, 1, $errorMsg);
                         //$this->flashMessage('Výrobní číslo ' . $serialNumber . ' není v evidenci u žádného výrobního příkazu!', 'error');
                     }
                 }
@@ -239,7 +239,7 @@ class DeliveryNotePresenter extends BasePresenter {
                         $checkSNRowStock = true;
                         $errorMsg = "Výrobní číslo " . $serialNumber . " nepatří na aktuální DL nebo už je položka připravená!";
                         $errorMsgType = "danger";
-                        $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, 0, 1, $errorMsg);
+                        $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, 1, null,  1, $errorMsg);
                         //$this->flashMessage('Výrobní číslo ' . $serialNumber . ' nepatří na aktuální DL nebo už je položka připravená!', 'danger');
                     } elseif ($serialNumberRow->MnozstviPoPrijmuAVydeji > 1) {
                         // výrobního čísla je na skladu více než 1 kus - úprava množství podle potřeby - redirect na další formulář
@@ -253,13 +253,13 @@ class DeliveryNotePresenter extends BasePresenter {
                         $errorMsgType = "";
                         $packageNr = $this->dataModel->updateDeliveryNoteItem($deliveryNoteId, $serialNumberRow->IDPohyb, $serialNumberRow->IDVyrCis, $serialNumberRow->MnozstviPoPrijmuAVydeji, $packageOpen, $packageNr);
                         $packageSess->number = $packageNr;
-                        $this->dataModel->writeExpLog($deliveryNoteId, 2, $serialNumberRow->IDPohyb, $serialNumberRow->IDVyrCis, null, $serialNumber, $serialNumberRow->MnozstviPoPrijmuAVydeji, 0, $errorMsg);
+                        //$this->dataModel->writeExpLog($deliveryNoteId, 2, $serialNumberRow->IDPohyb, $serialNumberRow->IDVyrCis, null, $serialNumber, 1, $serialNumberRow->MnozstviPoPrijmuAVydeji, 0, $errorMsg);
                     } else {
                         // sem by se to asi nemělo vůbec dostat
                         $checkSNRowStock = true;
                         $errorMsg = "Proč jsem tady (1)?";
                         $errorMsgType = "info";
-                        $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, 0, 1, $errorMsg);
+                        $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, null, null, 1, $errorMsg);
                         $this->flashMessage('Proč jsem tady?', 'info');
                     }
                 } else {
@@ -267,7 +267,7 @@ class DeliveryNotePresenter extends BasePresenter {
                     if ($errorMsg == "") {
                         $errorMsg = "VČ nepatří na aktuální DL nebo není na skladu nebo nesouhlasí nastavení výroby na sklad";
                         $errorMsgType = "error";
-                        $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, 0, 1, $errorMsg);
+                        //$this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, null, null, 1, $errorMsg);
                     }
                 }
                 if ($checkSNRowStock) {
@@ -287,20 +287,24 @@ class DeliveryNotePresenter extends BasePresenter {
                             $errorMsgType = "";
                             $packageNr = $this->dataModel->processDeliveryNoteNoCheckRelation($deliveryNoteId, $serialNumberRowStock->IDVyrCis, 1, $packageOpen, $packageNr);
                             $packageSess->number = $packageNr;
-                            $this->dataModel->writeExpLog($deliveryNoteId, 2, null, $serialNumberRow->IDVyrCis, null, $serialNumber, 1, 0, $errorMsg);
+                            //$this->dataModel->writeExpLog($deliveryNoteId, 2, null, $serialNumberRow->IDVyrCis, null, $serialNumber, 1, 1, 0, $errorMsg);
                         } else {
                             // sem by se to asi nemělo vůbec dostat
                             $errorMsg = "Výrobní číslo " . $serialNumber . " není na skladu?"; //$errorMsg = "Proč jsem tady (2)?";
                             $errorMsgType = "error";
-                            $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, 0, 1, $errorMsg);
+                            $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, 1, null, 1, $errorMsg);
                             //$this->flashMessage('Proč jsem tady?', 'info');
                         }
                     } else {
                         if ($errorMsg == "") {
                             $errorMsg = "Výrobní číslo " . $serialNumber . " neexistuje(20)?"; 
-                            $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, 0, 1, $errorMsg);
+                            $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, 1, null, 1, $errorMsg);
                             $errorMsgType = "error";
                         }
+                    }
+                } else {
+                    if ($errorMsg != "") {
+                        $this->dataModel->writeExpLog($deliveryNoteId, 2, null, null, null, $serialNumber, null, null, 1, $errorMsg);
                     }
                 }
             }
@@ -456,7 +460,7 @@ class DeliveryNotePresenter extends BasePresenter {
                 $packageNr = $this->dataModel->processDeliveryNoteNoCheckRelation($values->deliveryNoteId, $values->idVyrCis, $values->quantity, $packageOpen, $packageNr);
             }
             $packageSess->number = $packageNr;
-            $this->dataModel->writeExpLog($values->deliveryNoteId, 2, $values->idPohyb, $values->idVyrCis, null, $values->vyrCislo, $values->quantity, 0, 'Doplnění množství');
+            //$this->dataModel->writeExpLog($values->deliveryNoteId, 2, $values->idPohyb, $values->idVyrCis, null, $values->vyrCislo, $values->quantity, $res['mnozstviPriprava'], 0, 'Doplnění množství');
 
             $this->redirect('DeliveryNote:itemDetail', $values->idPohyb);
         };
@@ -505,10 +509,10 @@ class DeliveryNotePresenter extends BasePresenter {
 
             $res = $this->dataModel->processDeliveryNoteFromStock($values->deliveryNoteId, $values->idZboSklad, $values->quantity, $packageOpen, $packageNr);
             if ($res["res"] > 0) {
-                $this->dataModel->writeExpLog($values->deliveryNoteId, 1, null, null, $values->partNumber, null, $values->quantity, 0, 'Zadané množství upraveno');
+                //$this->dataModel->writeExpLog($values->deliveryNoteId, 2, null, null, $values->partNumber, null, $values->quantity, $res['mnozstviPriprava'], 0, 'Zadané množství upraveno');
                 // $this->flashMessage($res["msg"], 'error');
             } else {
-                $this->dataModel->writeExpLog($values->deliveryNoteId, 1, null, null, $values->partNumber, null, $values->quantity, 0, 'Doplnění množství ze skladu');
+                //$this->dataModel->writeExpLog($values->deliveryNoteId, 2, null, null, $values->partNumber, null, $values->quantity, $values->quantity, 0, '');
                 /*$packageSess->number = $res["packageNr"];
                 if ($res["mnozstviPriprava"] <> 0) {
                     $this->flashMessage('Všechny požadované kusy nejsou k dipozici, zbylo ještě ' . $res["mnozstviPriprava"], 'info');
