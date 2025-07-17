@@ -381,7 +381,7 @@ class DeliveryNoteModel extends BaseModel {
         // transakce
         $this->db->begin();
         try {
-            $vyrCislo = $this->db->query('SELECT Nazev FROM TabVyrCS WHERE ID = %i', $vyrCisloId)->fetch()->Nazev;
+            $vyrCislo = $this->db->query('SELECT Nazev1 FROM TabVyrCS WHERE ID = %i', $vyrCisloId)->fetch()->Nazev;
             $itemRows = $this->db->query("SELECT "
                             . "po.ID AS ItemId,"
                             . "CONVERT(INT, poe._exp_mnozstvi_pozad_puvodni) AS MnozstviPozadavek, "
