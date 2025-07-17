@@ -568,8 +568,8 @@ class DeliveryNotePresenter extends BasePresenter {
         // zrušit příznak tisku v DL
         $this->dataModel->reprintDeliveryNote($this->getSession('deliveryNoteId')->deliveryNoteId);
 
-        $f = fopen("c:\\inetpub\\wwwroot\\www\\batch_" . $deliveryNote->SkupinaTisk . "\\" . $this->getSession('deliveryNoteId')->deliveryNoteId . ".txt", "w");
-        fwrite($f, $this->getSession('deliveryNoteId')->deliveryNoteId);
+        /*$f = fopen("c:\\inetpub\\wwwroot\\www\\batch_" . $deliveryNote->SkupinaTisk . "\\" . $this->getSession('deliveryNoteId')->deliveryNoteId . ".txt", "w");
+        fwrite($f, $this->getSession('deliveryNoteId')->deliveryNoteId);*/
         $f = fopen("e:\\fs\\data_helios\\batch_" . $deliveryNote->SkupinaTisk . "\\" . $this->getSession('deliveryNoteId')->deliveryNoteId . ".txt", "w");
         fwrite($f, $this->getSession('deliveryNoteId')->deliveryNoteId);
 
@@ -658,7 +658,7 @@ class DeliveryNotePresenter extends BasePresenter {
             $f = fopen("e:\\fs\\data_helios\\batch_" . $deliveryNote->SkupinaTisk . "\\" . $this->getSession('deliveryNoteId')->deliveryNoteId . ".txt", "w");
             fwrite($f, $this->getSession('deliveryNoteId')->deliveryNoteId);
         
-            $this->dataModel->writeExpLog($this->getSession('deliveryNoteId')->deliveryNoteId, 1, null, null, null, null, 0, 0, '');
+            $this->dataModel->writeExpLog($this->getSession('deliveryNoteId')->deliveryNoteId, 1, null, null, null, null, null, null, 0, '');
 
             $this->getSession('deliveryNoteId')->remove();
             $this->getSession('package')->remove();
