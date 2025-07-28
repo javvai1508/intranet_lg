@@ -697,6 +697,18 @@ class DeliveryNoteModel extends BaseModel {
     }
 
     /**
+     * dohledání VyrCS podle VyrCP
+     * @param type $itemId
+     * @return type
+     */
+    public function getItemSN($itemSNId) {
+        return $this->db->query("SELECT "
+                        . "cp.ID AS IDVyrCis "
+                        . "FROM TabVyrCP cp "
+                        . "WHERE cp.ID = %i", $itemSNId)->fetch();
+    }
+
+    /**
      * 
      * @param type $itemSNId
      */

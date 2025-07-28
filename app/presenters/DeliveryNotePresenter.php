@@ -819,6 +819,8 @@ class DeliveryNotePresenter extends BasePresenter {
     public function handleRemoveDeliveryNoteItem($itemId) {
         $this->dataModel->removeDeliveryNoteItem($itemId);
         //$this->flashMessage('Jsem tu', 'danger');
+        $this->deliveryNoteId = $this->getSession('deliveryNoteId')->deliveryNoteId;
+        $this->dataModel->writeExpLog($this->deliveryNoteId, 4, $itemId, null, null, null, null, null, 0, '');
 
         $this->redirect('DeliveryNote:default');
     }
@@ -915,7 +917,12 @@ class DeliveryNotePresenter extends BasePresenter {
      * @param type $itemSNId
      */
     public function handleRemoveDeliveryNoteItemSN($itemId, $itemSNId) {
+        $this->deliveryNoteId = $this->getSession('deliveryNoteId')->deliveryNoteId;
+        $snId = $this->dataModel->getItemSN($itemSNId);
+
         $this->dataModel->removeDeliveryNoteItemSN($itemSNId);
+
+        $this->dataModel->writeExpLog($this->deliveryNoteId, 5, $itemId, $snId, null, null, null, null, 0, '');
 
         $this->redirect('DeliveryNote:itemDetail', $itemId);
     }
