@@ -4,7 +4,7 @@ namespace App\Forms;
 
 use Nette,
     Nette\Application\UI\Form,
-    Kdyby\Translation\Translator;
+    Contributte\Translation\Translator;
     
 /**
  * formulář pro uzavření DL
@@ -26,10 +26,10 @@ class CloseDeliveryNoteFormFactory {
         $form->setTranslator($this->translator);
 
         $form->addSubmit('send', 'Opravdu uzavřít?')
-                ->setAttribute('class', 'btn btn-lg btn-success');
+                ->setHtmlAttribute('class', 'btn btn-lg btn-success');
 
         $form->addSubmit('cancel', 'Neuzavírat')
-                ->setAttribute('class', 'btn btn-lg btn-secondary');
+                ->setHtmlAttribute('class', 'btn btn-lg btn-secondary');
 
         return $form;
     }

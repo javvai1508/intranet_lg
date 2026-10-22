@@ -4,7 +4,7 @@ namespace App\Forms;
 
 use Nette,
     Nette\Application\UI\Form,
-    Kdyby\Translation\Translator;
+    Contributte\Translation\Translator;
     
 /**
  * formulář pro vyhledávání DL
@@ -26,14 +26,14 @@ class SetDeliveryNoteFormFactory {
         $form->setTranslator($this->translator);
         
         $form->addText('ParovaciZnak', 'Číslo dodacího listu')
-                ->setAttribute('placeholder', 'Číslo dodacího listu')
-                ->setAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('placeholder', 'Číslo dodacího listu')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
                 ->setType('number')
                 ->setRequired('Zadej číslo dodacího listu')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addSubmit('send', 'form.labels.select')
-                ->setAttribute('class', 'btn btn-lg btn-secondary');
+                ->setHtmlAttribute('class', 'btn btn-lg btn-secondary');
 
         return $form;
     }

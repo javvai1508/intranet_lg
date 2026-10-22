@@ -1,0 +1,17 @@
+name: PHP checks
+on: [push, pull_request]
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, dom, gd, intl, pdo_sqlite
+          coverage: none
+      - run: composer validate --strict
+      - run: composer install --no-interaction --prefer-dist --ignore-platform-req=ext-pdo_sqlsrv
+      - run: find app tests -name '*.php' -print0 | xargs -0 -n1 php -l
+      - run: php -d zend.assertions=1 -d assert.exception=1 tests/smoke.php
+      - run: php -d zend.assertions=1 -d assert.exception=1 tests/database.php

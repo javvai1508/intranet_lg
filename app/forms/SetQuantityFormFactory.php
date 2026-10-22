@@ -4,7 +4,7 @@ namespace App\Forms;
 
 use Nette,
     Nette\Application\UI\Form,
-    Kdyby\Translation\Translator;
+    Contributte\Translation\Translator;
     
 /**
  * formulář pro vyhledávání DL
@@ -32,14 +32,14 @@ class SetQuantityFormFactory {
         $form->addHidden('idVyrCis');
         $form->addHidden('vyrCis');
         $form->addText('quantity')
-                ->setAttribute('placeholder', 'Množství')
-                ->setAttribute('class', 'form-control form-control-sm text-center ajax')
+                ->setHtmlAttribute('placeholder', 'Množství')
+                ->setHtmlAttribute('class', 'form-control form-control-sm text-center ajax')
                 ->setType('number')
                 ->setRequired('Zadej množství')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addSubmit('send', 'OK')
-                ->setAttribute('class', 'btn btn-sm btn-secondary');
+                ->setHtmlAttribute('class', 'btn btn-sm btn-secondary');
 
         return $form;
     }

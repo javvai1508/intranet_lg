@@ -15,7 +15,7 @@ use App\Models\MaterialModel,
     App\Forms\StdInventoryBarCodeFormFactory,
     App\Forms\StdInventoryFormFactory,
     Nette\Application\UI\Form,
-    Joseki\Application\Responses\PdfResponse;
+    Contributte\PdfResponse\PdfResponse;
 
 class MaterialPresenter extends BasePresenter
 {
@@ -76,8 +76,7 @@ class MaterialPresenter extends BasePresenter
         parent::__construct();
     }
 
-    public function startup()
-    {
+    public function startup(): void {
         parent::startup();
 
         if (!$this->user->isInRole("skladMat")) {
@@ -370,7 +369,7 @@ class MaterialPresenter extends BasePresenter
             $form->addHidden('itemSNId', $id);
             $form->addText('quantity')
                 ->setType('number')
-                ->setAttribute('class', 'form-control form-control-lg text-center ajax quantity-form-input');
+                ->setHtmlAttribute('class', 'form-control form-control-lg text-center ajax quantity-form-input');
 
             return $form;
         });
@@ -389,11 +388,11 @@ class MaterialPresenter extends BasePresenter
         $template->receipt = $receipt;
         $template->receiptItems = $receiptItems;
 
-        $pdf = new \Joseki\Application\Responses\PdfResponse($template);
+        $pdf = new \Contributte\PdfResponse\PdfResponse($template);
 
         $pdf->pageFormat = "A4";
         $pdf->setPageMargins("10, 10, 10, 10, 1, 1");
-        $pdf->styles = file_get_contents("c:\\inetpub\\wwwroot\\www\\css\\pdf-style.css");
+        $pdf->styles = file_get_contents(__DIR__ . '/../../www/css/pdf-style.css');
         $pdf->getMPDF()->setFooter("Ligum Intranet");
 
         /* server */
@@ -839,13 +838,13 @@ class MaterialPresenter extends BasePresenter
             $ii++;
             $template->dispatch = $dispatchItem;
 
-            $pdf = new \Joseki\Application\Responses\PdfResponse($template);
+            $pdf = new \Contributte\PdfResponse\PdfResponse($template);
 
             // $pdf->pageFormat = array(50, 30);
             $pdf->pageFormat = array(50, 100);
             $pdf->setPageMargins("0, 1, 1, 2, 1, 1");
-            // $pdf->styles = file_get_contents("c:\\inetpub\\wwwroot\\www\\css\\pdf-label-style-3x5.css");
-            $pdf->styles = file_get_contents("c:\\inetpub\\wwwroot\\www\\css\\pdf-label-style.css");
+            // $pdf->styles = file_get_contents(__DIR__ . '/../../www/css/pdf-label-style-3x5.css');
+            $pdf->styles = file_get_contents(__DIR__ . '/../../www/css/pdf-label-style.css');
 
             $numberOfCopies = "1x";
             $printSettings = "noscale, " . $numberOfCopies;

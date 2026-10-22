@@ -4,7 +4,7 @@ namespace App\Forms;
 
 use Nette,
     Nette\Application\UI\Form,
-    Kdyby\Translation\Translator;
+    Contributte\Translation\Translator;
     
 /**
  * formulář pro vyhledávání DL
@@ -27,11 +27,11 @@ class ReceiptReadBarCodeFormFactory {
         
         $form->addHidden('receiptId');
         $form->addText('BarCode')
-                ->setAttribute('placeholder', 'Výrobní číslo')
-                ->setAttribute('class', 'form-control form-control-sm no-enter')
+                ->setHtmlAttribute('placeholder', 'Výrobní číslo')
+                ->setHtmlAttribute('class', 'form-control form-control-sm no-enter')
                 ->setType('text')
                 ->setRequired('Zadej výrobní číslo')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         return $form;
     }

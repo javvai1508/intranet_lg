@@ -6,7 +6,7 @@ use App\Models\CustMaterialModel,
     App\Forms\SelectCustMaterialFormFactory,
     App\Forms\NewCustMaterialFormFactory,
     Nette\Application\UI\Form,
-    Joseki\Application\Responses\PdfResponse;
+    Contributte\PdfResponse\PdfResponse;
 
 class CustomerMaterialPresenter extends BasePresenter {
 
@@ -26,7 +26,7 @@ class CustomerMaterialPresenter extends BasePresenter {
         parent::__construct();
     }
 
-    public function startup() {
+    public function startup(): void {
         parent::startup();
         
         if (!$this->user->isInRole("prijMatZak")) {
@@ -137,12 +137,12 @@ class CustomerMaterialPresenter extends BasePresenter {
         $template->setFile(__DIR__ . "/templates/CustomerMaterial/custMatLabelPDF5x10.latte");
         $template->receiptItem = $receiptItem;
         
-        $pdf = new \Joseki\Application\Responses\PdfResponse($template);
+        $pdf = new \Contributte\PdfResponse\PdfResponse($template);
 
         $pdf->pageFormat = array(50, 100);
         // $pdf->pageFormat = "A4-L";
         $pdf->setPageMargins("2, 1, 1, 2, 1, 1");
-        $pdf->styles = file_get_contents("c:\\inetpub\\wwwroot\\www\\css\\pdf-label-style.css");
+        $pdf->styles = file_get_contents(__DIR__ . '/../../www/css/pdf-label-style.css');
         // $pdf->getMPDF()->setFooter("");
         $numberOfCopies = intval($receiptItem->Mnozstvi) . "x";
         $printSettings = "noscale, " . $numberOfCopies;

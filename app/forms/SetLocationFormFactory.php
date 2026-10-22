@@ -4,7 +4,7 @@ namespace App\Forms;
 
 use Nette,
     Nette\Application\UI\Form,
-    Kdyby\Translation\Translator;
+    Contributte\Translation\Translator;
     
 /**
  * formulář pro vyhledávání DL
@@ -29,11 +29,11 @@ class SetLocationFormFactory {
         $form->addSelect('UmisteniKod', 'Umístění')
                 ->setItems($locationArr)
                 ->setPrompt('---')
-                ->setAttribute('placeholder', 'vyber umístění')
-                ->setAttribute('class', 'form-control form-control-lg');
+                ->setHtmlAttribute('placeholder', 'vyber umístění')
+                ->setHtmlAttribute('class', 'form-control form-control-lg');
 
         $form->addSubmit('send', 'OK')
-                ->setAttribute('class', 'btn btn-lg btn-secondary');
+                ->setHtmlAttribute('class', 'btn btn-lg btn-secondary');
 
         return $form;
     }

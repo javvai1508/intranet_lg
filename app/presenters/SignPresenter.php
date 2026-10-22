@@ -15,7 +15,7 @@ class SignPresenter extends BasePresenter
         parent::__construct();
     }
 
-    public function startup() {
+    public function startup(): void {
         parent::startup();
     }
 
@@ -27,41 +27,6 @@ class SignPresenter extends BasePresenter
 
     protected function createComponentSignInForm() {
         $form = $this->factory->create();
-
-        $form->onError[] = function ($form) {
-            $values = $form->getValues();
-            $this->blockedUsers = $this->blockingModel->getBlockedUser($values->username);
-
-            if (!$this->blockedUsers) {
-                $this->blockingModel->insertBlockedUser($values->username);
-            } else if ($this->blockedUsers['lockedTo'] == NULL) {
-                $this->blockingModel->increaseBlockedUser($this->blockedUsers);
-            } else if ($this->blockedUsers['lockedTo'] != NULL) {
-                $this->blockingModel->increaseBlockedUserTstamp($this->blockedUsers);
-            }
-        };
-
-        $form->onValidate[] = function($form, $values) {
-            /*
-            $this->blockedUsers = $this->blockingModel->getBlockedUser($values->username);
-            
-            if ($this->blockedUsers) {
-                $datetime = new \DibiDateTime();
-
-                if ($this->blockedUsers['count'] >= 5 AND $this->blockedUsers['lockedTo'] == NULL) {
-                    $this->blockingModel->setTstampLockTo($values->username);
-                    $this->flashMessage('You are blocked!');
-                    $form->addError('You are blocked!');
-                    $time = new \DibiDateTime();
-                    $this->redirect('Sign:blocked', $time->setTimestamp(time() + 3600)->__toString());
-                } else if ($this->blockedUsers['count'] >= 5 AND $this->blockedUsers['lockedTo'] >= $datetime) {
-                    $form->addError('You are blocked!');
-                    $this->redirect('Sign:blocked', $this->blockedUsers['lockedTo']->__toString());
-                }
-            }
-             * 
-             */
-        };
 
         $form->onSuccess[] = function ($form, $values) {
                 // $this->userManager->insertUsersLog($this->user->id, $this->user->identity->data['project_id'], 'login');
@@ -77,7 +42,7 @@ class SignPresenter extends BasePresenter
     }
 
     public function renderBlocked($time) {
-        if (new \DibiDateTime() > new\DibiDateTime($time)) {
+        if (new \DateTimeImmutable() > new \DateTimeImmutable($time)) {
             $this->redirect('Sign:in');
         } else {
             $this->template->time = $time;

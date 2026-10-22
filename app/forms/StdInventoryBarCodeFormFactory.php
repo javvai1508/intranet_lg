@@ -4,7 +4,7 @@ namespace App\Forms;
 
 use Nette,
     Nette\Application\UI\Form,
-    Kdyby\Translation\Translator;
+    Contributte\Translation\Translator;
     
 /**
  * formulář pro nový materiál zákazníka
@@ -35,18 +35,18 @@ class StdInventoryBarCodeFormFactory {
          */
         
         $form->addText('VyrCislo', 'Výrobní číslo')
-                ->setAttribute('placeholder', 'Výrobní číslo')
-                ->setAttribute('class', 'form-control form-control-lg')
-                ->setAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('placeholder', 'Výrobní číslo')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
                 // ->setType('number')
                 // ->setRequired('Zadej výrobní číslo')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 /*
         $form->addCheckbox('TisknoutStitek', 'Generovat VČ?')
-                ->setAttribute('class', 'form-control form-control-lg checkbox-large');
+                ->setHtmlAttribute('class', 'form-control form-control-lg checkbox-large');
 */        
         $form->addSubmit('send', 'form.labels.next')
-                ->setAttribute('class', 'btn btn-lg btn-primary');
+                ->setHtmlAttribute('class', 'btn btn-lg btn-primary');
 
         $form->getElementPrototype()->autocomplete = 'off';
         

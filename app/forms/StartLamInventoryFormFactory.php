@@ -4,7 +4,7 @@ namespace App\Forms;
 
 use Nette,
     Nette\Application\UI\Form,
-    Kdyby\Translation\Translator;
+    Contributte\Translation\Translator;
     
 /**
  * formulář pro nový materiál zákazníka
@@ -36,36 +36,36 @@ class StartLamInventoryFormFactory {
          */
         
         $form->addText('VyrCislo', 'Výrobní číslo')
-                ->setAttribute('placeholder', 'Výrobní číslo')
-                ->setAttribute('class', 'form-control form-control-lg')
-                ->setAttribute('class', 'form-control form-control-lg no-enter')
+                ->setHtmlAttribute('placeholder', 'Výrobní číslo')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('class', 'form-control form-control-lg no-enter')
                 ->setType('number')
                 // ->setRequired('Zadej výrobní číslo')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addSelect('TypLaminatu')
-                ->setAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
                 ->setItems($typLaminatu)
                 ->setPrompt('---')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addSelect('Prumer1', 'Průměr')
-                ->setAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
                 ->setItems($prumerZao)
                 ->setPrompt('---')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addSelect('Nazev', 'Název')
-                ->setAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
                 ->setItems($laminat)
                 ->setPrompt('---')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addCheckbox('TisknoutStitek', 'Generovat VČ a tisknout nový štítek?')
-                ->setAttribute('class', 'form-control form-control-lg checkbox-large');
+                ->setHtmlAttribute('class', 'form-control form-control-lg checkbox-large');
         
         $form->addSubmit('send', 'form.labels.save')
-                ->setAttribute('class', 'btn btn-lg btn-primary');
+                ->setHtmlAttribute('class', 'btn btn-lg btn-primary');
 
         $form->getElementPrototype()->autocomplete = 'off';
         

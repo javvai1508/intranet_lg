@@ -1,0 +1,6 @@
+database:
+    dsn: 'sqlsrv:Server=SQLSERVER;Database=HELIOS;Encrypt=yes;TrustServerCertificate=no'
+    user: intranet_lg
+    password: 'DOPLNIT'
+    options:
+        lazy: true
