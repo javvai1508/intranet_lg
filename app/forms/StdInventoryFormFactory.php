@@ -4,7 +4,7 @@ namespace App\Forms;
 
 use Nette,
     Nette\Application\UI\Form,
-    Kdyby\Translation\Translator;
+    Contributte\Translation\Translator;
     
 /**
  * formulář pro nový materiál zákazníka
@@ -40,22 +40,22 @@ class StdInventoryFormFactory {
         $form->addHidden('VyrCislo');
 
         $form->addSelect('IDZboSklad', 'Název')
-                ->setAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
                 ->setItems($material)
                 ->setPrompt('---')
-                ->setAttribute('autocomplete', false)
+                ->setHtmlAttribute('autocomplete', false)
                 ->setDisabled();
 
         $form->addText('Mnozstvi', 'Množství')
-                ->setAttribute('placeholder', 'Množství')
-                ->setAttribute('class', 'form-control form-control-lg')
-                ->setAttribute('class', 'form-control form-control-lg no-enter')
+                ->setHtmlAttribute('placeholder', 'Množství')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('class', 'form-control form-control-lg no-enter')
                 ->setRequired('Zadej množství')
                 ->addRule(Form::FLOAT, 'Zadej číslo')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addSubmit('send', 'form.labels.save')
-                ->setAttribute('class', 'btn btn-lg btn-primary');
+                ->setHtmlAttribute('class', 'btn btn-lg btn-primary');
 
         $form->getElementPrototype()->autocomplete = 'off';
         

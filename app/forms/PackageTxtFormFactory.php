@@ -4,7 +4,7 @@ namespace App\Forms;
 
 use Nette,
     Nette\Application\UI\Form,
-    Kdyby\Translation\Translator;
+    Contributte\Translation\Translator;
     
 /**
  * formulář pro zadání balení při uzavření DL
@@ -28,16 +28,16 @@ class PackageTxtFormFactory {
         $form->addHidden('jeReq');
         
         $form->addTextArea('BaleniTx', 'Balení')
-                ->setAttribute('class', 'form-control form-control-lg')
-                ->setAttribute('rows', '3')/*
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('rows', '3')/*
                 ->addConditionOn($form['jeReq'], $form::EQUAL, true)
                     ->setRequired('Vyplňte údaje o balení')*/;
 
         $form->addSubmit('send', 'Uložit')
-                ->setAttribute('class', 'btn btn-lg btn-success');
+                ->setHtmlAttribute('class', 'btn btn-lg btn-success');
 
         $form->addSubmit('cancel', 'Zpět')
-                ->setAttribute('class', 'btn btn-lg btn-secondary');
+                ->setHtmlAttribute('class', 'btn btn-lg btn-secondary');
 
         return $form;
     }

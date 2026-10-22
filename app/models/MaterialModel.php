@@ -12,7 +12,7 @@ class MaterialModel extends BaseModel {
      * @return type
      */
     public function getAutocompleteFirma($subStr) {
-        return $this->db->query("SELECT Firma + ', ' + Misto + ' (' + CONVERT(NVARCHAR(10), CisloOrg) + ')' AS Firma FROM TabCisOrg WHERE (Firma LIKE %~like~ OR Misto LIKE %~like~) AND ISNULL(Fakturacni, 0) = 1 AND Stav = 0 AND ISNULL(JeDodavatel, 0) = 1 ORDER BY Firma + ', ' + Misto + ' (' + CONVERT(NVARCHAR(10), CisloOrg) + ')'", $subStr, $subStr)->fetchAll();
+        return $this->db->query("SELECT Firma + ', ' + Misto + ' (' + CONVERT(NVARCHAR(10), CisloOrg) + ')' AS Firma FROM TabCisOrg WHERE (Firma LIKE ? OR Misto LIKE ?) AND ISNULL(Fakturacni, 0) = 1 AND Stav = 0 AND ISNULL(JeDodavatel, 0) = 1 ORDER BY Firma + ', ' + Misto + ' (' + CONVERT(NVARCHAR(10), CisloOrg) + ')'", $this->containsPattern($subStr), $this->containsPattern($subStr))->fetchAll();
     }
 
     /**
@@ -23,7 +23,7 @@ class MaterialModel extends BaseModel {
      */
     public function getAutocompleteParovaciZnak($cisloOrg, $subStr) {
         if (!($cisloOrg === "")) {
-            return $this->db->query("SELECT ParovaciZnak AS ParovaciZnak FROM TabDokladyZbozi WHERE ParovaciZnak LIKE %~like~ AND DruhPohybuZbo = 6 AND IDSklad = '10000100' AND CisloOrg = %i ORDER BY ParovaciZnak", $subStr, $cisloOrg)->fetchAll();
+            return $this->db->query("SELECT ParovaciZnak AS ParovaciZnak FROM TabDokladyZbozi WHERE ParovaciZnak LIKE ? AND DruhPohybuZbo = 6 AND IDSklad = '10000100' AND CisloOrg = ? ORDER BY ParovaciZnak", $this->containsPattern($subStr), $cisloOrg)->fetchAll();
         } else {
             return NULL;
         }
@@ -35,7 +35,7 @@ class MaterialModel extends BaseModel {
      * @return type
      */
     public function getBlurParovaciZnak($parovaciZnak) {
-        return $this->db->query("SELECT co.CisloOrg, co.Firma + ', ' + co.Misto + ' (' + CONVERT(NVARCHAR(10), co.CisloOrg) + ')' AS Firma FROM TabDokladyZbozi do, TabCisOrg co WHERE do.ParovaciZnak = %s AND do.CisloOrg = co.CisloOrg", $parovaciZnak)->fetchAll();
+        return $this->db->query("SELECT co.CisloOrg, co.Firma + ', ' + co.Misto + ' (' + CONVERT(NVARCHAR(10), co.CisloOrg) + ')' AS Firma FROM TabDokladyZbozi do, TabCisOrg co WHERE do.ParovaciZnak = ? AND do.CisloOrg = co.CisloOrg", $parovaciZnak)->fetchAll();
     }
 
     /**
@@ -44,7 +44,7 @@ class MaterialModel extends BaseModel {
      * @return type
      */
     public function getFirma($cisloOrg) {
-        return $this->db->query("SELECT Firma + ', ' + Misto + ' (' + CONVERT(NVARCHAR(10), CisloOrg) + ')' AS Firma FROM TabCisOrg WHERE CisloOrg = %i", $cisloOrg)->fetch();
+        return $this->db->query("SELECT Firma + ', ' + Misto + ' (' + CONVERT(NVARCHAR(10), CisloOrg) + ')' AS Firma FROM TabCisOrg WHERE CisloOrg = ?", $cisloOrg)->fetch();
     }
 
     /**
@@ -65,7 +65,7 @@ class MaterialModel extends BaseModel {
                         . "FROM TabDokladyZbozi do "
                         . "LEFT JOIN TabCisOrg co ON co.CisloOrg = do.CisloOrg "
                         . "LEFT JOIN TabCisOrg_EXT coe ON co.ID = coe.ID "
-                        . "WHERE do.ParovaciZnak = %s AND do.DruhPohybuZbo = 6 AND do.IDSklad = '10000100' AND do.CisloOrg = %i", $values->ParovaciZnak, $values->CisloOrg)->fetch();
+                        . "WHERE do.ParovaciZnak = ? AND do.DruhPohybuZbo = 6 AND do.IDSklad = '10000100' AND do.CisloOrg = ?", $values->ParovaciZnak, $values->CisloOrg)->fetch();
     }
 
     /**
@@ -87,7 +87,7 @@ class MaterialModel extends BaseModel {
                         . "FROM TabDokladyZbozi do "
                         . "LEFT JOIN TabCisOrg co ON co.CisloOrg = do.CisloOrg "
                         . "LEFT JOIN TabCisOrg_EXT coe ON co.ID = coe.ID "
-                        . "WHERE do.ID = %i", $orderId)->fetch();
+                        . "WHERE do.ID = ?", $orderId)->fetch();
     }
 
     /**
@@ -105,8 +105,8 @@ class MaterialModel extends BaseModel {
                         . "vo.Mnozstvi - vo.MnozOdebrane AS MnozstviZbyva, "
                         . "pr.Mnozstvi AS MnozstviPrij "
                         . "FROM TabPohybyZbozi vo "
-                        . "LEFT JOIN TabPohybyZbozi pr ON pr.IDOldPolozka = vo.ID AND pr.IDDoklad = %i "
-                        . "WHERE vo.IDDoklad = %i ", $receiptId, $orderId)->fetchAll();
+                        . "LEFT JOIN TabPohybyZbozi pr ON pr.IDOldPolozka = vo.ID AND pr.IDDoklad = ? "
+                        . "WHERE vo.IDDoklad = ? ", $receiptId, $orderId)->fetchAll();
     }
 
     /**
@@ -124,13 +124,13 @@ class MaterialModel extends BaseModel {
                         . "vo.Mnozstvi - vo.MnozOdebrane AS MnozstviZbyva, "
                         . "pr.Mnozstvi AS MnozstviPrij "
                         . "FROM TabPohybyZbozi vo "
-                        . "LEFT JOIN TabPohybyZbozi pr ON pr.IDOldPolozka = vo.ID AND pr.IDDoklad = %i "
-                        . "WHERE vo.ID = %i ", $receiptId, $itemId)->fetch();
+                        . "LEFT JOIN TabPohybyZbozi pr ON pr.IDOldPolozka = vo.ID AND pr.IDDoklad = ? "
+                        . "WHERE vo.ID = ? ", $receiptId, $itemId)->fetch();
     }
 
     /**
      * založení příjemky
-     * 
+     *
      * @param type $cisloOrg
      * @return type
      */
@@ -138,8 +138,8 @@ class MaterialModel extends BaseModel {
 
         return $this->db->query("SET NOCOUNT ON "
                         . "DECLARE @IDDoklad INT "
-                        . "EXEC hpx_agrafa_sklad_zaloz_prij_tablet @CisloOrg = %i, @IDDoklad = @IDDoklad OUTPUT "
-                        . "SELECT @IDDoklad", $cisloOrg)->fetchSingle(); // @VObjID = %i, , $orderId
+                        . "EXEC hpx_agrafa_sklad_zaloz_prij_tablet @CisloOrg = ?, @IDDoklad = @IDDoklad OUTPUT "
+                        . "SELECT @IDDoklad", $cisloOrg)->fetchField(); // @VObjID = ?, , $orderId
     }
 
     /**
@@ -153,7 +153,7 @@ class MaterialModel extends BaseModel {
                         . "do.CisloOrg, "
                         . "do.DatPorizeni, "
                         . "do.ParovaciZnak, "
-                        . "do.Text2, " 
+                        . "do.Text2, "
                         . "do.IDSklad, "
                         . "CASE WHEN doe._exp_dat_uzavreno IS NOT NULL OR do.DatRealizace IS NOT NULL THEN 1 ELSE 0 END AS StavRcpExp, "
                         . "co.Firma AS Firma, "
@@ -174,7 +174,7 @@ class MaterialModel extends BaseModel {
                         . "FROM TabPohybyZbozi po "
                         . "LEFT JOIN TabPohybyZbozi_EXT poe ON po.ID = poe.ID "
                         . "GROUP BY po.IDDoklad) sumy ON do.ID = sumy.IDDoklad "
-                        . "WHERE do.ID = %i", $receiptId)->fetch();
+                        . "WHERE do.ID = ?", $receiptId)->fetch();
     }
 
     /**
@@ -193,7 +193,7 @@ class MaterialModel extends BaseModel {
                         . "LEFT JOIN TabPohybyZbozi_EXT pre ON pre.ID = pr.ID "
                         . "LEFT JOIN TabPohybyZbozi vo ON pr.IDOldPolozka = vo.ID "
                         . "LEFT JOIN TabDokladyZbozi vod ON vod.ID = vo.IDDoklad "
-                        . "WHERE pr.IDDoklad = %i", $receiptId)->fetchAll();
+                        . "WHERE pr.IDDoklad = ?", $receiptId)->fetchAll();
     }
 
     /**
@@ -212,7 +212,7 @@ class MaterialModel extends BaseModel {
                         . "LEFT JOIN TabPohybyZbozi_EXT pre ON pre.ID = pr.ID "
                         . "LEFT JOIN TabPohybyZbozi vo ON pr.IDOldPolozka = vo.ID "
                         . "LEFT JOIN TabDokladyZbozi vod ON vod.ID = vo.IDDoklad "
-                        . "WHERE pr.IDDoklad = %i AND pr.Mnozstvi <> pre._prijem_dle_dl", $receiptId)->fetchAll();
+                        . "WHERE pr.IDDoklad = ? AND pr.Mnozstvi <> pre._prijem_dle_dl", $receiptId)->fetchAll();
     }
 
     /**
@@ -231,7 +231,7 @@ class MaterialModel extends BaseModel {
                         . "LEFT JOIN TabPohybyZbozi_EXT pre ON pre.ID = pr.ID "
                         . "LEFT JOIN TabPohybyZbozi vo ON pr.IDOldPolozka = vo.ID "
                         . "LEFT JOIN TabDokladyZbozi vod ON vod.ID = vo.IDDoklad "
-                        . "WHERE pr.IDDoklad = %i AND pr.ID = %i", $receiptId, $itemId)->fetch();
+                        . "WHERE pr.IDDoklad = ? AND pr.ID = ?", $receiptId, $itemId)->fetch();
     }
 
     /**
@@ -245,7 +245,7 @@ class MaterialModel extends BaseModel {
                         . "vc.Mnozstvi AS Mnozstvi "
                         . "FROM TabVyrCP vc "
                         . "JOIN TabPohybyZbozi pr ON vc.IDPolozkaDokladu = pr.ID "
-                        . "WHERE pr.ID = %i ", $itemId)->fetchAll();
+                        . "WHERE pr.ID = ? ", $itemId)->fetchAll();
     }
 
     /**
@@ -266,7 +266,7 @@ class MaterialModel extends BaseModel {
                         . "ISNULL(doe._skl_prijem_priprava, 0) AS Pripraveno "
                         . "FROM TabDokladyZbozi do "
                         . "LEFT JOIN TabDokladyZbozi_EXT doe ON do.ID = doe.ID "
-                        . "WHERE do.ParovaciZnak = %s AND do.IDSklad = '10000100'", $parovaciZnak)->fetch();
+                        . "WHERE do.ParovaciZnak = ? AND do.IDSklad = '10000100'", $parovaciZnak)->fetch();
         if (!$row) {
             $row = $this->db->query("SELECT do.ID, "
                             . "do.RadaDokladu, "
@@ -281,7 +281,7 @@ class MaterialModel extends BaseModel {
                             . "ISNULL(doe._skl_prijem_priprava, 0) AS Pripraveno "
                             . "FROM TabDokladyZbozi do "
                             . "LEFT JOIN TabDokladyZbozi_EXT doe ON do.ID = doe.ID "
-                            . "WHERE do.NavaznaObjednavka = %s AND do.IDSklad = '10000100'", $parovaciZnak)->fetch();
+                            . "WHERE do.NavaznaObjednavka = ? AND do.IDSklad = '10000100'", $parovaciZnak)->fetch();
         }
         return $row;
     }
@@ -301,7 +301,7 @@ class MaterialModel extends BaseModel {
                         . "JOIN TabVyrCS vcs ON vcp.IDVyrCis = vcs.ID "
                         . "JOIN TabPohybyZbozi po ON vcp.IDPolozkaDOkladu = po.ID "
                         . "LEFT JOIN TabVyrCP_EXT vcpe ON vcp.ID = vcpe.ID "
-                        . "WHERE po.IDDoklad = %i AND vcs.Nazev1 = %s", $values->receiptId, $values->BarCode)->fetch();
+                        . "WHERE po.IDDoklad = ? AND vcs.Nazev1 = ?", $values->receiptId, $values->BarCode)->fetch();
     }
 
     /**
@@ -320,18 +320,18 @@ class MaterialModel extends BaseModel {
                         . "JOIN TabVyrCS vcs ON vcp.IDVyrCis = vcs.ID "
                         . "JOIN TabPohybyZbozi po ON vcp.IDPolozkaDOkladu = po.ID "
                         . "LEFT JOIN TabVyrCP_EXT vcpe ON vcp.ID = vcpe.ID "
-                        . "WHERE po.IDDoklad = %i AND vcs.Nazev1 = %s", $values->receiptId, $values->BarCode)->fetch();
+                        . "WHERE po.IDDoklad = ? AND vcs.Nazev1 = ?", $values->receiptId, $values->BarCode)->fetch();
         $idVyrCP = $item->IDVyrCP;
         $idPohyb = $item->PrijRdId;
         $mnozstvi = $item->DodanoVC;
         if ($idVyrCP) {
             $sqres = $this->db->query("UPDATE TabVyrCP "
-                    . "SET Mnozstvi = Mnozstvi + %f "
-                    . "WHERE TabVyrCP.ID = %i", $mnozstvi, $idVyrCP);
+                    . "SET Mnozstvi = Mnozstvi + ? "
+                    . "WHERE TabVyrCP.ID = ?", $mnozstvi, $idVyrCP);
             if ($sqres && $idPohyb) {
                 $sqres = $this->db->query("UPDATE TabPohybyZbozi "
-                        . "SET Mnozstvi = Mnozstvi + %f "
-                        . "WHERE ID = %i", $mnozstvi, $idPohyb);
+                        . "SET Mnozstvi = Mnozstvi + ? "
+                        . "WHERE ID = ?", $mnozstvi, $idPohyb);
             }
         }
         return $res;
@@ -341,24 +341,24 @@ class MaterialModel extends BaseModel {
      * kontrola, případně založení nového VČ, přidat na řádek dokladu (viz výše) - akce v HeO, mimo OXXO
      */
     public function addSNToReceiptId($receiptId, $sn, $itemId, $qty) {
-        $this->db->query("EXEC dbo.hpx_agrafa_sklad_nove_vc_prijem_tablet @IDPohyb = %i, @BarCode = %s, @Mnozstvi = %f, @IDDoklad = %i", $itemId, $sn, $qty, $receiptId);
+        $this->db->query("EXEC dbo.hpx_agrafa_sklad_nove_vc_prijem_tablet @IDPohyb = ?, @BarCode = ?, @Mnozstvi = ?, @IDDoklad = ?", $itemId, $sn, $qty, $receiptId);
 
         return 1;
     }
 
     /**
-     * 
+     *
      * @param type $itemId
      */
     public function removeReceiptItem($itemId) {
         // transakce
-        $this->db->begin();
+        $this->db->beginTransaction();
         try {
             $res = $this->db->query("UPDATE TabPohybyZbozi "
                     . "SET Mnozstvi = 0 "
-                    . "WHERE ID = %i", $itemId);
+                    . "WHERE ID = ?", $itemId);
             if ($res) {
-                $res = $this->db->query("UPDATE TabVyrCP SET Mnozstvi = 0 WHERE IDPolozkaDokladu = %i", $itemId);
+                $res = $this->db->query("UPDATE TabVyrCP SET Mnozstvi = 0 WHERE IDPolozkaDokladu = ?", $itemId);
             }
             if ($res) {
                 $this->db->commit();
@@ -366,33 +366,33 @@ class MaterialModel extends BaseModel {
                 $this->db->rollback();
             }
             return $res;
-        } catch (DibiException $e) {
+        } catch (\Throwable $e) {
             $this->db->rollback();
             return false;
         }
     }
 
     /**
-     * 
+     *
      * @param type $itemSNId
      */
     public function removeReceiptItemSN($itemSNId) {
-        // transakce 
-        $this->db->begin();
+        // transakce
+        $this->db->beginTransaction();
         try {
             $res = true;
             $itemSNRow = $this->db->query("SELECT "
                             . "IDPolozkaDokladu AS ItemId, "
                             . "Mnozstvi AS MnozstviSN "
                             . "FROM TabVyrCP "
-                            . "WHERE ID = %i", $itemSNId)->fetch();
+                            . "WHERE ID = ?", $itemSNId)->fetch();
 
             if ($itemSNRow) {
-                $res = $this->db->query("UPDATE TabVyrCP SET Mnozstvi = 0 WHERE ID = %i", $itemSNId);
+                $res = $this->db->query("UPDATE TabVyrCP SET Mnozstvi = 0 WHERE ID = ?", $itemSNId);
 
                 $res = $this->db->query("UPDATE TabPohybyZbozi "
-                        . "SET Mnozstvi = Mnozstvi - %f "
-                        . "WHERE ID = %i", $itemSNRow->MnozstviSN, $itemSNRow->ItemId);
+                        . "SET Mnozstvi = Mnozstvi - ? "
+                        . "WHERE ID = ?", $itemSNRow->MnozstviSN, $itemSNRow->ItemId);
             } else {
                 $res = false;
             }
@@ -402,7 +402,7 @@ class MaterialModel extends BaseModel {
                 $this->db->rollback();
             }
             return $res;
-        } catch (DibiException $e) {
+        } catch (\Throwable $e) {
             $this->db->rollback();
             return false;
         }
@@ -419,8 +419,8 @@ class MaterialModel extends BaseModel {
                         . "prij.ID AS PrijRdId, "
                         . "obj.IDZboSklad "
                         . "FROM TabPohybyZbozi obj "
-                        . "LEFT JOIN TabPohybyZbozi prij ON obj.IDZboSklad = prij.IDZboSklad AND prij.IDDoklad = %i AND prij.IDOldPolozka = obj.ID "
-                        . "WHERE obj.ID = %i", $values->receiptId, $values->orderItemId)->fetch();
+                        . "LEFT JOIN TabPohybyZbozi prij ON obj.IDZboSklad = prij.IDZboSklad AND prij.IDDoklad = ? AND prij.IDOldPolozka = obj.ID "
+                        . "WHERE obj.ID = ?", $values->receiptId, $values->orderItemId)->fetch();
     }
 
     /**
@@ -438,26 +438,26 @@ class MaterialModel extends BaseModel {
 
         return $this->db->query("SET NOCOUNT ON "
                         . "DECLARE @IDPrijRd INT "
-                        . "SET @IDPrijRd = %i "
-                        . "EXEC hpx_agrafa_sklad_prijem_radek_tablet @IDPrijemka = %i, @IDPrijRd = @IDPrijRd OUTPUT, @IDObj = %i, @IDObjRd = %i, @IDZboSklad = %i, @BarCode = %s, @Mnozstvi = %f "
-                        . "SELECT @IDPrijRd", $receiptItemId, $receiptId, $orderId, $orderItemId, $idZboSklad, $sn, $mnozstvi)->fetchSingle();
+                        . "SET @IDPrijRd = ? "
+                        . "EXEC hpx_agrafa_sklad_prijem_radek_tablet @IDPrijemka = ?, @IDPrijRd = @IDPrijRd OUTPUT, @IDObj = ?, @IDObjRd = ?, @IDZboSklad = ?, @BarCode = ?, @Mnozstvi = ? "
+                        . "SELECT @IDPrijRd", $receiptItemId, $receiptId, $orderId, $orderItemId, $idZboSklad, $sn, $mnozstvi)->fetchField();
     }
 
     /**
-     * 
+     *
      */
     public function checkReceiptBeforeClosing($receiptId) {
         // kontrola na menší dodávku - porovnání TabPohybyZbozi.Mnozstvi a TabPohybyZbozi_EXT._prijem_dle_dl
         $res = 0;
         $chyby = $this->db->query("SELECT SUM(CASE WHEN po.Mnozstvi < ISNULL(poe._prijem_dle_dl, 0) THEN 1 ELSE 0 END) AS chyby "
                     . "FROM TabPohybyZbozi po "
-                    . "LEFT JOIN TabPohybyZbozi_EXT poe ON po.ID = poe.ID " 
-                    , "WHERE po.IDDoklad = %i", $receiptId)->fetch()->chyby;
+                    . "LEFT JOIN TabPohybyZbozi_EXT poe ON po.ID = poe.ID "
+                    . "WHERE po.IDDoklad = ?", $receiptId)->fetch()->chyby;
         if ($chyby > 0) {
             $res = 1;
         }
         // kontrola TabDokladyZbozi.Text2
-        $pozn = $this->db->query("SELECT Text2 FROM TabDokladyZbozi WHERE ID = %i", $receiptId)->fetch()->Text2;
+        $pozn = $this->db->query("SELECT Text2 FROM TabDokladyZbozi WHERE ID = ?", $receiptId)->fetch()->Text2;
         if ($pozn) {
             $res = $res + 10;
         }
@@ -471,13 +471,13 @@ class MaterialModel extends BaseModel {
      * @return boolean
      */
     public function closeReceipt($receiptId) {
-        $this->db->query("EXEC dbo.hpx_agrafa_sklad_uzavrit_prijem @IDDoklad = %i", $receiptId);
+        $this->db->query("EXEC dbo.hpx_agrafa_sklad_uzavrit_prijem @IDDoklad = ?", $receiptId);
         /*
         $this->db->query("UPDATE TabDokladyZbozi_EXT "
                 . "SET _exp_dat_uzavreno = GETDATE(), "
                 . "_exp_dat_ktisku = GETDATE(), "
                 . "_exp_dat_tisku = NULL "
-                . "WHERE ID = %i", $receiptId);
+                . "WHERE ID = ?", $receiptId);
                 */
         return true;
     }
@@ -488,7 +488,7 @@ class MaterialModel extends BaseModel {
      * @return boolean
      */
     public function closeReceiptQuick($receiptId) {
-        $this->db->query("EXEC dbo.hpx_agrafa_sklad_uzavrit_prijem_ihned @IDDoklad = %i", $receiptId);
+        $this->db->query("EXEC dbo.hpx_agrafa_sklad_uzavrit_prijem_ihned @IDDoklad = ?", $receiptId);
         return true;
     }
 
@@ -498,20 +498,20 @@ class MaterialModel extends BaseModel {
      * @return type
      */
     public function generateSN($itemId) {
-        $stockId = $this->db->query("SELECT IDZboSklad FROM TabPohybyZbozi WHERE ID = %i", $itemId)->fetchSingle();
+        $stockId = $this->db->query("SELECT IDZboSklad FROM TabPohybyZbozi WHERE ID = ?", $itemId)->fetchField();
         $sn = $this->db->query("SELECT "
                         . "RIGHT('000000'+ CONVERT(NVARCHAR(6), km.ID), 6) + RIGHT('0000' +CONVERT(NVARCHAR(4), MAX(CONVERT(INT, SUBSTRING(vcs.Nazev1, 8, 4))) + 1), 4) "
                         . "FROM TabVyrCS vcs  "
                         . "JOIN TabStavSkladu skl ON skl.ID = vcs.IDStavSkladu "
                         . "JOIN TabKmenZbozi km ON km.ID = skl.IDKmenZbozi "
-                        . "WHERE vcs.IDStavSkladu = %i AND SUBSTRING(vcs.Nazev1, 1, 6) = RIGHT('000000'+ CONVERT(NVARCHAR(6), km.ID), 6) "
-                        . "GROUP BY vcs.IDStavSkladu, RIGHT('000000'+ CONVERT(NVARCHAR(6), km.ID), 6)", $stockId)->fetchSingle();
+                        . "WHERE vcs.IDStavSkladu = ? AND SUBSTRING(vcs.Nazev1, 1, 6) = RIGHT('000000'+ CONVERT(NVARCHAR(6), km.ID), 6) "
+                        . "GROUP BY vcs.IDStavSkladu, RIGHT('000000'+ CONVERT(NVARCHAR(6), km.ID), 6)", $stockId)->fetchField();
         if (!$sn) {
             $sn = $this->db->query("SELECT "
                             . "RIGHT('000000'+ CONVERT(NVARCHAR(6), km.ID), 6) + '0001' "
                             . "FROM TabKmenZbozi km "
                             . "JOIN TabStavSkladu skl ON km.ID = skl.IDKmenZbozi "
-                            . "WHERE skl.ID = %i ", $stockId)->fetchSingle();
+                            . "WHERE skl.ID = ? ", $stockId)->fetchField();
         }
         return $sn;
     }
@@ -560,7 +560,7 @@ class MaterialModel extends BaseModel {
                         . "LEFT JOIN TabPohybyZbozi_EXT poe ON po.ID = poe.ID "
                         . "WHERE po.SkupZbo IN ('151', '350') "
                         . "GROUP BY po.IDDoklad) sumy ON do.ID = sumy.IDDoklad "
-                        . "WHERE do.ID = %i", $dispatchId)->fetch();
+                        . "WHERE do.ID = ?", $dispatchId)->fetch();
     }
 
     /**
@@ -569,10 +569,10 @@ class MaterialModel extends BaseModel {
      * @return type
      */
     public function getRequestItems($barCodeOper) {
-        // dohledat, jestli se jedná o sdruženou 
-        $sdruz = $this->db->query("SELECT ID FROM TabSdruzVyrOperace WHERE BarCode = %s", $barCodeOper)->fetch();
+        // dohledat, jestli se jedná o sdruženou
+        $sdruz = $this->db->query("SELECT ID FROM TabSdruzVyrOperace WHERE BarCode = ?", $barCodeOper)->fetch();
         if (isset($sdruz->ID)) {
-            // sdružená operace 
+            // sdružená operace
             $requests = $this->db->query("SELECT "
                             . "pkv.ID AS IDPrKVazby, "
                             . "km.ID AS IDKmen, "
@@ -598,7 +598,7 @@ class MaterialModel extends BaseModel {
                             . "AND dbo.hf_GetPrPDokladForPrKV(pkv.ID) <= opr.Doklad "
                             . "AND pkv.prednastaveno = 1  "
                             . "AND km.SkupZbo IN ('151') "
-                            . "AND op.BarCode = %s", $barCodeOper)->fetchAll();
+                            . "AND op.BarCode = ?", $barCodeOper)->fetchAll();
         } else {
             // jednotlivá operace
             $requests = $this->db->query("SELECT "
@@ -624,7 +624,7 @@ class MaterialModel extends BaseModel {
                             . "AND dbo.hf_GetPrPDokladForPrKV(pkv.ID) > ISNULL((SELECT TOP 1 Doklad FROM TabPrPostup OUTER APPLY (SELECT TOP 1 _TiskKodu, dilec, Operace FROM TabPostup LEFT JOIN TabPostup_EXT ON TabPostup.ID = TabPostup_EXT.ID WHERE dilec = TabPrPostup.dilec AND Operace = TabPrPostup.Operace AND IDPrikaz = pkv.IDPrikaz ORDER BY TabPostup.DatPorizeni DESC) AS tp WHERE IDPrikaz = pkv.IDPrikaz AND Doklad < prp.Doklad AND ISNULL(tp._TiskKodu, 0) = 0 ORDER BY Doklad DESC), 0) "
                             . "AND dbo.hf_GetPrPDokladForPrKV(pkv.ID) <= prp.Doklad "
                             . "AND pkv.prednastaveno = 1 "
-                            . "AND prp.BarCode = %s "
+                            . "AND prp.BarCode = ? "
                             . "AND km.SkupZbo IN ('151', '350')", $barCodeOper)->fetchAll();
         }
         return $requests;
@@ -652,7 +652,7 @@ class MaterialModel extends BaseModel {
                         . "LEFT JOIN TabKmenZbozi km ON km.ID = kv.vyssi "
                         . "LEFT JOIN TabKmenZbozi_EXT kme ON km.ID = kme.ID "
                         . "LEFT JOIN TabPrikaz pr ON pr.ID = kv.IDPrikaz "
-                        . "WHERE vy.IDDoklad = %i", $dispatchId)->fetchAll();
+                        . "WHERE vy.IDDoklad = ?", $dispatchId)->fetchAll();
     }
 
     /**
@@ -671,7 +671,7 @@ class MaterialModel extends BaseModel {
                         . "LEFT JOIN TabPohybyZbozi_EXT pre ON pre.ID = pr.ID "
                         . "LEFT JOIN TabPohybyZbozi vo ON pr.IDOldPolozka = vo.ID "
                         . "LEFT JOIN TabDokladyZbozi vod ON vod.ID = vo.IDDoklad "
-                        . "WHERE pr.ID = %i", $itemId)->fetch();
+                        . "WHERE pr.ID = ?", $itemId)->fetch();
     }
 
     /**
@@ -686,7 +686,7 @@ class MaterialModel extends BaseModel {
                         . "FROM TabVyrCP vc "
                         . "JOIN TabVyrCS vcs ON vcs.ID = vc.IDVyrCis "
                         . "JOIN TabPohybyZbozi pr ON vc.IDPolozkaDokladu = pr.ID "
-                        . "WHERE pr.ID = %i ", $itemId)->fetchAll();
+                        . "WHERE pr.ID = ? ", $itemId)->fetchAll();
     }
 
     /**
@@ -699,7 +699,7 @@ class MaterialModel extends BaseModel {
         if (substr(strtoupper($operBarCode), 0, 1) == 'A') {
             $operBarCode = substr($operBarCode, 0, strpos(strtoupper($operBarCode), 'B') + 1);
         } elseif (substr(strtoupper($operBarCode), 0, 1) == 'B') {
-            // sdružená operace 
+            // sdružená operace
         } else {
             // nesmysl
         }
@@ -709,17 +709,17 @@ class MaterialModel extends BaseModel {
         // pokud je válec - založit pouze hlavičku
         $res["Stav"] = $this->db->query("SET NOCOUNT ON "
                         . "DECLARE @Stav INT "
-                        . "EXEC hpx_agrafa_sklad_ko_vydej_tablet @OperBarCode = %s, @Token = %s, @Stav = @Stav OUTPUT "
-                        . "SELECT @Stav", $operBarCode, $token)->fetchSingle();
+                        . "EXEC hpx_agrafa_sklad_ko_vydej_tablet @OperBarCode = ?, @Token = ?, @Stav = @Stav OUTPUT "
+                        . "SELECT @Stav", $operBarCode, $token)->fetchField();
         if ($res["Stav"] == 0) { // válec
         } elseif ($res["Stav"] == 1 OR $res["Stav"] == 2) { // sleeve
             $this->db->query("SET NOCOUNT ON "
-                    . "EXEC hpx_agrafa_sklad_zaloz_vydej_hl_tablet @OperBarCode = %s, @Token = %s ", $operBarCode, $token);
-            $res["IDDoklad"] = $this->db->query("SELECT ID FROM TabDokladyZbozi_EXT WHERE _skl_token = %s", $token)->fetchSingle();
+                    . "EXEC hpx_agrafa_sklad_zaloz_vydej_hl_tablet @OperBarCode = ?, @Token = ? ", $operBarCode, $token);
+            $res["IDDoklad"] = $this->db->query("SELECT ID FROM TabDokladyZbozi_EXT WHERE _skl_token = ?", $token)->fetchField();
         } elseif ($res["Stav"] == 3) { // otevřená výdejka
-            $res["IDDoklad"] = $this->db->query("SELECT ID FROM TabDokladyZbozi_EXT WHERE _skl_token = %s", $token)->fetchSingle();
+            $res["IDDoklad"] = $this->db->query("SELECT ID FROM TabDokladyZbozi_EXT WHERE _skl_token = ?", $token)->fetchField();
         } else {
-            
+
         }
         return $res;
     }
@@ -732,8 +732,8 @@ class MaterialModel extends BaseModel {
         $token = uniqid();
         // založit pouze hlavičku
         $this->db->query("SET NOCOUNT ON "
-                . "EXEC hpx_agrafa_sklad_zaloz_vydej_ost_hl_tablet @TypVydejky = %s, @Token = %s ", $dispatchType, $token);
-        $res["IDDoklad"] = $this->db->query("SELECT ID FROM TabDokladyZbozi_EXT WHERE _skl_token = %s", $token)->fetchSingle();
+                . "EXEC hpx_agrafa_sklad_zaloz_vydej_ost_hl_tablet @TypVydejky = ?, @Token = ? ", $dispatchType, $token);
+        $res["IDDoklad"] = $this->db->query("SELECT ID FROM TabDokladyZbozi_EXT WHERE _skl_token = ?", $token)->fetchField();
         return $res;
     }
 
@@ -745,7 +745,7 @@ class MaterialModel extends BaseModel {
      */
     public function checkSerialNumber($dispatchId, $serialNumber) {
         $this->db->query("SET NOCOUNT ON "
-                . "EXEC hpx_agrafa_sklad_ko_sn_vydej_tablet @IDDoklad = %i, @VyrCNazev = %s ", $dispatchId, $serialNumber);
+                . "EXEC hpx_agrafa_sklad_ko_sn_vydej_tablet @IDDoklad = ?, @VyrCNazev = ? ", $dispatchId, $serialNumber);
 
         return $this->db->query("SELECT "
                         . "vc.ID AS IDVyrCis, "
@@ -766,8 +766,8 @@ class MaterialModel extends BaseModel {
                         . "FROM TabPohybyZbozi po "
                         . "LEFT JOIN TabPohybyZbozi_EXT poe ON po.ID = poe.ID "
                         . "GROUP BY po.IDDoklad, po.IDZboSklad "
-                        . ") po ON po.IDZboSklad = vc.IDStavSkladu AND po.IDDoklad = %i "
-                        . "WHERE vc.Nazev1 = %s", $dispatchId, $serialNumber)->fetch();
+                        . ") po ON po.IDZboSklad = vc.IDStavSkladu AND po.IDDoklad = ? "
+                        . "WHERE vc.Nazev1 = ?", $dispatchId, $serialNumber)->fetch();
     }
 
     /**
@@ -779,7 +779,7 @@ class MaterialModel extends BaseModel {
     public function updateDispatchItem($dispatchId, $zboSkladId, $vyrCisloId, $mnozstviPriprava) {
         // transakce
         $res = -9;
-        $this->db->begin();
+        $this->db->beginTransaction();
         try {
             $mnozstviPripravaInit = $mnozstviPriprava;
             $itemSums = $this->db->query("SELECT "
@@ -787,7 +787,7 @@ class MaterialModel extends BaseModel {
                             . "SUM(ISNULL(poe._exp_mnozstvi_pozad_puvodni, 0)) AS MnozstviPozadavek "
                             . "FROM TabPohybyZbozi po "
                             . "LEFT JOIN TabPohybyZbozi_EXT poe ON po.ID = poe.ID "
-                            . "WHERE po.IDDoklad = %i AND po.IDZboSklad = %i "
+                            . "WHERE po.IDDoklad = ? AND po.IDZboSklad = ? "
                             . "GROUP BY po.IDZboSklad ", $dispatchId, $zboSkladId)->fetch();
             $itemRows = $this->db->query("SELECT "
                             . "po.ID AS ItemId,"
@@ -801,11 +801,11 @@ class MaterialModel extends BaseModel {
                             . "SUM(Mnozstvi) AS MnozstviPriprava "
                             . "FROM TabVyrCP "
                             . "GROUP BY IDPolozkaDokladu) vcp ON po.ID = vcp.IDPolozkaDokladu "
-                            . "WHERE po.IDDoklad = %i AND po.IDZboSklad = %i "
+                            . "WHERE po.IDDoklad = ? AND po.IDZboSklad = ? "
                             . "ORDER BY po.Poradi", $dispatchId, $zboSkladId)->fetchAll();
             foreach ($itemRows as $itemRow) {
                 if ($mnozstviPriprava > 0) {
-                    // $mnozstviUloz = $itemRow->MnozstviPozadavek - $itemRow->MnozstviPriprava; 
+                    // $mnozstviUloz = $itemRow->MnozstviPozadavek - $itemRow->MnozstviPriprava;
                     $mnozstviUloz = $itemRow->MnozstviPozadavek / $itemSums->MnozstviPozadavek * $mnozstviPripravaInit;
                     if ($mnozstviUloz > $mnozstviPriprava) {
                         $mnozstviUloz = $mnozstviPriprava;
@@ -815,31 +815,30 @@ class MaterialModel extends BaseModel {
                                     . "ID AS ItemId, "
                                     . "Mnozstvi AS MnozstviSN "
                                     . "FROM TabVyrCP "
-                                    . "WHERE IDVyrCis = %i AND IDPolozkaDokladu = %i", $vyrCisloId, $itemId)->fetch();
+                                    . "WHERE IDVyrCis = ? AND IDPolozkaDokladu = ?", $vyrCisloId, $itemId)->fetch();
 
                     if ($itemSNRow) {
                         $this->db->query("UPDATE TabVyrCP "
-                                . "SET Mnozstvi = Mnozstvi + %f "
-                                . "WHERE ID = %i", $mnozstviUloz, $itemSNRow->ItemId);
+                                . "SET Mnozstvi = Mnozstvi + ? "
+                                . "WHERE ID = ?", $mnozstviUloz, $itemSNRow->ItemId);
                         $itemSNId = $itemSNRow->ItemId;
                     } else {
-                        $this->db->query("INSERT INTO TabVyrCP (IDPolozkaDokladu, IDVyrCis, Nazev, Vznik, Mnozstvi) "
-                                . "VALUES (%i, %i, '', 0, %f) ", $itemId, $vyrCisloId, $mnozstviUloz);
-                        $itemSNId = $this->db->query("SELECT SCOPE_IDENTITY()")->fetchSingle();
+                        $itemSNId = $this->db->query("SET NOCOUNT ON; INSERT INTO TabVyrCP (IDPolozkaDokladu, IDVyrCis, Nazev, Vznik, Mnozstvi) "
+                                . "VALUES (?, ?, '', 0, ?); SELECT CAST(SCOPE_IDENTITY() AS int)", $itemId, $vyrCisloId, $mnozstviUloz)->fetchField();
                     }
 
                     // upravit tak, aby se vždy přepočítal stav z výrobních čísel položky
-                    $ext = $this->db->query("SELECT ID FROM TabPohybyZbozi_EXT WHERE ID = %i", $itemId)->fetch();
+                    $ext = $this->db->query("SELECT ID FROM TabPohybyZbozi_EXT WHERE ID = ?", $itemId)->fetch();
                     if ($ext) {
                         $res = $this->db->query("UPDATE TabPohybyZbozi_EXT "
                                 . "SET _exp_mnozstvi_vc = s.Mnozstvi "
                                 . "FROM (SELECT IDPolozkaDokladu, SUM(Mnozstvi) AS Mnozstvi FROM TabVyrCP GROUP BY IDPolozkaDokladu) s "
-                                . "WHERE s.IDPolozkaDokladu = TabPohybyZbozi_EXT.ID AND TabPohybyZbozi_EXT.ID = %i", $itemId);
+                                . "WHERE s.IDPolozkaDokladu = TabPohybyZbozi_EXT.ID AND TabPohybyZbozi_EXT.ID = ?", $itemId);
                         /*
                           $res = $this->db->query("UPDATE TabPohybyZbozi_EXT "
-                          . "SET _exp_mnozstvi_vc = ISNULL(_exp_mnozstvi_vc, 0) + %f "
-                          . "WHERE ID = %i", $mnozstviPriprava, $itemId);
-                         * 
+                          . "SET _exp_mnozstvi_vc = ISNULL(_exp_mnozstvi_vc, 0) + ? "
+                          . "WHERE ID = ?", $mnozstviPriprava, $itemId);
+                         *
                          */
                     } else {
                         $res = $this->db->query("INSERT INTO TabPohybyZbozi_EXT (ID, _exp_mnozstvi_vc) "
@@ -847,12 +846,12 @@ class MaterialModel extends BaseModel {
                                 . "IDPolozkaDokladu, "
                                 . "SUM(Mnozstvi) "
                                 . "FROM TabVyrCP "
-                                . "WHERE IDPolozkaDokladu = %i "
+                                . "WHERE IDPolozkaDokladu = ? "
                                 . "GROUP BY IDPolozkaDokladu", $itemId);
                         /*
                           $res = $this->db->query("INSERT INTO TabPohybyZbozi_EXT (ID, _exp_mnozstvi_vc)"
-                          . "VALUES (%i, %f)", $itemId, $mnozstviPriprava);
-                         * 
+                          . "VALUES (?, ?)", $itemId, $mnozstviPriprava);
+                         *
                          */
                     }
                     $mnozstviPriprava = $mnozstviPriprava - $mnozstviUloz;
@@ -863,7 +862,7 @@ class MaterialModel extends BaseModel {
                 $res = $itemId;
             }
             return $res;
-        } catch (DibiException $e) {
+        } catch (\Throwable $e) {
             $this->db->rollback();
             return false;
         }
@@ -883,7 +882,7 @@ class MaterialModel extends BaseModel {
                         . "CONVERT(INT, vc.Mnozstvi + vc.MnozstviKPrijmu - vc.MnozstviKVydeji) AS MnozstviPoPrijmuAVydeji, "
                         . "vc.IDStavSkladu AS IDZboSklad "
                         . "FROM TabVyrCS vc "
-                        . "WHERE vc.Nazev1 = %s", $serialNumber)->fetch();
+                        . "WHERE vc.Nazev1 = ?", $serialNumber)->fetch();
     }
 
     /**
@@ -895,20 +894,20 @@ class MaterialModel extends BaseModel {
     public function updateDispatchItemOther($dispatchId, $zboSkladId, $vyrCisloId, $mnozstviPriprava) {
         // transakce
         $res = -9;
-        $this->db->begin();
+        $this->db->beginTransaction();
         try {
             // spustit akci na přidání položky do výdejky
             $itemId = $this->db->query("SET NOCOUNT ON "
             . "DECLARE @IDPohyb INT "
-            . "EXEC hpx_agrafa_sklad_vydej_pol_ost_tablet @IDPohyb = @IDPohyb OUTPUT, @IDZboSklad = %i, @IDVyrCS = %i, @Mnozstvi = %f, @IDDoklad = %i "
-            . "SELECT @IDPohyb", $zboSkladId, $vyrCisloId, $mnozstviPriprava, $dispatchId)->fetchSingle();
+            . "EXEC hpx_agrafa_sklad_vydej_pol_ost_tablet @IDPohyb = @IDPohyb OUTPUT, @IDZboSklad = ?, @IDVyrCS = ?, @Mnozstvi = ?, @IDDoklad = ? "
+            . "SELECT @IDPohyb", $zboSkladId, $vyrCisloId, $mnozstviPriprava, $dispatchId)->fetchField();
 
             $this->db->commit();
             if ($res) {
                 $res = $itemId;
             }
             return $res;
-        } catch (DibiException $e) {
+        } catch (\Throwable $e) {
             $this->db->rollback();
             return false;
         }
@@ -918,7 +917,7 @@ class MaterialModel extends BaseModel {
      * data pro generování štítků pro první operaci
      */
     public function getFirstOperationData($dispatchId) {
-        $barCode = $this->db->query("SELECT _skl_barcode_oper FROM TabDokladyZbozi_EXT WHERE ID = %i", $dispatchId)->fetchSingle();
+        $barCode = $this->db->query("SELECT _skl_barcode_oper FROM TabDokladyZbozi_EXT WHERE ID = ?", $dispatchId)->fetchField();
         return $this->db->query("SELECT "
                         . "pr.ID, "
                         . "pr.Prikaz, "
@@ -943,7 +942,7 @@ class MaterialModel extends BaseModel {
                         . "LEFT JOIN TabDokladyZbozi do ON do.ID = po.IDDoklad "
                         . "LEFT JOIN TabCisOrg cop ON cop.CisloOrg = do.CisloOrg "
                         . "JOIN TabVyrCisPrikaz vcp ON vcp.IDPrikaz = pr.ID "
-                        . "WHERE prp.BarCode = %s", $barCode)->fetchAll();
+                        . "WHERE prp.BarCode = ?", $barCode)->fetchAll();
     }
 
     /**
@@ -951,7 +950,7 @@ class MaterialModel extends BaseModel {
     */
     public function dispatchLabelPrintOK($dispatchId) {
         $dispatch = $this->getDispatch($dispatchId);
-        $this->db->query("UPDATE TabPrikaz_EXT SET _prikaz_skl_tisk_vydej_laminat = 1 WHERE ID = %i", $dispatch->IDPrikaz);
+        $this->db->query("UPDATE TabPrikaz_EXT SET _prikaz_skl_tisk_vydej_laminat = 1 WHERE ID = ?", $dispatch->IDPrikaz);
     }
 
     /**
@@ -961,7 +960,7 @@ class MaterialModel extends BaseModel {
      */
     public function closeDispatch($dispatchId) {
 
-        return $this->db->query("EXEC dbo.hpx_agrafa_sklad_uzavrit_vydej @ID = %i", $dispatchId);
+        return $this->db->query("EXEC dbo.hpx_agrafa_sklad_uzavrit_vydej @ID = ?", $dispatchId);
     }
 
     /**
@@ -971,28 +970,28 @@ class MaterialModel extends BaseModel {
      */
     public function addBOM($sn, $dispatchId) {
         $res = 0;
-        $this->db->query("EXEC dbo.hpx_agrafa_sklad_dopln_kvazby_tablet @VyrCNazev = %s, @IDDoklad = %i", $sn, $dispatchId);
+        $this->db->query("EXEC dbo.hpx_agrafa_sklad_dopln_kvazby_tablet @VyrCNazev = ?, @IDDoklad = ?", $sn, $dispatchId);
         return $res;
     }
 
     /**
-     * 
+     *
      * @param type $itemId
      */
     public function removeDispatchItem($itemId, $dispatchType) {
         // transakce
-        $this->db->begin();
+        $this->db->beginTransaction();
         try {
             if ($dispatchType == 'def' || $dispatchType == 'own') {
                 $res = $this->db->query("UPDATE TabPohybyZbozi "
                         . "SET Mnozstvi = 0 "
-                        . "WHERE ID = %i", $itemId);
-            } 
+                        . "WHERE ID = ?", $itemId);
+            }
             $res = $this->db->query("UPDATE TabPohybyZbozi_EXT "
                         . "SET _exp_mnozstvi_vc = 0 "
-                        . "WHERE ID = %i", $itemId);
+                        . "WHERE ID = ?", $itemId);
             if ($res) {
-                $res = $this->db->query("DELETE FROM TabVyrCP WHERE IDPolozkaDokladu = %i", $itemId);
+                $res = $this->db->query("DELETE FROM TabVyrCP WHERE IDPolozkaDokladu = ?", $itemId);
                 // aktualizace TabPohybyZbozi.Mnozstvi
             }
             if ($res) {
@@ -1001,38 +1000,38 @@ class MaterialModel extends BaseModel {
                 $this->db->rollback();
             }
             return $res;
-        } catch (DibiException $e) {
+        } catch (\Throwable $e) {
             $this->db->rollback();
             return false;
         }
     }
 
     /**
-     * 
+     *
      * @param type $itemSNId
      */
     public function removeDispatchItemSN($itemSNId, $dispatchType) {
-        // transakce 
-        $this->db->begin();
+        // transakce
+        $this->db->beginTransaction();
         try {
             $res = true;
             $itemSNRow = $this->db->query("SELECT "
                             . "IDPolozkaDokladu AS ItemId, "
                             . "Mnozstvi AS MnozstviSN "
                             . "FROM TabVyrCP "
-                            . "WHERE ID = %i", $itemSNId)->fetch();
+                            . "WHERE ID = ?", $itemSNId)->fetch();
 
             if ($itemSNRow) {
                 if ($dispatchType == 'def' || $dispatchType == 'own') {
                     $res = $this->db->query("UPDATE TabPohybyZbozi "
-                        . "SET Mnozstvi = Mnozstvi - %f "
-                        . "WHERE ID = %i", $itemSNRow->MnozstviSN, $itemSNRow->ItemId);
+                        . "SET Mnozstvi = Mnozstvi - ? "
+                        . "WHERE ID = ?", $itemSNRow->MnozstviSN, $itemSNRow->ItemId);
                 }
                 $res = $this->db->query("UPDATE TabPohybyZbozi_EXT "
-                        . "SET _exp_mnozstvi_vc = _exp_mnozstvi_vc - %f "
-                        . "WHERE ID = %i", $itemSNRow->MnozstviSN, $itemSNRow->ItemId);
+                        . "SET _exp_mnozstvi_vc = _exp_mnozstvi_vc - ? "
+                        . "WHERE ID = ?", $itemSNRow->MnozstviSN, $itemSNRow->ItemId);
                 if ($res) {
-                    $res = $this->db->query("DELETE FROM TabVyrCP WHERE ID = %i", $itemSNId);
+                    $res = $this->db->query("DELETE FROM TabVyrCP WHERE ID = ?", $itemSNId);
                 }
             } else {
                 $res = false;
@@ -1043,7 +1042,7 @@ class MaterialModel extends BaseModel {
                 $this->db->rollback();
             }
             return $res;
-        } catch (DibiException $e) {
+        } catch (\Throwable $e) {
             $this->db->rollback();
             return false;
         }
@@ -1052,7 +1051,7 @@ class MaterialModel extends BaseModel {
     /* ------------------------------ inventura ------------------------------------------- */
 
     /**
-     * 
+     *
      * @return type
      */
     public function getTypLaminatu() {
@@ -1068,7 +1067,7 @@ class MaterialModel extends BaseModel {
     }
 
     /**
-     * 
+     *
      * @return type
      */
     public function getPrumer1Zao() {
@@ -1082,7 +1081,7 @@ class MaterialModel extends BaseModel {
     }
 
     /**
-     * 
+     *
      * @param type $typLaminatu
      * @return type
      */
@@ -1092,12 +1091,12 @@ class MaterialModel extends BaseModel {
                         . "FROM TabStavSkladu skl "
                         . "JOIN TabKmenZbozi km ON km.ID = skl.IDKmenZbozi "
                         . "LEFT JOIN TabKmenZbozi_EXT kme ON km.ID = kme.ID "
-                        . "WHERE km.SkupZbo = '151' AND kme._Prumer1 IS NOT NULL AND kme._Prumer1 > 0 AND kme._typ_laminatu_id = %i "
+                        . "WHERE km.SkupZbo = '151' AND kme._Prumer1 IS NOT NULL AND kme._Prumer1 > 0 AND kme._typ_laminatu_id = ? "
                         . "ORDER BY FLOOR(kme._Prumer1)", $typLaminatu)->fetchPairs();
     }
 
     /**
-     * 
+     *
      * @return type
      */
     public function getLaminat() {
@@ -1113,7 +1112,7 @@ class MaterialModel extends BaseModel {
     }
 
     /**
-     * 
+     *
      * @param type $typLaminatu
      * @param type $prumerZao
      * @return type
@@ -1128,7 +1127,7 @@ class MaterialModel extends BaseModel {
                             . "JOIN TabKmenZbozi km ON km.ID = skl.IDKmenZbozi "
                             . "LEFT JOIN TabKmenZbozi_EXT kme ON km.ID = kme.ID "
                             . "LEFT JOIN hvw_agrafa_cis_laminat clam ON clam.ID = kme._typ_laminatu_id "
-                            . "WHERE km.SkupZbo = '151' AND kme._typ_laminatu_id = %i AND FLOOR(kme._Prumer1) = %i "
+                            . "WHERE km.SkupZbo = '151' AND kme._typ_laminatu_id = ? AND FLOOR(kme._Prumer1) = ? "
                             . "ORDER BY REPLACE(clam.Typ, ' ', ''), kme._Prumer1, kme._Prumer2, kme._DelkaLaminatu", $typLaminatu, $prumerZao)->fetchPairs();
         } else {
             return $this->db->query("SELECT "
@@ -1138,7 +1137,7 @@ class MaterialModel extends BaseModel {
                             . "JOIN TabKmenZbozi km ON km.ID = skl.IDKmenZbozi "
                             . "LEFT JOIN TabKmenZbozi_EXT kme ON km.ID = kme.ID "
                             . "LEFT JOIN hvw_agrafa_cis_laminat clam ON clam.ID = kme._typ_laminatu_id "
-                            . "WHERE km.SkupZbo = '151' AND kme._typ_laminatu_id = %i "
+                            . "WHERE km.SkupZbo = '151' AND kme._typ_laminatu_id = ? "
                             . "ORDER BY REPLACE(clam.Typ, ' ', ''), kme._Prumer1, kme._Prumer2, kme._DelkaLaminatu", $typLaminatu)->fetchPairs();
         }
     }
@@ -1149,24 +1148,24 @@ class MaterialModel extends BaseModel {
      * @return type
      */
     public function generateSNKmen($idKmenZbozi) {
-        $stockId = $this->db->query("SELECT ID FROM TabStavSkladu WHERE IDKmenZbozi = %i AND IDSklad = '10000100'", $idKmenZbozi)->fetchSingle();
+        $stockId = $this->db->query("SELECT ID FROM TabStavSkladu WHERE IDKmenZbozi = ? AND IDSklad = '10000100'", $idKmenZbozi)->fetchField();
         $sn = $this->db->query("SELECT "
                         . "RIGHT('000000'+ CONVERT(NVARCHAR(6), km.ID), 6) + RIGHT('0000' +CONVERT(NVARCHAR(4), MAX(CONVERT(INT, SUBSTRING(vcs.Nazev1, 8, 4))) + 1), 4) "
                         . "FROM TabVyrCS vcs  "
                         . "JOIN TabStavSkladu skl ON skl.ID = vcs.IDStavSkladu "
                         . "JOIN TabKmenZbozi km ON km.ID = skl.IDKmenZbozi "
-                        . "WHERE vcs.IDStavSkladu = %i AND SUBSTRING(vcs.Nazev1, 1, 6) = RIGHT('000000'+ CONVERT(NVARCHAR(6), km.ID), 6) "
-                        . "GROUP BY vcs.IDStavSkladu, RIGHT('000000'+ CONVERT(NVARCHAR(6), km.ID), 6)", $stockId)->fetchSingle();
+                        . "WHERE vcs.IDStavSkladu = ? AND SUBSTRING(vcs.Nazev1, 1, 6) = RIGHT('000000'+ CONVERT(NVARCHAR(6), km.ID), 6) "
+                        . "GROUP BY vcs.IDStavSkladu, RIGHT('000000'+ CONVERT(NVARCHAR(6), km.ID), 6)", $stockId)->fetchField();
         if (!$sn) {
             $sn = $this->db->query("SELECT "
                             . "RIGHT('000000'+ CONVERT(NVARCHAR(6), km.ID), 6) + '0001' "
                             . "FROM TabKmenZbozi km "
                             . "JOIN TabStavSkladu skl ON km.ID = skl.IDKmenZbozi "
-                            . "WHERE skl.ID = %i ", $stockId)->fetchSingle();
+                            . "WHERE skl.ID = ? ", $stockId)->fetchField();
         }
         return $sn;
     }
-    
+
     /**
      * zpracování inventurní položky - startovací inventura!!!
      * @param type $vyrCislo
@@ -1177,10 +1176,10 @@ class MaterialModel extends BaseModel {
         $res = 0;
         $res = $this->db->query("SET NOCOUNT ON "
                         . "DECLARE @Res INT "
-                        . "EXEC hpx_agrafa_sklad_inv_start_zpracuj @VyrCislo = %s, @IdKmenZbozi = %i, @TisknoutStitek = %b, @Res = @Res OUTPUT "
-                        . "SELECT @Res", $vyrCislo, $idKmenZbozi, $tisknoutStitek)->fetchSingle();
+                        . "EXEC hpx_agrafa_sklad_inv_start_zpracuj @VyrCislo = ?, @IdKmenZbozi = ?, @TisknoutStitek = ?, @Res = @Res OUTPUT "
+                        . "SELECT @Res", $vyrCislo, $idKmenZbozi, $tisknoutStitek)->fetchField();
         return $res;
-        
+
     }
 
     /** -------------------- standardní inventura ------------------------------- */
@@ -1189,17 +1188,17 @@ class MaterialModel extends BaseModel {
     }
 
     public function getInventoryHd($invHdId) {
-        return $this->db->query("SELECT TabInvHead.ID, TabInvHead.Popis + ' (' + CONVERT(NVARCHAR(20), TabInvHead.DatumGenerovani, 104) + ')' AS Nazev, TabInvHead_EXT._inv_skupzbo AS InvSkupZbo FROM TabInvHead LEFT JOIN TabInvHead_EXT ON TabInvHead.ID = TabInvHead_EXT.ID WHERE TabInvHead.ID = %i", $invHdId)->fetch();
+        return $this->db->query("SELECT TabInvHead.ID, TabInvHead.Popis + ' (' + CONVERT(NVARCHAR(20), TabInvHead.DatumGenerovani, 104) + ')' AS Nazev, TabInvHead_EXT._inv_skupzbo AS InvSkupZbo FROM TabInvHead LEFT JOIN TabInvHead_EXT ON TabInvHead.ID = TabInvHead_EXT.ID WHERE TabInvHead.ID = ?", $invHdId)->fetch();
     }
 
     /**
-     * 
+     *
      */
     public function getMaterialInv($skupZbo) {
-        $res = $this->db->query("SELECT skl.ID, km.Nazev1 
-            FROM TabStavSkladu skl 
-            LEFT JOIN TabKmenZbozi km ON km.ID = skl.IDKmenZbozi 
-            WHERE skl.IDSklad = '10000100' AND km.Skupzbo = %s 
+        $res = $this->db->query("SELECT skl.ID, km.Nazev1
+            FROM TabStavSkladu skl
+            LEFT JOIN TabKmenZbozi km ON km.ID = skl.IDKmenZbozi
+            WHERE skl.IDSklad = '10000100' AND km.Skupzbo = ?
             ORDER BY km.Nazev1", $skupZbo)->fetchPairs();
         return $res;
     }
@@ -1211,22 +1210,22 @@ class MaterialModel extends BaseModel {
      * @return int
      */
     public function checkStdInventorySN($vyrCislo) {
-        $res = $this->db->query("SELECT skl.ID 
-            FROM TabVyrCS vcs 
-            JOIN TabStavSkladu skl ON skl.ID = vcs.IDStavSkladu 
-            WHERE vcs.Nazev1 = %s AND skl.IDSklad = '10000100'", $vyrCislo)->fetchSingle();
+        $res = $this->db->query("SELECT skl.ID
+            FROM TabVyrCS vcs
+            JOIN TabStavSkladu skl ON skl.ID = vcs.IDStavSkladu
+            WHERE vcs.Nazev1 = ? AND skl.IDSklad = '10000100'", $vyrCislo)->fetchField();
         if (!$res) {
             $res = -1;
         }
         return $res;
-        
+
     }
 
     public function getInvItemInfo($idZboSklad) {
-        return $this->db->query("SELECT km.SkupZbo AS SkupZbo 
-            FROM TabStavSkladu skl 
-            JOIN TabKmenZbozi km ON km.ID = skl.IDKmenZbozi 
-            WHERE skl.ID = %i", $idZboSklad)->fetchSingle();
+        return $this->db->query("SELECT km.SkupZbo AS SkupZbo
+            FROM TabStavSkladu skl
+            JOIN TabKmenZbozi km ON km.ID = skl.IDKmenZbozi
+            WHERE skl.ID = ?", $idZboSklad)->fetchField();
     }
 
     /**
@@ -1240,18 +1239,18 @@ class MaterialModel extends BaseModel {
                         . "FROM TabVyrCS vcs  "
                         . "JOIN TabStavSkladu skl ON skl.ID = vcs.IDStavSkladu "
                         . "JOIN TabKmenZbozi km ON km.ID = skl.IDKmenZbozi "
-                        . "WHERE vcs.IDStavSkladu = %i AND SUBSTRING(vcs.Nazev1, 1, 6) = RIGHT('000000'+ CONVERT(NVARCHAR(6), km.ID), 6) "
-                        . "GROUP BY vcs.IDStavSkladu, RIGHT('000000'+ CONVERT(NVARCHAR(6), km.ID), 6)", $idZboSklad)->fetchSingle();
+                        . "WHERE vcs.IDStavSkladu = ? AND SUBSTRING(vcs.Nazev1, 1, 6) = RIGHT('000000'+ CONVERT(NVARCHAR(6), km.ID), 6) "
+                        . "GROUP BY vcs.IDStavSkladu, RIGHT('000000'+ CONVERT(NVARCHAR(6), km.ID), 6)", $idZboSklad)->fetchField();
         if (!$sn) {
             $sn = $this->db->query("SELECT "
                             . "RIGHT('000000'+ CONVERT(NVARCHAR(6), km.ID), 6) + '0001' "
                             . "FROM TabKmenZbozi km "
                             . "JOIN TabStavSkladu skl ON km.ID = skl.IDKmenZbozi "
-                            . "WHERE skl.ID = %i ", $idZboSklad)->fetchSingle();
+                            . "WHERE skl.ID = ? ", $idZboSklad)->fetchField();
         }
         return $sn;
     }
-    
+
     /**
      * zpracování inventurní položky - standardní inventura
      * @param type $vyrCislo
@@ -1264,10 +1263,10 @@ class MaterialModel extends BaseModel {
         $res = 0;
         $res = $this->db->query("SET NOCOUNT ON "
                         . "DECLARE @Res INT "
-                        . "EXEC hpx_agrafa_sklad_inv_std_zpracuj @IDInvHd = %i, @VyrCislo = %s, @IdZboSklad = %i, @Mnozstvi = %f, @TisknoutStitek = %b, @Res = @Res OUTPUT "
-                        . "SELECT @Res", $invHdId, $vyrCislo, $idZboSklad, $mnozstvi, $tisknoutStitek)->fetchSingle();
+                        . "EXEC hpx_agrafa_sklad_inv_std_zpracuj @IDInvHd = ?, @VyrCislo = ?, @IdZboSklad = ?, @Mnozstvi = ?, @TisknoutStitek = ?, @Res = @Res OUTPUT "
+                        . "SELECT @Res", $invHdId, $vyrCislo, $idZboSklad, $mnozstvi, $tisknoutStitek)->fetchField();
         return $res;
-        
+
     }
 
 }

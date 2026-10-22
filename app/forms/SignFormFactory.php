@@ -6,7 +6,7 @@ use Nette,
     //Lang,
     Nette\Application\UI\Form,
     Nette\Security\User,
-    Kdyby\Translation\Translator;
+    Contributte\Translation\Translator;
 
 /**
  * formulář pro přihlášení
@@ -33,16 +33,16 @@ class SignFormFactory{
         $form->setTranslator($this->translator);
         $form->addText('username', 'Osobní číslo')
                 ->setRequired('Zadejte osobní číslo')
-                ->setAttribute('class', 'form-control')
+                ->setHtmlAttribute('class', 'form-control')
                 ->setType('number')
-                ->setAttribute('placeholder', 'Osobní číslo');
+                ->setHtmlAttribute('placeholder', 'Osobní číslo');
 
         $form->addCheckbox('remember', 'form.labels.remember');
         
         // $form->addCheckbox('onlySign', 'form.labels.nexttimesignin');
 
         $form->addSubmit('send', 'form.labels.signin')
-                ->setAttribute('class', 'btn btn-lg btn-primary col-xs-12');
+                ->setHtmlAttribute('class', 'btn btn-lg btn-primary col-xs-12');
 
         $form->onSuccess[] = [$this, 'formSucceeded'];
         return $form;

@@ -3,6 +3,7 @@
 namespace App\Presenters;
 
 use Nette;
+use Nette\Forms\Controls;
 
 class BasePresenter extends Nette\Application\UI\Presenter {
 
@@ -13,10 +14,10 @@ class BasePresenter extends Nette\Application\UI\Presenter {
     /** @persistent */
     public $locale;
 
-    /** @inject @var \Kdyby\Translation\Translator */
+    /** @inject @var \Contributte\Translation\Translator */
     public $translator;
 
-    public function startup() {
+    public function startup(): void {
         Parent::startup();
 
         $sessionLang = $this->getSession()->getSection('lang')->lang;
@@ -34,15 +35,14 @@ class BasePresenter extends Nette\Application\UI\Presenter {
           $ipHigh = ip2long('192.168.2.254');
           $ipLow = ip2long('192.168.2.1');
           $ip = ip2long($httpRequest->getRemoteAddress());
-          if (($ip > $ipHigh || $ip < $ipLow) && $this->getPresenter()->name != 'Sign'){
+          if (($ip > $ipHigh || $ip < $ipLow) && $this->getPresenter()->getName() != 'Sign'){
           }
          * 
          */
-        if (!$this->user->isLoggedIn() && $this->getPresenter()->name != 'Sign') {
-            $this->getSession()->destroy();
+        if (!$this->user->isLoggedIn() && $this->getPresenter()->getName() != 'Sign') {
             $this->redirect('Sign:in');
         }
-        // \Tracy\Debugger::barDump($this->getPresenter()->name);
+        // \Tracy\Debugger::barDump($this->getPresenter()->getName());
         
     }
 

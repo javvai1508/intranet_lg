@@ -4,7 +4,7 @@ namespace App\Forms;
 
 use Nette,
     Nette\Application\UI\Form,
-    Kdyby\Translation\Translator;
+    Contributte\Translation\Translator;
     
 /**
  * formulář pro zadání čísla skladové karty
@@ -26,14 +26,14 @@ class SelectCustMaterialFormFactory {
         $form->setTranslator($this->translator);
         
         $form->addText('CisloKarty')
-                ->setAttribute('placeholder', 'Číslo skladové karty')
-                ->setAttribute('class', 'form-control form-control-sm')
+                ->setHtmlAttribute('placeholder', 'Číslo skladové karty')
+                ->setHtmlAttribute('class', 'form-control form-control-sm')
                 ->setType('text')
                 ->setRequired('Zadej číslo skladové karty')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addSubmit('send', 'form.labels.select')
-                ->setAttribute('class', 'btn btn-sm btn-secondary');
+                ->setHtmlAttribute('class', 'btn btn-sm btn-secondary');
 
         return $form;
     }

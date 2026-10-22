@@ -11,7 +11,7 @@ class HomepagePresenter extends BasePresenter {
         parent::__construct();
     }
 
-    public function startup() {
+    public function startup(): void {
         parent::startup();
     }
 

@@ -12,7 +12,7 @@ class CustMaterialModel extends BaseModel {
      * @return type
      */
     public function getAutocompleteFirma($subStr) {
-        return $this->db->query("SELECT Firma + ', ' + Misto + ' (' + CONVERT(NVARCHAR(10), CisloOrg) + ')' AS Firma FROM TabCisOrg WHERE (Firma LIKE %~like~ OR Misto LIKE %~like~) AND ISNULL(Fakturacni, 0) = 1 AND Stav = 0 AND ISNULL(JeOdberatel, 0) = 1 ORDER BY Firma + ', ' + Misto + ' (' + CONVERT(NVARCHAR(10), CisloOrg) + ')'", $subStr, $subStr)->fetchAll();
+        return $this->db->query("SELECT Firma + ', ' + Misto + ' (' + CONVERT(NVARCHAR(10), CisloOrg) + ')' AS Firma FROM TabCisOrg WHERE (Firma LIKE ? OR Misto LIKE ?) AND ISNULL(Fakturacni, 0) = 1 AND Stav = 0 AND ISNULL(JeOdberatel, 0) = 1 ORDER BY Firma + ', ' + Misto + ' (' + CONVERT(NVARCHAR(10), CisloOrg) + ')'", $this->containsPattern($subStr), $this->containsPattern($subStr))->fetchAll();
     }
 
     /**
@@ -28,8 +28,8 @@ class CustMaterialModel extends BaseModel {
         }
         return $this->db->query("SET NOCOUNT ON "
                         . "DECLARE @IDDoklad INT "
-                        . "EXEC hpx_agrafa_matzak_prijem @IDDoklad = @IDDoklad OUTPUT, @PouzitiKarty = 1, @CisloOrg = %i, @Mnozstvi = %i, @Nazev = %s, @VPrumerJadra = %f, @VPrumerPogumu = %f, @VDelkaPogumu = %f, @VDelkaValce = %f, @VCepL = %f, @VCepP = %f, @Poznamka = %s, @TisknoutKusy = %i, @IDZboSklad = NULL "
-                        . "SELECT @IDDoklad", $values->CisloOrg, $values->Mnozstvi, $values->Nazev, $values->VPrumerJadra, $values->VPrumerPogumu, $values->VDelkaPogumu, $values->VDelkaValce, $values->VCepL, $values->VCepP, $values->Poznamka, $values->TisknoutKusy)->fetchSingle();
+                        . "EXEC hpx_agrafa_matzak_prijem @IDDoklad = @IDDoklad OUTPUT, @PouzitiKarty = 1, @CisloOrg = ?, @Mnozstvi = ?, @Nazev = ?, @VPrumerJadra = ?, @VPrumerPogumu = ?, @VDelkaPogumu = ?, @VDelkaValce = ?, @VCepL = ?, @VCepP = ?, @Poznamka = ?, @TisknoutKusy = ?, @IDZboSklad = NULL "
+                        . "SELECT @IDDoklad", $values->CisloOrg, $values->Mnozstvi, $values->Nazev, $values->VPrumerJadra, $values->VPrumerPogumu, $values->VDelkaPogumu, $values->VDelkaValce, $values->VCepL, $values->VCepP, $values->Poznamka, $values->TisknoutKusy)->fetchField();
     }
 
     /**
@@ -38,7 +38,7 @@ class CustMaterialModel extends BaseModel {
      * @return type
      */
     public function getFirma($cisloOrg) {
-        return $this->db->query("SELECT Firma + ', ' + Misto + ' (' + CONVERT(NVARCHAR(10), CisloOrg) + ')' AS Firma FROM TabCisOrg WHERE CisloOrg = %i", $cisloOrg)->fetch();
+        return $this->db->query("SELECT Firma + ', ' + Misto + ' (' + CONVERT(NVARCHAR(10), CisloOrg) + ')' AS Firma FROM TabCisOrg WHERE CisloOrg = ?", $cisloOrg)->fetch();
     }
 
     /**
@@ -61,6 +61,6 @@ class CustMaterialModel extends BaseModel {
                 . "JOIN TabKmenZbozi km ON skl.IDKmenZbozi = km.ID "
                 . "LEFT JOIN TabKmenZbozi_EXT kme ON kme.ID = km.ID "
                 . "LEFT JOIN TabCisOrg co ON do.CisloOrg = co.CisloOrg "
-                . "WHERE po.IDDoklad = %i", $custMatId)->fetch();
+                . "WHERE po.IDDoklad = ?", $custMatId)->fetch();
     }
 }

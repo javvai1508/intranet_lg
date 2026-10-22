@@ -19,7 +19,7 @@ class DeliveryNoteModel extends BaseModel {
                         . "CONVERT(NVARCHAR(20), do.DatPovinnostiFa, 104) AS DatVystaveni, "
                         . "CONVERT(NVARCHAR(20), do.Splatnost, 104) AS DatDodavky "
                         . "FROM TabDokladyZbozi do "
-                        . "WHERE do.ParovaciZnak = %s", $deliveryNoteNr)->fetch();
+                        . "WHERE do.ParovaciZnak = ?", $deliveryNoteNr)->fetch();
 
         // kontrola existence DL (pozor na prázdné pole)
         if ($deliveryNote) {
@@ -87,7 +87,7 @@ class DeliveryNoteModel extends BaseModel {
                         . "LEFT JOIN TabPohybyZbozi po ON vc.IDPolozkaDokladu = po.ID "
                         . "WHERE SUBSTRING(po.SkupZbo, 1, 1) = '5' "
                         . "GROUP BY po.IDDoklad) baliky ON do.ID = baliky.IDDoklad "
-                        . "WHERE do.ID = %i", $deliveryNoteId)->fetch();
+                        . "WHERE do.ID = ?", $deliveryNoteId)->fetch();
     }
 
     /**
@@ -111,7 +111,7 @@ class DeliveryNoteModel extends BaseModel {
                         . "LEFT JOIN TabKmenZbozi_EXT kme ON kme.ID = km.ID "
                         . "LEFT JOIN TabPohybyZbozi pox ON po.IDOldPolozka = pox.ID "
                         . "LEFT JOIN TabDokladyZbozi dox ON pox.IDDoklad = dox.ID "
-                        . "WHERE po.IDDoklad = %i AND SUBSTRING(po.SkupZbo, 1, 1) = '5' "
+                        . "WHERE po.IDDoklad = ? AND SUBSTRING(po.SkupZbo, 1, 1) = '5' "
                         . "ORDER BY dox.RadaDokladu, dox.PoradoveCislo, pox.Poradi", $deliveryNoteId)->fetchAll();
     }
 
@@ -136,7 +136,7 @@ class DeliveryNoteModel extends BaseModel {
                         . "LEFT JOIN TabKmenZbozi_EXT kme ON kme.ID = km.ID "
                         . "LEFT JOIN TabPohybyZbozi pox ON po.IDOldPolozka = pox.ID "
                         . "LEFT JOIN TabDokladyZbozi dox ON pox.IDDoklad = dox.ID "
-                        . "WHERE po.IDDoklad = %i AND ISNULL(poe._exp_mnozstvi_vc, 0) <> poe._exp_mnozstvi_pozad_puvodni", $deliveryNoteId)->fetchAll();
+                        . "WHERE po.IDDoklad = ? AND ISNULL(poe._exp_mnozstvi_vc, 0) <> poe._exp_mnozstvi_pozad_puvodni", $deliveryNoteId)->fetchAll();
     }
 
     public function getResponsibleMail($deliveryNoteId) {
@@ -146,7 +146,7 @@ class DeliveryNoteModel extends BaseModel {
                         . "JOIN TabCisOrg co ON co.CisloOrg = do.CisloOrg "
                         . "JOIN TabCisZam zam ON co.OdpOs = zam.ID "
                         . "JOIN TabKontakty ko ON zam.ID = ko.IDCisZam "
-                        . "WHERE do.ID = %i AND ko.Druh = 6 AND zam.ID IS NOT NULL", $deliveryNoteId)->fetch()->Mail;
+                        . "WHERE do.ID = ? AND ko.Druh = 6 AND zam.ID IS NOT NULL", $deliveryNoteId)->fetch()->Mail;
     }
 
     /**
@@ -163,7 +163,7 @@ class DeliveryNoteModel extends BaseModel {
      * @param type $locationKod
      */
     public function setLocation($values) {
-        return $this->db->query("UPDATE TabDokladyZbozi_EXT SET _exp_umisteni = %s WHERE ID = %i", $values->UmisteniKod, $values->deliveryNoteId);
+        return $this->db->query("UPDATE TabDokladyZbozi_EXT SET _exp_umisteni = ? WHERE ID = ?", $values->UmisteniKod, $values->deliveryNoteId);
     }
 
     /**
@@ -186,7 +186,7 @@ class DeliveryNoteModel extends BaseModel {
                         . "JOIN TabStavSkladu skl ON po.IDZboSklad = skl.ID "
                         . "JOIN TabKmenZbozi km ON skl.IDKmenZbozi = km.ID "
                         . "LEFT JOIN TabKmenZbozi_EXT kme ON km.ID = kme.ID "
-                        . "WHERE po.IDDoklad = %i AND (km.SkupZbo + km.RegCis) = %s "
+                        . "WHERE po.IDDoklad = ? AND (km.SkupZbo + km.RegCis) = ? "
                         . "GROUP BY skl.ID, CASE WHEN SUBSTRING(km.SkupZbo, 1, 2) = '51' THEN ISNULL(CONVERT(NVARCHAR(20), kme._SPrumerJadra), '-') + '/U' + ISNULL(CONVERT(NVARCHAR(20), kme._STiskovyObvod), '-') + '/' + ISNULL(CONVERT(NVARCHAR(20), kme._SPracovniDelkaSleeve), '-') + '/' + ISNULL(CONVERT(NVARCHAR(20), kme._SCelkovaDelkaSleeve), '-') WHEN SUBSTRING(km.SkupZbo, 1, 2) = '55' THEN ISNULL(CONVERT(NVARCHAR(20), kme._VPrumerJadra), '-') + '/' + ISNULL(CONVERT(NVARCHAR(20), kme._VPrumerPogumu), '-') + '/' + ISNULL(CONVERT(NVARCHAR(20), kme._VDelkaPogumu), '-') + '/' + ISNULL(CONVERT(NVARCHAR(20), kme._VPracDelka), '-') + '/' + ISNULL(CONVERT(NVARCHAR(20), kme._VDelkaValce), '-') ELSE '' END ", $deliveryNoteId, $partNumber)->fetch();
     }
 
@@ -220,9 +220,9 @@ class DeliveryNoteModel extends BaseModel {
                         . "LEFT JOIN TabPrikaz pr ON pr.ID = vcpr.IDPrikaz "
                         . "LEFT JOIN TabPrikaz_EXT pre ON pr.ID = pre.ID "
                         . "LEFT JOIN TabPohybyZbozi pozdr ON pozdr.ID = ISNULL(pr.IDRezervace, pre._prikaz_idrezervace_oprava) "
-                        . "LEFT JOIN TabPohybyZbozi podl ON pozdr.ID = podl.IDOldPolozka AND podl.IDDoklad = %i "
+                        . "LEFT JOIN TabPohybyZbozi podl ON pozdr.ID = podl.IDOldPolozka AND podl.IDDoklad = ? "
                         . "LEFT JOIN TabPohybyZbozi_EXT podle ON podle.ID = podl.ID "
-                        . "WHERE vc.Nazev1 = %s", $deliveryNoteId, $serialNumber)->fetch();
+                        . "WHERE vc.Nazev1 = ?", $deliveryNoteId, $serialNumber)->fetch();
     }
 
     /**
@@ -247,13 +247,13 @@ class DeliveryNoteModel extends BaseModel {
                         . "pose._exp_mnozstvi_pozad_puvodni - ISNULL(pose._exp_mnozstvi_vc, 0) AS MnozstviZbyva "
                         . "FROM TabVyrCS vc "
                         . "JOIN TabStavSkladu skl ON skl.ID = vc.IDStavSkladu "
-                        . "LEFT JOIN TabPohybyZbozi pos ON pos.IDZboSklad = skl.ID AND pos.IDDoklad = %i "
+                        . "LEFT JOIN TabPohybyZbozi pos ON pos.IDZboSklad = skl.ID AND pos.IDDoklad = ? "
                         . "LEFT JOIN TabPohybyZbozi_EXT pose ON pose.ID = pos.ID "
                         . "LEFT JOIN TabPohybyZbozi pox ON pos.IDOldPolozka = pox.ID "
                         . "LEFT JOIN TabDokladyZbozi dox ON pox.IDDoklad = dox.ID "
                         . "LEFT JOIN TabKmenZbozi km ON km.ID = skl.IDKmenZbozi "
                         . "LEFT JOIN TabKmenZbozi_EXT kme ON km.ID = kme.ID "
-                        . "WHERE vc.Nazev1 = %s AND pose._exp_mnozstvi_pozad_puvodni - ISNULL(pose._exp_mnozstvi_vc, 0) > 0 AND ISNULL(kme._SNekontrolovatVPEP, 0) = 1 "
+                        . "WHERE vc.Nazev1 = ? AND pose._exp_mnozstvi_pozad_puvodni - ISNULL(pose._exp_mnozstvi_vc, 0) > 0 AND ISNULL(kme._SNekontrolovatVPEP, 0) = 1 "
                         . "ORDER BY dox.RadaDokladu, dox.PoradoveCislo, pox.Poradi", $deliveryNoteId, $serialNumber)->fetch();
     }
 
@@ -277,7 +277,7 @@ class DeliveryNoteModel extends BaseModel {
                         . "LEFT JOIN TabVyrCP vcp ON vcp.IDPolozkaDokladu = po.ID "
                         . "LEFT JOIN TabVyrCS vcs ON vcp.IDVyrCis = vcs.ID "
                         . "LEFT JOIN TabVyrCP_EXT vcpe ON vcp.ID = vcpe.ID "
-                        . "WHERE po.IDDoklad = %i AND vcs.Nazev1 = %s", $deliveryNoteId, $serialNumber)->fetch();
+                        . "WHERE po.IDDoklad = ? AND vcs.Nazev1 = ?", $deliveryNoteId, $serialNumber)->fetch();
     }
 
     /**
@@ -295,7 +295,7 @@ class DeliveryNoteModel extends BaseModel {
                         . "FROM TabVyrCisPrikaz vcpr "
                         . "JOIN TabPrikaz pr ON pr.ID = vcpr.IDPrikaz "
                         . "WHERE (CONVERT(NUMERIC(19,6), CASE WHEN (vcpr.Mnozstvi - vcpr.Odvedeno - vcpr.Zmetky - CONVERT(numeric(19,6), (SELECT ISNULL(SUM(CP.Mnozstvi * PZ.PrepMnozstvi), 0.0) FROM TabPohybyZbozi PZ INNER JOIN TabVyrCP CP ON (CP.IDPolozkaDokladu = PZ.ID) INNER JOIN TabVyrCS CS ON (CS.ID = CP.IDVyrCis AND CS.Nazev1 = vcpr.VyrCislo) WHERE PZ.TypVyrobnihoDokladu=0 AND PZ.IDPrikaz = vcpr.IDPrikaz AND PZ.DruhPohybuZbo=0 AND PZ.SkutecneDatReal IS NULL))) < 0 THEN 0 ELSE (vcpr.Mnozstvi - vcpr.Odvedeno - vcpr.Zmetky - CONVERT(numeric(19,6), (SELECT ISNULL(SUM(CP.Mnozstvi * PZ.PrepMnozstvi), 0.0) FROM TabPohybyZbozi PZ INNER JOIN TabVyrCP CP ON (CP.IDPolozkaDokladu = PZ.ID) INNER JOIN TabVyrCS CS ON (CS.ID = CP.IDVyrCis AND CS.Nazev1 = vcpr.VyrCislo) WHERE PZ.TypVyrobnihoDokladu=0 AND PZ.IDPrikaz = vcpr.IDPrikaz AND PZ.DruhPohybuZbo=0 AND PZ.SkutecneDatReal IS NULL))) END, 0)) > 0 AND  "
-                        . "vcpr.VyrCislo = %s", $serialNumber)->fetch();
+                        . "vcpr.VyrCislo = ?", $serialNumber)->fetch();
     }
 
     /**
@@ -307,8 +307,8 @@ class DeliveryNoteModel extends BaseModel {
     public function finalizeOperation($persNumber, $serialNumber, $quantity) {
         $res = $this->db->query("SET NOCOUNT ON "
                         . "DECLARE @Res NVARCHAR(200) "
-                        . "EXEC hpx_agrafa_exp_odvedeni_vyrobku @OsC = %i, @VyrCislo = %s, @Mnozstvi = %f, @Res = @Res OUTPUT "
-                        . "SELECT @Res", $persNumber, $serialNumber, $quantity)->fetchSingle();
+                        . "EXEC hpx_agrafa_exp_odvedeni_vyrobku @OsC = ?, @VyrCislo = ?, @Mnozstvi = ?, @Res = @Res OUTPUT "
+                        . "SELECT @Res", $persNumber, $serialNumber, $quantity)->fetchField();
         return $res;
     }
 
@@ -334,7 +334,7 @@ class DeliveryNoteModel extends BaseModel {
                 . "JOIN TabPohybyZbozi po ON po.IDZboSklad = vc.IDStavSkladu "
                 . "LEFT JOIN TabPohybyZbozi_EXT ON po.ID = poe.ID "
                 . "JOIN TabDokladyZbozi ep ON ep.ID = po.IDDoklad "
-                . "WHERE vc.Nazev1 = %s", $serialNumber)->fetch();
+                . "WHERE vc.Nazev1 = ?", $serialNumber)->fetch();
 
         /**
          * 
@@ -363,11 +363,11 @@ class DeliveryNoteModel extends BaseModel {
         $this->db->query("UPDATE TabPohybyZbozi "
                 . "SET Mnozstvi = ISNULL(poe._exp_mnozstvi_vc, 0) "
                 . "FROM TabPohybyZbozi_EXT poe "
-                . "WHERE TabPohybyZbozi.ID = poe.ID AND TabPohybyZbozi.ID = %i AND SUBSTRING(TabPohybyZbozi.SkupZbo, 1, 1) = '5'", $itemId);
+                . "WHERE TabPohybyZbozi.ID = poe.ID AND TabPohybyZbozi.ID = ? AND SUBSTRING(TabPohybyZbozi.SkupZbo, 1, 1) = '5'", $itemId);
 
-        $deliveryNoteId = $this->db->query("SELECT IDDoklad FROM TabPohybyZbozi WHERE ID = %i", $itemId)->fetch()->IDDoklad;
-        $this->db->query("EXEC dbo.hp_VypCenOZPolozek_IDDokladu @IDDoklad = %i, @AktualizaceSlev = 0", $deliveryNoteId);
-        $this->db->query("EXEC dbo.hpx_agrafa_exp_aktualizuj_odebrane_mnozstvi_dl_ep @ID = %i", $deliveryNoteId);
+        $deliveryNoteId = $this->db->query("SELECT IDDoklad FROM TabPohybyZbozi WHERE ID = ?", $itemId)->fetch()->IDDoklad;
+        $this->db->query("EXEC dbo.hp_VypCenOZPolozek_IDDokladu @IDDoklad = ?, @AktualizaceSlev = 0", $deliveryNoteId);
+        $this->db->query("EXEC dbo.hpx_agrafa_exp_aktualizuj_odebrane_mnozstvi_dl_ep @ID = ?", $deliveryNoteId);
     }
 
     /**
@@ -379,9 +379,9 @@ class DeliveryNoteModel extends BaseModel {
      */
     public function updateDeliveryNoteItem($deliveryNoteId, $pohybId, $vyrCisloId, $mnozstviPriprava, $packageOpen, $packageNr) {
         // transakce
-        $this->db->begin();
+        $this->db->beginTransaction();
         try {
-            $vyrCislo = $this->db->query('SELECT Nazev1 FROM TabVyrCS WHERE ID = %i', $vyrCisloId)->fetch()->Nazev1;
+            $vyrCislo = $this->db->query('SELECT Nazev1 FROM TabVyrCS WHERE ID = ?', $vyrCisloId)->fetch()->Nazev1;
             $itemRows = $this->db->query("SELECT "
                             . "po.ID AS ItemId,"
                             . "CONVERT(INT, poe._exp_mnozstvi_pozad_puvodni) AS MnozstviPozadavek, "
@@ -389,7 +389,7 @@ class DeliveryNoteModel extends BaseModel {
                             . "FROM TabPohybyZbozi po "
                             . "LEFT JOIN TabPohybyZbozi_EXT poe ON poe.ID = po.ID "
                             . "LEFT JOIN TabVyrCP vcp ON po.ID = vcp.IDPolozkaDokladu "
-                            . "WHERE po.ID = %i "
+                            . "WHERE po.ID = ? "
                             . "ORDER BY po.Poradi", $pohybId)->fetchAll();
             foreach ($itemRows as $itemRow) {
                 $itemId = $itemRow->ItemId;
@@ -403,41 +403,40 @@ class DeliveryNoteModel extends BaseModel {
                                         . "ID AS ItemId, "
                                         . "Mnozstvi AS MnozstviSN "
                                         . "FROM TabVyrCP "
-                                        . "WHERE IDVyrCis = %i AND IDPolozkaDokladu = %i", $vyrCisloId, $itemId)->fetch();
+                                        . "WHERE IDVyrCis = ? AND IDPolozkaDokladu = ?", $vyrCisloId, $itemId)->fetch();
 
                         if ($itemSNRow) {
                             $this->db->query("UPDATE TabVyrCP "
-                                    . "SET Mnozstvi = Mnozstvi + %f "
-                                    . "WHERE ID = %i", $mnozstviUloz, $itemSNRow->ItemId);
+                                    . "SET Mnozstvi = Mnozstvi + ? "
+                                    . "WHERE ID = ?", $mnozstviUloz, $itemSNRow->ItemId);
                             $itemSNId = $itemSNRow->ItemId;
                         } else {
-                            $this->db->query("INSERT INTO TabVyrCP (IDPolozkaDokladu, IDVyrCis, Nazev, Vznik, Mnozstvi) "
-                                    . "VALUES (%i, %i, '', 0, %f) ", $itemId, $vyrCisloId, $mnozstviUloz);
-                            $itemSNId = $this->db->query("SELECT SCOPE_IDENTITY()")->fetchSingle();
+                            $itemSNId = $this->db->query("SET NOCOUNT ON; INSERT INTO TabVyrCP (IDPolozkaDokladu, IDVyrCis, Nazev, Vznik, Mnozstvi) "
+                                    . "VALUES (?, ?, '', 0, ?); SELECT CAST(SCOPE_IDENTITY() AS int)", $itemId, $vyrCisloId, $mnozstviUloz)->fetchField();
                         }
 
                         // balíky
                         if ($packageOpen) {
                             $this->db->query("INSERT INTO agrafa_ligum_dl_polozka_balik (IDVyrCP, CisloBaliku, Mnozstvi) "
-                                    . "VALUES (%i, %i, %f)", $itemSNId, $packageNr, $mnozstviUloz);
+                                    . "VALUES (?, ?, ?)", $itemSNId, $packageNr, $mnozstviUloz);
                         } else {
                             for ($ii = 1; $ii <= $mnozstviUloz; $ii++) {
                                 $this->db->query("INSERT INTO agrafa_ligum_dl_polozka_balik (IDVyrCP, CisloBaliku, Mnozstvi) "
-                                        . "VALUES (%i, %i, %f)", $itemSNId, $packageNr, 1);
+                                        . "VALUES (?, ?, ?)", $itemSNId, $packageNr, 1);
                                 $packageNr = $this->getNextPackage($deliveryNoteId);
                             }
                         }
                         // upravit tak, aby se vždy přepočítal stav z výrobních čísel položky
-                        $ext = $this->db->query("SELECT ID FROM TabPohybyZbozi_EXT WHERE ID = %i", $itemId)->fetch();
+                        $ext = $this->db->query("SELECT ID FROM TabPohybyZbozi_EXT WHERE ID = ?", $itemId)->fetch();
                         if ($ext) {
                             $res = $this->db->query("UPDATE TabPohybyZbozi_EXT "
                                     . "SET _exp_mnozstvi_vc = s.Mnozstvi "
                                     . "FROM (SELECT IDPolozkaDokladu, SUM(Mnozstvi) AS Mnozstvi FROM TabVyrCP GROUP BY IDPolozkaDokladu) s "
-                                    . "WHERE s.IDPolozkaDokladu = TabPohybyZbozi_EXT.ID AND TabPohybyZbozi_EXT.ID = %i", $itemId);
+                                    . "WHERE s.IDPolozkaDokladu = TabPohybyZbozi_EXT.ID AND TabPohybyZbozi_EXT.ID = ?", $itemId);
                             /*
                               $res = $this->db->query("UPDATE TabPohybyZbozi_EXT "
-                              . "SET _exp_mnozstvi_vc = ISNULL(_exp_mnozstvi_vc, 0) + %f "
-                              . "WHERE ID = %i", $mnozstviPriprava, $itemId);
+                              . "SET _exp_mnozstvi_vc = ISNULL(_exp_mnozstvi_vc, 0) + ? "
+                              . "WHERE ID = ?", $mnozstviPriprava, $itemId);
                              * 
                              */
                         } else {
@@ -446,11 +445,11 @@ class DeliveryNoteModel extends BaseModel {
                                     . "IDPolozkaDokladu, "
                                     . "SUM(Mnozstvi) "
                                     . "FROM TabVyrCP "
-                                    . "WHERE IDPolozkaDokladu = %i "
+                                    . "WHERE IDPolozkaDokladu = ? "
                                     . "GROUP BY IDPolozkaDokladu", $itemId);
                             /*
                               $res = $this->db->query("INSERT INTO TabPohybyZbozi_EXT (ID, _exp_mnozstvi_vc)"
-                              . "VALUES (%i, %f)", $itemId, $mnozstviPriprava);
+                              . "VALUES (?, ?)", $itemId, $mnozstviPriprava);
                              * 
                              */
                         }
@@ -466,7 +465,7 @@ class DeliveryNoteModel extends BaseModel {
                 $res = $packageNr;
             }
             return $res;
-        } catch (DibiException $e) {
+        } catch (\Throwable $e) {
             $this->db->rollback();
             return false;
         }
@@ -481,7 +480,7 @@ class DeliveryNoteModel extends BaseModel {
      */
     public function updateDeliveryNoteItemFromStock($deliveryNoteId, $pohybId, $vyrCisloId, $mnozstviPriprava, $packageOpen, $packageNr) {
         // transakce
-        $this->db->begin();
+        $this->db->beginTransaction();
         try {
             $itemRow = $this->db->query("SELECT "
                             . "po.ID AS ItemId,"
@@ -491,38 +490,38 @@ class DeliveryNoteModel extends BaseModel {
                             . "FROM TabPohybyZbozi po "
                             . "LEFT JOIN TabPohybyZbozi_EXT poe ON poe.ID = po.ID "
                             . "JOIN TabVyrCP vcp ON po.ID = vcp.IDPolozkaDokladu "
-                            . "WHERE po.ID = %i AND vcp.IDVyrCis = %i "
+                            . "WHERE po.ID = ? AND vcp.IDVyrCis = ? "
                             . "ORDER BY po.Poradi", $pohybId, $vyrCisloId)->fetch();
 
             if ($itemRow) {
                 \Tracy\Debugger::barDump($itemRow);
                 $itemId = $itemRow["ItemId"];
                 $this->db->query("UPDATE TabVyrCP "
-                        . "SET Mnozstvi = Mnozstvi + %f "
-                        . "WHERE ID = %i", $mnozstviPriprava, $itemRow["IDVyrCP"]);
+                        . "SET Mnozstvi = Mnozstvi + ? "
+                        . "WHERE ID = ?", $mnozstviPriprava, $itemRow["IDVyrCP"]);
 
                 // balíky
                 if ($packageOpen) {
                     $this->db->query("INSERT INTO agrafa_ligum_dl_polozka_balik (IDVyrCP, CisloBaliku, Mnozstvi) "
-                            . "VALUES (%i, %i, %f)", $itemRow["IDVyrCP"], $packageNr, $mnozstviPriprava);
+                            . "VALUES (?, ?, ?)", $itemRow["IDVyrCP"], $packageNr, $mnozstviPriprava);
                 } else {
                     for ($ii = 1; $ii <= $mnozstviPriprava; $ii++) {
                         $this->db->query("INSERT INTO agrafa_ligum_dl_polozka_balik (IDVyrCP, CisloBaliku, Mnozstvi) "
-                                . "VALUES (%i, %i, %f)", $itemRow["IDVyrCP"], $packageNr, $mnozstviPriprava);
+                                . "VALUES (?, ?, ?)", $itemRow["IDVyrCP"], $packageNr, $mnozstviPriprava);
                         $packageNr = $this->getNextPackage($deliveryNoteId);
                     }
                 }
                 // upravit tak, aby se vždy přepočítal stav z výrobních čísel položky
-                $ext = $this->db->query("SELECT ID FROM TabPohybyZbozi_EXT WHERE ID = %i", $itemId)->fetch();
+                $ext = $this->db->query("SELECT ID FROM TabPohybyZbozi_EXT WHERE ID = ?", $itemId)->fetch();
                 if ($ext) {
                     $res = $this->db->query("UPDATE TabPohybyZbozi_EXT "
                             . "SET _exp_mnozstvi_vc = s.Mnozstvi "
                             . "FROM (SELECT IDPolozkaDokladu, SUM(Mnozstvi) AS Mnozstvi FROM TabVyrCP GROUP BY IDPolozkaDokladu) s "
-                            . "WHERE s.IDPolozkaDokladu = TabPohybyZbozi_EXT.ID AND TabPohybyZbozi_EXT.ID = %i", $itemId);
+                            . "WHERE s.IDPolozkaDokladu = TabPohybyZbozi_EXT.ID AND TabPohybyZbozi_EXT.ID = ?", $itemId);
                     /*
                       $res = $this->db->query("UPDATE TabPohybyZbozi_EXT "
-                      . "SET _exp_mnozstvi_vc = ISNULL(_exp_mnozstvi_vc, 0) + %f "
-                      . "WHERE ID = %i", $mnozstviPriprava, $itemId);
+                      . "SET _exp_mnozstvi_vc = ISNULL(_exp_mnozstvi_vc, 0) + ? "
+                      . "WHERE ID = ?", $mnozstviPriprava, $itemId);
                      * 
                      */
                 } else {
@@ -531,11 +530,11 @@ class DeliveryNoteModel extends BaseModel {
                             . "IDPolozkaDokladu, "
                             . "SUM(Mnozstvi) "
                             . "FROM TabVyrCP "
-                            . "WHERE IDPolozkaDokladu = %i "
+                            . "WHERE IDPolozkaDokladu = ? "
                             . "GROUP BY IDPolozkaDokladu", $itemId);
                     /*
                       $res = $this->db->query("INSERT INTO TabPohybyZbozi_EXT (ID, _exp_mnozstvi_vc)"
-                      . "VALUES (%i, %f)", $itemId, $mnozstviPriprava);
+                      . "VALUES (?, ?)", $itemId, $mnozstviPriprava);
                      * 
                      */
                 }
@@ -547,7 +546,7 @@ class DeliveryNoteModel extends BaseModel {
                 $res = $packageNr;
             }
             return $res;
-        } catch (DibiException $e) {
+        } catch (\Throwable $e) {
             $this->db->rollback();
             return false;
         }
@@ -564,9 +563,9 @@ class DeliveryNoteModel extends BaseModel {
         // transakce
         //$res = NULL;
         $resmsg = "";
-        $this->db->begin();
+        $this->db->beginTransaction();
         try {
-            $this->db->query("EXEC dbo.hpx_agrafa_exp_sleeve_dopln_noepvp @IDDoklad = %i, @IDVyrCis = %i, @MnozPridat = %f", $deliveryNoteId, $vyrCisId, $mnozstviPriprava);
+            $this->db->query("EXEC dbo.hpx_agrafa_exp_sleeve_dopln_noepvp @IDDoklad = ?, @IDVyrCis = ?, @MnozPridat = ?", $deliveryNoteId, $vyrCisId, $mnozstviPriprava);
 
             $this->db->commit();
             if (isset($res)) {
@@ -578,7 +577,7 @@ class DeliveryNoteModel extends BaseModel {
                 $resArr["res"] = 1;
             }
             return $resArr;
-        } catch (DibiException $e) {
+        } catch (\Throwable $e) {
             $this->db->rollback();
             return false;
         }
@@ -595,9 +594,9 @@ class DeliveryNoteModel extends BaseModel {
         // transakce
         //$res = NULL;
         $resmsg = "";
-        $this->db->begin();
+        $this->db->beginTransaction();
         try {
-            $this->db->query("EXEC dbo.hpx_agrafa_exp_sleeve_pridej_skl_pol @IDDoklad = %i, @IDZboSklad = %i, @MnozPridat = %f", $deliveryNoteId, $zboSkladId, $mnozstviPriprava);
+            $this->db->query("EXEC dbo.hpx_agrafa_exp_sleeve_pridej_skl_pol @IDDoklad = ?, @IDZboSklad = ?, @MnozPridat = ?", $deliveryNoteId, $zboSkladId, $mnozstviPriprava);
 
             $this->db->commit();
             if (isset($res)) {
@@ -609,7 +608,7 @@ class DeliveryNoteModel extends BaseModel {
                 $resArr["res"] = 1;
             }
             return $resArr;
-        } catch (DibiException $e) {
+        } catch (\Throwable $e) {
             $this->db->rollback();
             return false;
         }
@@ -621,17 +620,17 @@ class DeliveryNoteModel extends BaseModel {
      */
     public function removeDeliveryNoteItem($itemId) {
         // transakce
-        $this->db->begin();
+        $this->db->beginTransaction();
         try {
             $res = $this->db->query("UPDATE TabPohybyZbozi_EXT "
                     . "SET _exp_mnozstvi_vc = 0 "
-                    . "WHERE ID = %i", $itemId);
+                    . "WHERE ID = ?", $itemId);
             if ($res) {
                 $res = $this->db->query("DELETE FROM agrafa_ligum_dl_polozka_balik "
-                        . "WHERE id IN (SELECT bal.id FROM agrafa_ligum_dl_polozka_balik bal JOIN TabVyrCP vc ON vc.ID = bal.IDVyrCP WHERE vc.IDPolozkaDokladu = %i)", $itemId);
+                        . "WHERE id IN (SELECT bal.id FROM agrafa_ligum_dl_polozka_balik bal JOIN TabVyrCP vc ON vc.ID = bal.IDVyrCP WHERE vc.IDPolozkaDokladu = ?)", $itemId);
                 // zkontrolovat a opravit mazání balíků vvx-220407 if ($res) {
-                    $resDel = $this->db->query("DELETE FROM TabVyrCP WHERE IDPolozkaDokladu = %i AND NOT(EXISTS(SELECT ID FROM TabVyrCP_EXT WHERE TabVyrCP_EXT.ID = TabVyrCP.ID AND ISNULL(TabVyrCP_EXT._exp_mnozstvi_vc_pozad, 0) > 0))", $itemId);
-                    $resUpd = $this->db->query("UPDATE TabVyrCP SET Mnozstvi = 0 WHERE IDPolozkaDokladu = %i AND EXISTS(SELECT ID FROM TabVyrCP_EXT WHERE TabVyrCP_EXT.ID = TabVyrCP.ID AND ISNULL(TabVyrCP_EXT._exp_mnozstvi_vc_pozad, 0) > 0)", $itemId);
+                    $resDel = $this->db->query("DELETE FROM TabVyrCP WHERE IDPolozkaDokladu = ? AND NOT(EXISTS(SELECT ID FROM TabVyrCP_EXT WHERE TabVyrCP_EXT.ID = TabVyrCP.ID AND ISNULL(TabVyrCP_EXT._exp_mnozstvi_vc_pozad, 0) > 0))", $itemId);
+                    $resUpd = $this->db->query("UPDATE TabVyrCP SET Mnozstvi = 0 WHERE IDPolozkaDokladu = ? AND EXISTS(SELECT ID FROM TabVyrCP_EXT WHERE TabVyrCP_EXT.ID = TabVyrCP.ID AND ISNULL(TabVyrCP_EXT._exp_mnozstvi_vc_pozad, 0) > 0)", $itemId);
                         if ($resDel || $resUpd) {
                             $res = true;
                         } else {
@@ -647,7 +646,7 @@ class DeliveryNoteModel extends BaseModel {
                 $this->db->rollback();
             }
             return $res;
-        } catch (DibiException $e) {
+        } catch (\Throwable $e) {
             $this->db->rollback();
             return false;
         }
@@ -674,7 +673,7 @@ class DeliveryNoteModel extends BaseModel {
                         . "LEFT JOIN TabKmenZbozi_EXT kme ON kme.ID = km.ID "
                         . "LEFT JOIN TabPohybyZbozi pox ON po.IDOldPolozka = pox.ID "
                         . "LEFT JOIN TabDokladyZbozi dox ON pox.IDDoklad = dox.ID "
-                        . "WHERE po.ID = %i", $itemId)->fetch();
+                        . "WHERE po.ID = ?", $itemId)->fetch();
     }
 
     /**
@@ -693,7 +692,7 @@ class DeliveryNoteModel extends BaseModel {
                         . "CONVERT(INT, ISNULL(cp.Mnozstvi, 0)) AS MnozstviCP "
                         . "FROM TabVyrCP cp "
                         . "LEFT JOIN TabVyrCS vc ON cp.IDVyrCis = vc.ID "
-                        . "WHERE cp.IDPolozkaDokladu = %i", $itemId)->fetchAll();
+                        . "WHERE cp.IDPolozkaDokladu = ?", $itemId)->fetchAll();
     }
 
     /**
@@ -705,7 +704,7 @@ class DeliveryNoteModel extends BaseModel {
         return $this->db->query("SELECT "
                         . "cp.ID AS IDVyrCis "
                         . "FROM TabVyrCP cp "
-                        . "WHERE cp.ID = %i", $itemSNId)->fetch();
+                        . "WHERE cp.ID = ?", $itemSNId)->fetch();
     }
 
     /**
@@ -714,25 +713,25 @@ class DeliveryNoteModel extends BaseModel {
      */
     public function removeDeliveryNoteItemSN($itemSNId) {
         // transakce 
-        $this->db->begin();
+        $this->db->beginTransaction();
         try {
             $res = true;
             $itemSNRow = $this->db->query("SELECT "
                             . "IDPolozkaDokladu AS ItemId, "
                             . "Mnozstvi AS MnozstviSN "
                             . "FROM TabVyrCP "
-                            . "WHERE ID = %i", $itemSNId)->fetch();
+                            . "WHERE ID = ?", $itemSNId)->fetch();
 
             if ($itemSNRow) {
                 $res = $this->db->query("UPDATE TabPohybyZbozi_EXT "
-                        . "SET _exp_mnozstvi_vc = _exp_mnozstvi_vc - %f "
-                        . "WHERE ID = %i", $itemSNRow->MnozstviSN, $itemSNRow->ItemId);
+                        . "SET _exp_mnozstvi_vc = _exp_mnozstvi_vc - ? "
+                        . "WHERE ID = ?", $itemSNRow->MnozstviSN, $itemSNRow->ItemId);
 
                 if ($res) {
-                    $res = $this->db->query("DELETE FROM agrafa_ligum_dl_polozka_balik WHERE IDVyrCP = %i", $itemSNId);
+                    $res = $this->db->query("DELETE FROM agrafa_ligum_dl_polozka_balik WHERE IDVyrCP = ?", $itemSNId);
                     // zkontrolovat a opravit mazání balíků vvx-220407 if ($res) {
-                        $resDel = $this->db->query("DELETE FROM TabVyrCP WHERE ID = %i AND NOT(EXISTS(SELECT ID FROM TabVyrCP_EXT WHERE TabVyrCP_EXT.ID = TabVyrCP.ID AND ISNULL(TabVyrCP_EXT._exp_mnozstvi_vc_pozad, 0) > 0))", $itemSNId);
-                        $resUpd = $this->db->query("UPDATE TabVyrCP SET Mnozstvi = 0 WHERE ID = %i AND EXISTS(SELECT ID FROM TabVyrCP_EXT WHERE TabVyrCP_EXT.ID = TabVyrCP.ID AND ISNULL(TabVyrCP_EXT._exp_mnozstvi_vc_pozad, 0) > 0)", $itemSNId);
+                        $resDel = $this->db->query("DELETE FROM TabVyrCP WHERE ID = ? AND NOT(EXISTS(SELECT ID FROM TabVyrCP_EXT WHERE TabVyrCP_EXT.ID = TabVyrCP.ID AND ISNULL(TabVyrCP_EXT._exp_mnozstvi_vc_pozad, 0) > 0))", $itemSNId);
+                        $resUpd = $this->db->query("UPDATE TabVyrCP SET Mnozstvi = 0 WHERE ID = ? AND EXISTS(SELECT ID FROM TabVyrCP_EXT WHERE TabVyrCP_EXT.ID = TabVyrCP.ID AND ISNULL(TabVyrCP_EXT._exp_mnozstvi_vc_pozad, 0) > 0)", $itemSNId);
                         // aktualizace TabPohybyZbozi.Mnozstvi
                         if ($resDel || $resUpd) {
                             $res = true;
@@ -751,7 +750,7 @@ class DeliveryNoteModel extends BaseModel {
                 $this->db->rollback();
             }
             return $res;
-        } catch (DibiException $e) {
+        } catch (\Throwable $e) {
             $this->db->rollback();
             return false;
         }
@@ -765,19 +764,19 @@ class DeliveryNoteModel extends BaseModel {
     public function updateQuantitySN($values) {
         // kontrola množství na sklad
         // transakce
-        $this->db->begin();
+        $this->db->beginTransaction();
         try {
             $itemSNRow = $this->db->query("SELECT "
                             . "cp.IDPolozkaDokladu AS ItemId, "
                             . "CONVERT(INT, ISNULL(cp.Mnozstvi, 0)) AS MnozstviSN, "
                             . "CONVERT(INT, ISNULL(cs.Mnozstvi + cs.MnozstviKPrijmu - cs.MnozstviKVydeji, 0)) AS MnozstviSkladem, "
-                            . "CASE WHEN (ISNULL(poe._exp_mnozstvi_vc - cp.Mnozstvi, 0) + %f) > ISNULL(poe._exp_mnozstvi_pozad_puvodni, 0) THEN 0 ELSE 1 END AS ErrPozad, "
-                            . "CASE WHEN ISNULL(cs.Mnozstvi + cs.MnozstviKPrijmu - cs.MnozstviKVydeji, 0) + ISNULL(cp.Mnozstvi, 0) >= %f THEN 1 ELSE 0 END AS ErrSklad "
+                            . "CASE WHEN (ISNULL(poe._exp_mnozstvi_vc - cp.Mnozstvi, 0) + ?) > ISNULL(poe._exp_mnozstvi_pozad_puvodni, 0) THEN 0 ELSE 1 END AS ErrPozad, "
+                            . "CASE WHEN ISNULL(cs.Mnozstvi + cs.MnozstviKPrijmu - cs.MnozstviKVydeji, 0) + ISNULL(cp.Mnozstvi, 0) >= ? THEN 1 ELSE 0 END AS ErrSklad "
                             . "FROM TabVyrCP cp "
                             . "LEFT JOIN TabVyrCS cs ON cp.IDVyrCis = cs.ID "
                             . "LEFT JOIN TabPohybyZbozi po ON po.ID = cp.IDPolozkaDokladu "
                             . "LEFT JOIN TabPohybyZbozi_EXT poe ON po.ID = poe.ID "
-                            . "WHERE cp.ID = %i", $values->quantity, $values->quantity, $values->itemSNId)->fetch();
+                            . "WHERE cp.ID = ?", $values->quantity, $values->quantity, $values->itemSNId)->fetch();
 
             \Tracy\Debugger::barDump($itemSNRow);
 
@@ -788,18 +787,18 @@ class DeliveryNoteModel extends BaseModel {
                     $res = 3;
                 } else {
                     $this->db->query("UPDATE TabVyrCP "
-                            . "SET Mnozstvi = %f "
-                            . "WHERE ID = %i", $values->quantity, $values->itemSNId);
+                            . "SET Mnozstvi = ? "
+                            . "WHERE ID = ?", $values->quantity, $values->itemSNId);
 
-                    $mnozVC = $this->db->query("SELECT Mnozstvi FROM TabVyrCP WHERE ID = %i", $values->itemSNId)->fetch()->Mnozstvi;
+                    $mnozVC = $this->db->query("SELECT Mnozstvi FROM TabVyrCP WHERE ID = ?", $values->itemSNId)->fetch()->Mnozstvi;
 
                     if ($mnozVC == 0) {
-                        $this->db->query("DELETE FROM TabVyrCP WHERE ID = %i", $values->itemSNId);
+                        $this->db->query("DELETE FROM TabVyrCP WHERE ID = ?", $values->itemSNId);
                     }
 
                     $sqRes = $this->db->query("UPDATE TabPohybyZbozi_EXT "
-                            . "SET _exp_mnozstvi_vc = _exp_mnozstvi_vc - %f + %f "
-                            . "WHERE ID = %i", $itemSNRow->MnozstviSN, $values->quantity, $itemSNRow->ItemId);
+                            . "SET _exp_mnozstvi_vc = _exp_mnozstvi_vc - ? + ? "
+                            . "WHERE ID = ?", $itemSNRow->MnozstviSN, $values->quantity, $itemSNRow->ItemId);
                     // aktualizace TabPohybyZbozi.Mnozstvi
                     $this->updateDeliveryNoteItemQuantity($itemSNRow->ItemId);
                     if ($sqRes) {
@@ -817,7 +816,7 @@ class DeliveryNoteModel extends BaseModel {
                 $this->db->rollback();
             }
             return $res;
-        } catch (DibiException $e) {
+        } catch (\Throwable $e) {
             $this->db->rollback();
             return false;
         }
@@ -840,7 +839,7 @@ class DeliveryNoteModel extends BaseModel {
                         . "LEFT JOIN TabPohybyZbozi po ON po.ID = cp.IDPolozkaDokladu "
                         . "LEFT JOIN TabPohybyZbozi_EXT poe ON poe.ID = po.ID "
                         . "LEFT JOIN TabVyrCS cs ON cp.IDVyrCis = cs.ID "
-                        . "WHERE cp.ID = %i", $quantity, $itemSNId)->fetch();
+                        . "WHERE cp.ID = ?", $itemSNId)->fetch();
 
 
         if ($itemSNRow) {
@@ -890,7 +889,7 @@ class DeliveryNoteModel extends BaseModel {
                         . "LEFT JOIN TabPohybyZbozi pox ON po.IDOldPolozka = pox.ID "
                         . "LEFT JOIN TabDokladyZbozi dox ON pox.IDDoklad = dox.ID "
                         . "LEFT JOIN (SELECT IDVyrCP AS IDVyrCP, CisloBaliku AS CisloBal, COUNT(id) AS ks FROM agrafa_ligum_dl_polozka_balik GROUP BY IDVyrCP, CisloBaliku) ksbal ON bal.IDVyrCP = ksbal.IDVyrCP AND bal.CisloBaliku = ksbal.CisloBal "
-                        . "WHERE po.IDDoklad = %i "
+                        . "WHERE po.IDDoklad = ? "
                         . "ORDER BY bal.CisloBaliku, vc.Nazev1 ", $deliveryNoteId)->fetchAll();
     }
 
@@ -900,7 +899,7 @@ class DeliveryNoteModel extends BaseModel {
      */
     public function removeFromPackage($packageId) {
         // transakce 
-        $this->db->begin();
+        $this->db->beginTransaction();
         try {
             $res = true;
             $packageRow = $this->db->query("SELECT "
@@ -910,20 +909,20 @@ class DeliveryNoteModel extends BaseModel {
                             . "cp.IDPolozkaDokladu AS IDPohybu "
                             . "FROM agrafa_ligum_dl_polozka_balik bal "
                             . "JOIN TabVyrCP cp ON cp.ID = bal.IDVyrCP "
-                            . "WHERE bal.id = %i", $packageId)->fetch();
+                            . "WHERE bal.id = ?", $packageId)->fetch();
 
             if ($packageRow) {
                 $res = $this->db->query("UPDATE TabVyrCP "
-                        . "SET Mnozstvi = Mnozstvi - %f "
-                        . "WHERE ID = %i", $packageRow->Mnozstvi, $packageRow->IDVyrCP);
+                        . "SET Mnozstvi = Mnozstvi - ? "
+                        . "WHERE ID = ?", $packageRow->Mnozstvi, $packageRow->IDVyrCP);
                 if ($res) {
                     $res = $this->db->query("UPDATE TabPohybyZbozi_EXT "
-                            . "SET _exp_mnozstvi_vc = _exp_mnozstvi_vc - %f "
-                            . "WHERE ID = %i", $packageRow->Mnozstvi, $packageRow->IDPohybu);
+                            . "SET _exp_mnozstvi_vc = _exp_mnozstvi_vc - ? "
+                            . "WHERE ID = ?", $packageRow->Mnozstvi, $packageRow->IDPohybu);
                     // aktualizace TabPohybyZbozi.Mnozstvi
                     $this->updateDeliveryNoteItemQuantity($packageRow->IDPohybu);
                     if ($res) {
-                        $res = $this->db->query("DELETE FROM agrafa_ligum_dl_polozka_balik WHERE id = %i", $packageId);
+                        $res = $this->db->query("DELETE FROM agrafa_ligum_dl_polozka_balik WHERE id = ?", $packageId);
                     }
                 }
             } else {
@@ -936,7 +935,7 @@ class DeliveryNoteModel extends BaseModel {
                 $this->db->rollback();
             }
             return $res;
-        } catch (DibiException $e) {
+        } catch (\Throwable $e) {
             $this->db->rollback();
             return false;
         }
@@ -953,7 +952,7 @@ class DeliveryNoteModel extends BaseModel {
         $chyby = $this->db->query("SELECT SUM(CASE WHEN ISNULL(poe._exp_mnozstvi_vc, 0) <> poe._exp_mnozstvi_pozad_puvodni THEN 1 ELSE 0 END) AS chyby "
                     . "FROM TabPohybyZbozi po "
                     . "LEFT JOIN TabPohybyZbozi_EXT poe ON po.ID = poe.ID " 
-                    , "WHERE po.IDDoklad = %i", $deliveryNoteId)->fetch()->chyby;
+                    . "WHERE po.IDDoklad = ?", $deliveryNoteId)->fetch()->chyby;
         if ($chyby > 0) {
             $res = 1;
         }
@@ -965,7 +964,7 @@ class DeliveryNoteModel extends BaseModel {
      * odeslání mailu po uzavření DL na NH
      */
     public function sendMailAfterDeliveryNoteClose($deliveryNoteId, $jeAtt) {
-        $this->db->query("EXEC dbo.hpx_agrafa_exp_uzavdl_mail @JeAtt = %i, @IDDoklad = %i", $jeAtt, $deliveryNoteId);
+        $this->db->query("EXEC dbo.hpx_agrafa_exp_uzavdl_mail @JeAtt = ?, @IDDoklad = ?", $jeAtt, $deliveryNoteId);
         return true;
     }
 
@@ -973,7 +972,7 @@ class DeliveryNoteModel extends BaseModel {
      * odeslání mailu po doplnění balení k DL na NH
      */
     public function sendMailAfterAddPackageTxtClose($deliveryNoteId) {
-        $this->db->query("EXEC dbo.hpx_agrafa_exp_vlozit_baleni_dl_mail @IDDoklad = %i", $deliveryNoteId);
+        $this->db->query("EXEC dbo.hpx_agrafa_exp_vlozit_baleni_dl_mail @IDDoklad = ?", $deliveryNoteId);
         return true;
     }
 
@@ -981,7 +980,7 @@ class DeliveryNoteModel extends BaseModel {
      * nový tisk DL - zrušit příznak tisku
      */
     public function reprintDeliveryNote($deliveryNoteId) {
-        $this->db->query("UPDATE TabDokladyZbozi_EXT SET _exp_dat_tisku = NULL WHERE ID = %i", $deliveryNoteId);
+        $this->db->query("UPDATE TabDokladyZbozi_EXT SET _exp_dat_tisku = NULL WHERE ID = ?", $deliveryNoteId);
     }
 
     /**
@@ -990,7 +989,7 @@ class DeliveryNoteModel extends BaseModel {
      * @return boolean
      */
     public function closeDeliveryNote($deliveryNoteId) {
-        $this->db->query("EXEC dbo.hpx_agrafa_exp_uzavrit_dl @ID = %i", $deliveryNoteId);
+        $this->db->query("EXEC dbo.hpx_agrafa_exp_uzavrit_dl @ID = ?", $deliveryNoteId);
         return true;
     }
 
@@ -1000,7 +999,7 @@ class DeliveryNoteModel extends BaseModel {
      * @return boolean
      */
     public function savePackageTxt($deliveryNoteId, $baleniTx) {
-        $this->db->query("EXEC dbo.hpx_agrafa_exp_vlozit_baleni_dl @BaleniTx = %s, @ID = %i", $baleniTx, $deliveryNoteId);
+        $this->db->query("EXEC dbo.hpx_agrafa_exp_vlozit_baleni_dl @BaleniTx = ?, @ID = ?", $baleniTx, $deliveryNoteId);
         return true;
     }
 
@@ -1016,11 +1015,11 @@ class DeliveryNoteModel extends BaseModel {
                         . "FROM agrafa_ligum_dl_polozka_balik bal "
                         . "LEFT JOIN TabVyrCP vc ON vc.ID = bal.IDVyrCP "
                         . "LEFT JOIN TabPohybyZbozi po ON po.ID = vc.IDPolozkaDokladu "
-                        . "WHERE po.IDDoklad = %i) bal1 "
-                        . "WHERE NOT EXISTS(SELECT * FROM (SELECT DISTINCT po.IDDoklad, bal.CisloBaliku AS packNr FROM agrafa_ligum_dl_polozka_balik bal LEFT JOIN TabVyrCP vc ON vc.ID = bal.IDVyrCP LEFT JOIN TabPohybyZbozi po ON po.ID = vc.IDPolozkaDokladu WHERE po.IDDoklad = %i) bal2 WHERE bal2.packNr = bal1.packNr + 1 ) "
+                        . "WHERE po.IDDoklad = ?) bal1 "
+                        . "WHERE NOT EXISTS(SELECT * FROM (SELECT DISTINCT po.IDDoklad, bal.CisloBaliku AS packNr FROM agrafa_ligum_dl_polozka_balik bal LEFT JOIN TabVyrCP vc ON vc.ID = bal.IDVyrCP LEFT JOIN TabPohybyZbozi po ON po.ID = vc.IDPolozkaDokladu WHERE po.IDDoklad = ?) bal2 WHERE bal2.packNr = bal1.packNr + 1 ) "
                         . "UNION "
                         . "SELECT 1 AS CisloBaliku "
-                        . "WHERE NOT EXISTS (SELECT * FROM (SELECT DISTINCT po.IDDoklad, bal.CisloBaliku AS packNr FROM agrafa_ligum_dl_polozka_balik bal LEFT JOIN TabVyrCP vc ON vc.ID = bal.IDVyrCP LEFT JOIN TabPohybyZbozi po ON po.ID = vc.IDPolozkaDokladu WHERE po.IDDoklad = %i) bal3 WHERE bal3.packNr = 1)) ot "
+                        . "WHERE NOT EXISTS (SELECT * FROM (SELECT DISTINCT po.IDDoklad, bal.CisloBaliku AS packNr FROM agrafa_ligum_dl_polozka_balik bal LEFT JOIN TabVyrCP vc ON vc.ID = bal.IDVyrCP LEFT JOIN TabPohybyZbozi po ON po.ID = vc.IDPolozkaDokladu WHERE po.IDDoklad = ?) bal3 WHERE bal3.packNr = 1)) ot "
                         . "ORDER BY 1", $deliveryNoteId, $deliveryNoteId, $deliveryNoteId)->fetch()->packNr;
         /*
           $nextPack = $this->db->query("SELECT "
@@ -1028,7 +1027,7 @@ class DeliveryNoteModel extends BaseModel {
           . "FROM agrafa_ligum_dl_polozka_balik bal "
           . "LEFT JOIN TabVyrCP vc ON vc.ID = bal.IDVyrCP "
           . "LEFT JOIN TabPohybyZbozi po ON po.ID = vc.IDPolozkaDokladu "
-          . "WHERE po.IDDoklad = %i", $deliveryNoteId)->fetch()->packNr;
+          . "WHERE po.IDDoklad = ?", $deliveryNoteId)->fetch()->packNr;
          * 
          */
         return $nextPack;
@@ -1039,7 +1038,7 @@ class DeliveryNoteModel extends BaseModel {
      */
     public function writeExpLog($deliveryNoteId, $action, $itemId, $snId, $partNumber, $barCode, $quantitySet, $quantity, $result, $errMsg) {
         $res = $this->db->query("INSERT INTO eTab_LogExpNH (IDDoklad, Akce, IDPohyb, IDVyrCis, RegCis, VyrCislo, MnozstviZad, Mnozstvi, Vysledek, Chyba, DatZaznamu)"
-                        . "VALUES (%i, %i, %i, %i, %s, %s, %f, %f, %i, %s, GETDATE())", $deliveryNoteId, $action, $itemId, $snId, $partNumber, $barCode, $quantitySet, $quantity, $result, $errMsg);
+                        . "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE())", $deliveryNoteId, $action, $itemId, $snId, $partNumber, $barCode, $quantitySet, $quantity, $result, $errMsg);
 
         return $res;
     }

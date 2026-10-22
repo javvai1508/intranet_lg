@@ -55,7 +55,7 @@ class DeliveryNotePresenter extends BasePresenter {
         parent::__construct();
     }
 
-    public function startup() {
+    public function startup(): void {
         parent::startup();
 
         if (!$this->user->isInRole("expedice")) {
@@ -545,12 +545,12 @@ class DeliveryNotePresenter extends BasePresenter {
         $template->deliveryNote = $deliveryNote;
         $template->deliveryNoteItems = $deliveryNoteItems;
         
-        $pdf = new \Joseki\Application\Responses\PdfResponse($template);
+        $pdf = new \Contributte\PdfResponse\PdfResponse($template);
 
         $pdf->pageFormat = "A4";
         $pdf->setPageMargins("10, 10, 10, 10, 1, 1");
-        $pdf->styles = file_get_contents("__DIR__" . "\\..\\..\\www\\css\\pdf-style.css");
-        //$pdf->styles = file_get_contents("c:\\inetpub\\wwwroot\\www\\css\\pdf-style.css");
+        $pdf->styles = file_get_contents(__DIR__ . '/../../www/css/pdf-style.css');
+        //$pdf->styles = file_get_contents(__DIR__ . '/../../www/css/pdf-style.css');
         $pdf->getMPDF()->setFooter("Ligum Intranet");
 
         /* server */
@@ -864,7 +864,7 @@ class DeliveryNotePresenter extends BasePresenter {
             $form->addHidden('itemSNId', $id);
             $form->addText('quantity')
                     ->setType('number')
-                    ->setAttribute('class', 'form-control form-control-lg text-center ajax quantity-form-input');
+                    ->setHtmlAttribute('class', 'form-control form-control-lg text-center ajax quantity-form-input');
 
             $form->onValidate[] = array($this, "validateEditQuantityForm");
 

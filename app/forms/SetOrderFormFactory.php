@@ -4,7 +4,7 @@ namespace App\Forms;
 
 use Nette,
     Nette\Application\UI\Form,
-    Kdyby\Translation\Translator;
+    Contributte\Translation\Translator;
     
 /**
  * formulář pro nový materiál zákazníka
@@ -26,28 +26,28 @@ class SetOrderFormFactory {
         $form->setTranslator($this->translator);
         
         $form->addText('CisloOrg', 'Odběratel')
-                ->setAttribute('placeholder', 'Číslo organizace')
-                ->setAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('placeholder', 'Číslo organizace')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
                 ->setType('number')
                 ->setRequired('Zadej číslo organizace')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addText('Firma')
-                ->setAttribute('placeholder', 'Firma, místo')
-                ->setAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('placeholder', 'Firma, místo')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
                 ->setType('text')
                 ->setRequired('Zadej firmu / místo')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addText('ParovaciZnak', 'Číslo objednávky')
-                ->setAttribute('placeholder', 'Číslo objednávky')
-                ->setAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('placeholder', 'Číslo objednávky')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
                 ->setType('number')
                 ->setRequired('Zadej číslo objednávky')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addSubmit('send', 'form.labels.continue')
-                ->setAttribute('class', 'btn btn-lg btn-primary');
+                ->setHtmlAttribute('class', 'btn btn-lg btn-primary');
 
         $form->getElementPrototype()->autocomplete = 'off';
         

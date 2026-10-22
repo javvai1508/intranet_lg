@@ -4,7 +4,7 @@ namespace App\Forms;
 
 use Nette,
     Nette\Application\UI\Form,
-    Kdyby\Translation\Translator;
+    Contributte\Translation\Translator;
     
 /**
  * formulář pro nový materiál zákazníka
@@ -26,92 +26,92 @@ class NewCustMaterialFormFactory {
         $form->setTranslator($this->translator);
         
         $form->addText('CisloOrg', 'Odběratel')
-                ->setAttribute('placeholder', 'Číslo organizace')
-                ->setAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('placeholder', 'Číslo organizace')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
                 ->setType('number')
                 ->setRequired('Zadej číslo organizace')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addText('Firma')
-                ->setAttribute('placeholder', 'Firma, místo')
-                ->setAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('placeholder', 'Firma, místo')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
                 ->setType('text')
                 ->setRequired('Zadej firmu / místo')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addText('Mnozstvi', 'Množství')
-                ->setAttribute('placeholder', 'Množství')
-                ->setAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('placeholder', 'Množství')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
                 ->setType('number')
                 ->setRequired('Zadej množství')
                 ->addRule(Form::INTEGER, 'Musí být číslo')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addText('Nazev', 'Název (výkres)')
-                ->setAttribute('placeholder', 'Název (výkres)')
-                ->setAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('placeholder', 'Název (výkres)')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
                 ->setType('text')
                 ->setRequired('Zadej název (výkres)')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addText('VPrumerJadra', 'Průměr jádra')
-                ->setAttribute('placeholder', 'Průměr jádra')
-                ->setAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('placeholder', 'Průměr jádra')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
                 ->setType('number')
                 ->setRequired('Zadej průměr jádra')
                 ->addRule(Form::FLOAT, 'Musí být číslo')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addText('VPrumerPogumu', 'Průměr pogumu')
-                ->setAttribute('placeholder', 'Průměr pogumu')
-                ->setAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('placeholder', 'Průměr pogumu')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
                 ->setType('number')
                 ->setRequired('Zadej průměr pogumu')
                 ->addRule(Form::FLOAT, 'Musí být číslo')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addText('VDelkaPogumu', 'Délka pogumu')
-                ->setAttribute('placeholder', 'Délka pogumu')
-                ->setAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('placeholder', 'Délka pogumu')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
                 ->setType('number')
                 ->setRequired('Zadej délku pogumu')
                 ->addRule(Form::FLOAT, 'Musí být číslo')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addText('VDelkaValce', 'Celková délka')
-                ->setAttribute('placeholder', 'Celková délka')
-                ->setAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('placeholder', 'Celková délka')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
                 ->setType('number')
                 ->setRequired('Zadej celkovou délku')
                 ->addRule(Form::FLOAT, 'Musí být číslo')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addText('VCepL', 'Čep levý')
-                ->setAttribute('placeholder', 'Čep levý')
-                ->setAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('placeholder', 'Čep levý')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
                 ->setType('number')
                 ->setRequired(false)
                 ->addRule(Form::FLOAT, 'Musí být číslo')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addText('VCepP', 'Čep pravý')
-                ->setAttribute('placeholder', 'Čep pravý')
-                ->setAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('placeholder', 'Čep pravý')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
                 ->setType('number')
                 ->setRequired(false)
                 ->addRule(Form::FLOAT, 'Musí být číslo')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addCheckbox('TisknoutKusy', 'Tisknout štítky podle počtu kusů?')
-                ->setAttribute('class', 'form-control form-control-lg checkbox-large');
+                ->setHtmlAttribute('class', 'form-control form-control-lg checkbox-large');
         
         $form->addTextArea('Poznamka', 'Poznámka')
-                ->setAttribute('class', 'form-control form-control-lg')
-                ->setAttribute('rows', '3')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('rows', '3')
                 ->setRequired(false);
 
         $form->addSubmit('send', 'form.labels.save')
-                ->setAttribute('class', 'btn btn-lg btn-primary');
+                ->setHtmlAttribute('class', 'btn btn-lg btn-primary');
 
         $form->getElementPrototype()->autocomplete = 'off';
         

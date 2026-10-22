@@ -4,7 +4,7 @@ namespace App\Forms;
 
 use Nette,
     Nette\Application\UI\Form,
-    Kdyby\Translation\Translator;
+    Contributte\Translation\Translator;
     
 /**
  * formulář pro nový materiál zákazníka
@@ -26,13 +26,13 @@ class SetStockDocFormFactory {
         $form->setTranslator($this->translator);
         
         $form->addText('ParovaciZnak')
-                ->setAttribute('placeholder', 'Číslo dokladu')
-                ->setAttribute('class', 'form-control form-control-sm')
+                ->setHtmlAttribute('placeholder', 'Číslo dokladu')
+                ->setHtmlAttribute('class', 'form-control form-control-sm')
                 ->setRequired('Zadej číslo dokladu')
-                ->setAttribute('autocomplete', false);
+                ->setHtmlAttribute('autocomplete', false);
 
         $form->addSubmit('send', 'form.labels.select')
-                ->setAttribute('class', 'btn btn-sm btn-secondary');
+                ->setHtmlAttribute('class', 'btn btn-sm btn-secondary');
 
         return $form;
     }
