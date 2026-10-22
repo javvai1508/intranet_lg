@@ -61,7 +61,8 @@ class SignFormFactory{
         }
 
         try {
-            $this->user->login($values->username);
+            // Nette forwards only explicitly supplied arguments to Authenticator.
+            $this->user->login($values->username, '');
         } catch (Nette\Security\AuthenticationException $e) {
             $form->addError($e->getMessage());
         }
