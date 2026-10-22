@@ -1,1 +1,12 @@
-app/config/config.local.neon
+/app/config/local.neon
+/log/*
+/temp/*
+/vendor/
+!/.gitkeep
+!.gitignore
+!.htaccess
+!web.config
+.idea/
+.vscode/
+composer.phar
+*.code-workspace
