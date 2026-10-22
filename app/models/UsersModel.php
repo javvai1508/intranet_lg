@@ -40,7 +40,7 @@ class UsersModel extends BaseModel implements Nette\Security\Authenticator {
         }
         
 
-        return new Nette\Security\SimpleIdentity($auth->id, $roles, $auth->toArray());
+        return new Nette\Security\SimpleIdentity($auth->id, $roles, (array) $auth);
     }
 
     /**
