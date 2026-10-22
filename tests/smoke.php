@@ -33,3 +33,22 @@ $pdfPath = $pdf->save(sys_get_temp_dir(), 'intranet-lg-pdf-smoke');
 assert(str_starts_with(file_get_contents($pdfPath), '%PDF-'));
 unlink($pdfPath);
 echo "PDF generation OK\n";
+
+// Exercise the form callback, not just the initial GET render.
+$user = $container->getByType(Nette\Security\User::class);
+$authenticator = new class implements Nette\Security\Authenticator {
+    public array $received = [];
+    public function authenticate(string $username, string $password): Nette\Security\IIdentity
+    {
+        $this->received = [$username, $password];
+        return new Nette\Security\SimpleIdentity(123, ['expedice']);
+    }
+};
+$user->setAuthenticator($authenticator);
+$factory = $container->getByType(App\Forms\SignFormFactory::class);
+$factory->formSucceeded($factory->create(), Nette\Utils\ArrayHash::from(['username' => '123', 'remember' => false]));
+assert($authenticator->received === ['123', '']);
+assert($user->isLoggedIn());
+assert($user->getId() === 123);
+$user->logout(true);
+echo "Sign form authentication callback OK\n";
