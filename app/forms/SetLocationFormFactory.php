@@ -3,19 +3,13 @@
 namespace App\Forms;
 
 use Nette,
-    Nette\Application\UI\Form,
-    Contributte\Translation\Translator;
+    Nette\Application\UI\Form;
     
 /**
  * formulář pro vyhledávání DL
  */
 class SetLocationFormFactory {
 
-    private $translator;
-
-    public function __construct(Translator $translator) {
-        $this->translator = $translator;
-    }
 
     /**
      * @return Form
@@ -23,7 +17,6 @@ class SetLocationFormFactory {
     public function create($locationArr) {
 
         $form = new Form;
-        $form->setTranslator($this->translator);
         
         $form->addHidden('deliveryNoteId');
         $form->addSelect('UmisteniKod', 'Umístění')

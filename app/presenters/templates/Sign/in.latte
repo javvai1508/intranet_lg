@@ -1,5 +1,4 @@
 {block content}
-{translator sign /}
 <div class="row content sign">
     <div class="col-sm-4 offset-sm-4 col-lg-2 offset-lg-5 text-center">
         <h3>Přihlášení</h3>
@@ -9,7 +8,7 @@
                 {if $input->name == "remember"}
                     <div class="form-check mb-2">
                         <input n:name=remember />
-                        <label>{_sign.remember}</label>
+                        <label n:name=remember>Zapamatovat si mě?</label>
                     </div>
                 {elseif $input->name == "send"}
                     {input $input}

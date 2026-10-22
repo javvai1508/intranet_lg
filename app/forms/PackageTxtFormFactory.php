@@ -3,19 +3,13 @@
 namespace App\Forms;
 
 use Nette,
-    Nette\Application\UI\Form,
-    Contributte\Translation\Translator;
+    Nette\Application\UI\Form;
     
 /**
  * formulář pro zadání balení při uzavření DL
  */
 class PackageTxtFormFactory {
 
-    private $translator;
-
-    public function __construct(Translator $translator) {
-        $this->translator = $translator;
-    }
 
     /**
      * @return Form
@@ -23,7 +17,6 @@ class PackageTxtFormFactory {
     public function create() {
 
         $form = new Form;
-        $form->setTranslator($this->translator);
 
         $form->addHidden('jeReq');
         

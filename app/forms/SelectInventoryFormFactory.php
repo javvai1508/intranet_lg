@@ -3,8 +3,7 @@
 namespace App\Forms;
 
 use Nette,
-    Nette\Application\UI\Form,
-    Contributte\Translation\Translator;
+    Nette\Application\UI\Form;
     
 /**
  * formulář pro vyhledávání DL
@@ -13,11 +12,8 @@ class SelectInventoryFormFactory {
 
     private $dataModel;
 
-    private $translator;
-
-    public function __construct(\App\Models\MaterialModel $materialModel, Translator $translator) {
+    public function __construct(\App\Models\MaterialModel $materialModel) {
         $this->dataModel = $materialModel;
-        $this->translator = $translator;
     }
 
     /**
@@ -29,7 +25,6 @@ class SelectInventoryFormFactory {
         $inventoryList = $this->dataModel->getInventoryList();
 
         $form = new Form;
-        $form->setTranslator($this->translator);
         
         $form->addSelect('IDInvHl', 'Vyber inventuru')
                 ->setHtmlAttribute('class', 'form-control form-control-lg')
@@ -37,7 +32,7 @@ class SelectInventoryFormFactory {
                 ->setPrompt('---')
                 ->setHtmlAttribute('autocomplete', false);
 
-        $form->addSubmit('send', 'form.labels.select')
+        $form->addSubmit('send', 'Vybrat')
                 ->setHtmlAttribute('class', 'btn btn-lg btn-secondary');
 
         return $form;

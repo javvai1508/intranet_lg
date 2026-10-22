@@ -43,8 +43,8 @@ aby aktualizace na novějším vývojovém PHP nepřidala nekompatibilní balí�
 - INSERT a načtení `SCOPE_IDENTITY()` běží v jednom SQL batchi.
 - Opravené tři nesoulady argumentů dotazů: dvě kontroly před uzavřením dokladu
   a výběr výrobního čísla při validaci množství.
-- Kdyby Translation nahrazuje Contributte Translation, Joseki PDF nahrazuje
-  Contributte PDF s aktuálním mPDF. Slovníky a veřejné chování zůstávají zachovány.
+- Překladová vrstva i jazykové slovníky jsou odstraněné. Aplikace používá přímo
+  české texty bez volby jazyka. Joseki PDF nahrazuje Contributte PDF s aktuálním mPDF.
 - Přizpůsobené rozhraní autentizace, formuláře, mapování presenterů a syntaxe Latte 3.
 - Odstraněné nefunkční callbacky přihlášení odkazující na neexistující blockingModel.
 
@@ -61,3 +61,9 @@ Latte šablony, vykreslí přihlášení a vytvoří PDF. Databázový test pou�
 SQLite a ověřuje PDO parametry, Unicode, fetchPairs a rollback.
 GitHub Actions spouští kontroly na PHP 8.2. Testy nepřistupují do Heliosu.
 SQLite nenahrazuje ověření SQL Server procedur, triggerů a tisku na cílovém serveru.
+
+## Přechod na české texty bez překladové vrstvy
+
+Po aktualizaci kódu a `composer.lock` znovu spusťte `composer install --no-dev`
+a vymažte `temp/cache`. Pokud lokální konfigurace obsahuje sekci `translation:`
+nebo registraci překladového rozšíření v `extensions:`, odstraňte je také.

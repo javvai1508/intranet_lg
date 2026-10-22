@@ -1,6 +1,7 @@
 <?php
 
 require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/forms/validation-messages.php';
 
 $configurator = new Nette\Bootstrap\Configurator;
 

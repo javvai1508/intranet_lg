@@ -5,8 +5,6 @@ foreach (['Sign', 'Homepage', 'DeliveryNote', 'Material', 'CustomerMaterial', 'E
     $container->getByType(Nette\Application\IPresenterFactory::class)->createPresenter($name);
     echo "Presenter $name OK\n";
 }
-$translator = $container->getByType(Contributte\Translation\Translator::class);
-assert($translator->translate('form.labels.signin') !== 'form.labels.signin');
 $latte = $container->getByType(Nette\Bridges\ApplicationLatte\LatteFactory::class)->create();
 $latte->addExtension(new Nette\Bridges\ApplicationLatte\UIExtension(null));
 $latte->addExtension(new Nette\Bridges\FormsLatte\FormsExtension);
@@ -24,6 +22,9 @@ $response->send($container->getByType(Nette\Http\IRequest::class), $container->g
 $html = ob_get_clean();
 assert(str_contains($html, 'Osobní číslo'));
 assert(str_contains($html, 'Přihlásit'));
+assert(str_contains($html, 'Zapamatovat si mě?'));
+assert(!str_contains($html, 'form.labels.'));
+assert(str_contains($html, '<html lang="cs">'));
 echo "Sign page render OK\n";
 $pdf = new Contributte\PdfResponse\PdfResponse('<h1>Test štítku</h1>');
 $pdf->pageFormat = [50, 100];
@@ -52,3 +53,10 @@ assert($user->isLoggedIn());
 assert($user->getId() === 123);
 $user->logout(true);
 echo "Sign form authentication callback OK\n";
+
+$form = new Nette\Application\UI\Form;
+$form->addText('number')->addRule(Nette\Forms\Form::Integer);
+$form->setValues(['number' => 'abc']);
+$form->validate();
+assert($form->getErrors() === ['Zadejte celé číslo.']);
+echo "Czech validation messages OK\n";

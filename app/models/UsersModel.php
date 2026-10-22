@@ -188,14 +188,6 @@ class UsersModel extends BaseModel implements Nette\Security\Authenticator {
     }
 
     /**
-     * seznam jazyku pro vyber
-     * @return type
-     */
-    public function getLanguages() { // consumer.base, sign, admin.base, resetPassword
-        //return $this->db->query("SELECT * FROM driver.languages ORDER BY name")->fetchAll();
-    }
-
-    /**
      * odblokovani uzivatele po chybnych prihlasenich
      * @param type $userMail
      */

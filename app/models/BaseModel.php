@@ -12,11 +12,9 @@ class BaseModel
      /** @var \Nette\Database\Connection */
     protected $db;
     
-    private $lang;
 
     public function __construct(\Nette\Database\Connection $connection) {
         $this->db = $connection;
-        $this->lang = 'cs';
     }
     
     protected function containsPattern(string $value): string

@@ -3,19 +3,13 @@
 namespace App\Forms;
 
 use Nette,
-    Nette\Application\UI\Form,
-    Contributte\Translation\Translator;
+    Nette\Application\UI\Form;
     
 /**
  * formulář pro nový materiál zákazníka
  */
 class SetOrderFormFactory {
 
-    private $translator;
-
-    public function __construct(Translator $translator) {
-        $this->translator = $translator;
-    }
 
     /**
      * @return Form
@@ -23,7 +17,6 @@ class SetOrderFormFactory {
     public function create() {
 
         $form = new Form;
-        $form->setTranslator($this->translator);
         
         $form->addText('CisloOrg', 'Odběratel')
                 ->setHtmlAttribute('placeholder', 'Číslo organizace')
@@ -46,7 +39,7 @@ class SetOrderFormFactory {
                 ->setRequired('Zadej číslo objednávky')
                 ->setHtmlAttribute('autocomplete', false);
 
-        $form->addSubmit('send', 'form.labels.continue')
+        $form->addSubmit('send', 'Pokračovat')
                 ->setHtmlAttribute('class', 'btn btn-lg btn-primary');
 
         $form->getElementPrototype()->autocomplete = 'off';

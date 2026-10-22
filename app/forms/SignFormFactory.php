@@ -5,8 +5,7 @@ namespace App\Forms;
 use Nette,
     //Lang,
     Nette\Application\UI\Form,
-    Nette\Security\User,
-    Contributte\Translation\Translator;
+    Nette\Security\User;
 
 /**
  * formulář pro přihlášení
@@ -17,12 +16,10 @@ class SignFormFactory{
     
     /** @var User */
     private $user;
-    private $translator;
     public $vaiale;
 
-    public function __construct(User $user, Translator $translator) {
+    public function __construct(User $user) {
         $this->user = $user;
-        $this->translator = $translator;
     }
 
     /**
@@ -30,18 +27,17 @@ class SignFormFactory{
      */
     public function create() {
         $form = new Form;
-        $form->setTranslator($this->translator);
         $form->addText('username', 'Osobní číslo')
                 ->setRequired('Zadejte osobní číslo')
                 ->setHtmlAttribute('class', 'form-control')
                 ->setType('number')
                 ->setHtmlAttribute('placeholder', 'Osobní číslo');
 
-        $form->addCheckbox('remember', 'form.labels.remember');
+        $form->addCheckbox('remember', 'Zapamatovat si mě?');
         
-        // $form->addCheckbox('onlySign', 'form.labels.nexttimesignin');
+        // $form->addCheckbox('onlySign', 'Příště ihned na přihlášení');
 
-        $form->addSubmit('send', 'form.labels.signin')
+        $form->addSubmit('send', 'Přihlásit')
                 ->setHtmlAttribute('class', 'btn btn-lg btn-primary col-xs-12');
 
         $form->onSuccess[] = [$this, 'formSucceeded'];

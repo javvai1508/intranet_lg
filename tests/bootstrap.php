@@ -1,6 +1,7 @@
 <?php
 ini_set('session.save_path', sys_get_temp_dir());
 require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../app/forms/validation-messages.php';
 $configurator = new Nette\Bootstrap\Configurator;
 $configurator->setDebugMode(true);
 $configurator->setTempDirectory(sys_get_temp_dir() . '/intranet-lg-tests');

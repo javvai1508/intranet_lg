@@ -3,8 +3,7 @@
 namespace App\Forms;
 
 use Nette,
-    Nette\Application\UI\Form,
-    Contributte\Translation\Translator;
+    Nette\Application\UI\Form;
     
 /**
  * formulář pro nový materiál zákazníka
@@ -13,11 +12,8 @@ class StdInventoryBarCodeFormFactory {
 
     private $dataModel;
 
-    private $translator;
-
-    public function __construct(\App\Models\MaterialModel $materialModel, Translator $translator) {
+    public function __construct(\App\Models\MaterialModel $materialModel) {
         $this->dataModel = $materialModel;
-        $this->translator = $translator;
     }
 
     /**
@@ -26,7 +22,6 @@ class StdInventoryBarCodeFormFactory {
     public function create() {
 
         $form = new Form;
-        $form->setTranslator($this->translator);
         
         /*
         $prumerZao = $this->dataModel->getPrumer1Zao();
@@ -45,7 +40,7 @@ class StdInventoryBarCodeFormFactory {
         $form->addCheckbox('TisknoutStitek', 'Generovat VČ?')
                 ->setHtmlAttribute('class', 'form-control form-control-lg checkbox-large');
 */        
-        $form->addSubmit('send', 'form.labels.next')
+        $form->addSubmit('send', 'Další')
                 ->setHtmlAttribute('class', 'btn btn-lg btn-primary');
 
         $form->getElementPrototype()->autocomplete = 'off';

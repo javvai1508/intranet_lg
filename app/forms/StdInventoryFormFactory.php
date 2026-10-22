@@ -3,8 +3,7 @@
 namespace App\Forms;
 
 use Nette,
-    Nette\Application\UI\Form,
-    Contributte\Translation\Translator;
+    Nette\Application\UI\Form;
     
 /**
  * formulář pro nový materiál zákazníka
@@ -13,11 +12,8 @@ class StdInventoryFormFactory {
 
     private $dataModel;
 
-    private $translator;
-
-    public function __construct(\App\Models\MaterialModel $materialModel, Translator $translator) {
+    public function __construct(\App\Models\MaterialModel $materialModel) {
         $this->dataModel = $materialModel;
-        $this->translator = $translator;
     }
 
     /**
@@ -26,7 +22,6 @@ class StdInventoryFormFactory {
     public function create($skupZbo) {
 
         $form = new Form;
-        $form->setTranslator($this->translator);
         
         $material = $this->dataModel->getMaterialInv($skupZbo);
         /*
@@ -54,7 +49,7 @@ class StdInventoryFormFactory {
                 ->addRule(Form::FLOAT, 'Zadej číslo')
                 ->setHtmlAttribute('autocomplete', false);
 
-        $form->addSubmit('send', 'form.labels.save')
+        $form->addSubmit('send', 'Uložit')
                 ->setHtmlAttribute('class', 'btn btn-lg btn-primary');
 
         $form->getElementPrototype()->autocomplete = 'off';

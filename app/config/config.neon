@@ -1,22 +1,10 @@
-parameters:
-    lang: [en, cs]
-
 application:
     errorPresenter: Error
     mapping:
         *: App\Presenters\*Presenter
 
-extensions:
-    translation: Contributte\Translation\DI\TranslationExtension
-
 session:
     expiration: 14 days
-
-translation:
-    locales:
-        default: cs
-        fallback: [cs]
-    dirs: [%appDir%/lang]
 
 services:
     - App\Forms\SignFormFactory

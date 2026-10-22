@@ -7,38 +7,9 @@ use Nette\Forms\Controls;
 
 class BasePresenter extends Nette\Application\UI\Presenter {
 
-    const LANG = ['en', 'cs'];
-
-    private $session;
-
-    /** @persistent */
-    public $locale;
-
-    /** @inject @var \Contributte\Translation\Translator */
-    public $translator;
-
     public function startup(): void {
         Parent::startup();
 
-        $sessionLang = $this->getSession()->getSection('lang')->lang;
-        if (isset($sessionLang) && $this->locale != $sessionLang) {
-            $this->locale = $this->getSession()->getSection('lang')->lang;
-        } else {
-            $this->getSession()->getSection('lang')->lang = $this->locale;
-        }
-        /*
-        $this->template->lang = $this->locale;
-        $this->template->languages = $this->userManager->getLanguages();
-        */
-        /*
-          $httpRequest = $this->getHttpRequest();
-          $ipHigh = ip2long('192.168.2.254');
-          $ipLow = ip2long('192.168.2.1');
-          $ip = ip2long($httpRequest->getRemoteAddress());
-          if (($ip > $ipHigh || $ip < $ipLow) && $this->getPresenter()->getName() != 'Sign'){
-          }
-         * 
-         */
         if (!$this->user->isLoggedIn() && $this->getPresenter()->getName() != 'Sign') {
             $this->redirect('Sign:in');
         }
@@ -48,23 +19,9 @@ class BasePresenter extends Nette\Application\UI\Presenter {
 
     protected function showSession() {
         $session = $this->getSession();
-        \Tracy\Debugger::barDump($session->getSection('lang')->lang);
         \Tracy\Debugger::barDump($session->getSection('deliveryNote')->deliveryNote);
         \Tracy\Debugger::barDump($session->getSection('package')->number);
         \Tracy\Debugger::barDump($session->getSection('package')->open);
-    }
-
-    /**
-     * změna jazyka
-     * @param type $lang
-     */
-    public function handleLang($lang) {
-        $this->locale = $lang;
-        $this->getSession()->getSection('lang')->lang = $lang;
-        $this->getHttpResponse()->setCookie('lang', $lang, '100 days');
-        // $sectionBc = $this->session->getSection('breadCrumb');
-        // $sectionBc->bc = $this->breadCrumbModel->getMenuLang($lang, $this->user->id, $this->projectId);
-        $this->redirect('this');
     }
 
     /**
